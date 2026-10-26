@@ -83,6 +83,10 @@
   .chat-quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--cream); border-top: 1px solid var(--card-border); }
   .chat-quick-btn { background: #fff; border: 1.5px solid var(--turquoise); color: var(--turquoise-deep); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
   .chat-quick-btn:hover { background: var(--turquoise); color: #fff; }
+  .chat-input-row{display:flex;gap:6px;padding:10px;border-top:1px solid var(--card-border);background:#fff}
+  .chat-input-row input{min-width:0;flex:1;border:1px solid var(--card-border);border-radius:18px;padding:10px;font:inherit;outline-color:var(--turquoise)}
+  .chat-input-row button{border:0;border-radius:50%;width:42px;min-width:42px;height:42px;background:var(--turquoise-deep);color:#fff;font-size:1.1rem;cursor:pointer}
+  .chat-input-row button.listening{background:#d93025;animation:pop .5s infinite alternate}
 
   /* Tabs */
   .tabs-container{ overflow-x: auto; white-space: nowrap; padding-bottom: 12px; margin: 20px 0 16px; scrollbar-width: none; }
@@ -466,7 +470,12 @@
   <div class="chat-quick-btns">
     <button class="chat-quick-btn" onclick="sendAiMsg('شجعني يا سمسم!')">👏 شجعني!</button>
     <button class="chat-quick-btn" onclick="sendAiMsg('كيف أصل للمستوى التالي؟')">🏆 المستويات</button>
-    <button class="chat-quick-btn" onclick="sendAiMsg('نصيحة للقراءة')">💡 نصيحة</button>
+    <button class="chat-quick-btn" onclick="sendAiMsg('افتح الأغاني التعليمية')">🎵 الأغاني</button>
+  </div>
+  <div class="chat-input-row">
+    <input id="aiChatInput" type="text" placeholder="اتكلم مع سمسم أو اكتب له..." aria-label="رسالتك لسمسم">
+    <button id="aiSendBtn" title="إرسال الرسالة" aria-label="إرسال">➤</button>
+    <button id="aiMicBtn" title="تحدث مع سمسم بالصوت" aria-label="تحدث بالصوت">🎙️</button>
   </div>
 </div>
 
@@ -608,31 +617,49 @@ const chatBody = document.getElementById('chatBody');
 aiFriendBtn.onclick = () => chatModal.classList.toggle('active');
 closeChatBtn.onclick = () => chatModal.classList.remove('active');
 
-function sendAiMsg(text) {
-  const name = currentUser ? currentUser.username : 'يا بطل';
-  const userDiv = document.createElement('div');
-  userDiv.className = 'chat-msg user';
-  userDiv.textContent = text;
-  chatBody.appendChild(userDiv);
-
-  let reply = `أنت أسطورة يا ${name}! واصل اللعب لتجمع المزيد من النقاط 🌟`;
-  if (text.includes('شجعني')) {
-    reply = `أنت بطل رائع يا ${name}! أنا فخور بك جداً، أداءك مذهل واستمر في التعلم 🚀`;
-  } else if (text.includes('المستوى')) {
-    reply = `يا ${name}، كل 20 نقطة تجمعها ترفعك لمستوى أعلى وتفتح لك ألقاباً وشارات جديدة 🏆`;
-  } else if (text.includes('نصيحة')) {
-    reply = "تمهل أثناء القراءة وافتح فمك جيداً ونطق الحروف بحركاتها الفتحة والضمة والكسرة 💡";
-  }
-
-  setTimeout(() => {
-    const botDiv = document.createElement('div');
-    botDiv.className = 'chat-msg bot';
-    botDiv.textContent = reply;
-    chatBody.appendChild(botDiv);
-    chatBody.scrollTop = chatBody.scrollHeight;
-    speak(reply);
-  }, 400);
+function addChatMessage(text, who){
+  const div=document.createElement('div'); div.className='chat-msg '+who; div.textContent=text;
+  chatBody.appendChild(div); chatBody.scrollTop=chatBody.scrollHeight;
 }
+function getSesameReply(text){
+  const t=String(text||'').toLowerCase().replace(/[ًٌٍَُِّْـ]/g,'');
+  const name=currentUser?currentUser.username:'يا بطل';
+  if(/افتح.*(اغاني|الأغاني|اناشيد|الأناشيد)|قسم الاغاني/.test(t)){const tab=document.querySelector('[data-tab="songs"]');if(tab)tab.click();return 'حاضر يا '+name+'! فتحت لك ركن الأغاني التعليمية. اختار أنشودة واضغط استمع. 🎵';}
+  if(/افتح.*(حروف|الحروف)|لعبه الحروف|لعبة الحروف/.test(t)){const tab=document.querySelector('[data-tab="learn"]');if(tab)tab.click();return 'يلا بينا يا بطل! فتحت لك لعبة الحروف. اختار حرف وابدأ التعلّم. 🔤';}
+  if(/شجع|زعلان|تعبت|مش قادر/.test(t)) return 'أنا معاك يا '+name+' ❤️ خدها خطوة خطوة. كل مرة تتعلم فيها حاجة جديدة أنت بتتقدم، وأنا فخور بيك!';
+  if(/مستوى|نقاط|درجتي|نقطي/.test(t)) return 'يا '+name+'، معاك '+(typeof score!=='undefined'?score:0)+' نقطة. كل 20 نقطة ترفعك لمستوى جديد. يلا نكمل! 🏆';
+  if(/نصيحه|نصيحة|اقرا|القراءة/.test(t)) return 'نصيحتي ليك: اقرأ الكلمة ببطء، قسمها لحروف، وبعدها انطقها كاملة. التدريب البسيط كل يوم بيعمل فرق كبير! 📚';
+  if(/اسمك|انت مين|أنت مين/.test(t)) return 'أنا سمسم 🤖 صاحبك المساعد في بوابة المعرفة! أقدر أشجعك، أساعدك تتعلم، وأفتح لك أقسام اللعبة.';
+  if(/السلام عليكم|سلام/.test(t)) return 'وعليكم السلام يا بطل '+name+'! نورت بوابة المعرفة. مستعد نتعلم ونلعب؟ 😊';
+  if(/شكرا|شكرًا|تسلم/.test(t)) return 'العفو يا صاحبي! أنا هنا أساعدك. تحب نلعب ولا نسمع أغنية تعليمية؟ 🌟';
+  if(/اغنيه|أغنية|اغاني|أنشوده|انشوده/.test(t)) return 'عندي ركن للأغاني التعليمية! قول لي «افتح الأغاني» وهفتح لك القسم. 🎵';
+  if(/العب|نلعب|لعبه|لعبة/.test(t)) return 'يلا نلعب! اختار واحد من أقسام الألعاب فوق، أو قول لي «افتح الحروف» عشان أفتح لك لعبة الحروف. 🎮';
+  return 'سمعتك يا '+name+' 😊 أنا سمسم، صاحبك في التعلّم. جرّب تقول لي: شجعني، افتح الأغاني، افتح الحروف، أو كام نقطة عندي؟';
+}
+function sendAiMsg(text) {
+  if(!text)return;
+  addChatMessage(text,'user');
+  const reply=getSesameReply(text);
+  setTimeout(()=>{addChatMessage(reply,'bot');speak(reply);},250);
+}
+const aiChatInput=document.getElementById('aiChatInput');
+document.getElementById('aiSendBtn')?.addEventListener('click',()=>{const t=aiChatInput.value.trim();if(t){aiChatInput.value='';sendAiMsg(t);}});
+aiChatInput?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('aiSendBtn').click();});
+const aiMicBtn=document.getElementById('aiMicBtn');
+let sesameRecognition=null;
+function startSesameListening(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){addChatMessage('المتصفح ده مش بيدعم التعرف على الصوت. جرّب Google Chrome وحدّثه، أو اكتب رسالتك لسمسم.','bot');speak('المتصفح لا يدعم التحدث الصوتي. يمكنك كتابة رسالتك.');return;}
+  if(sesameRecognition){try{sesameRecognition.stop();}catch(e){} sesameRecognition=null;}
+  sesameRecognition=new SR(); sesameRecognition.lang='ar-EG'; sesameRecognition.continuous=false; sesameRecognition.interimResults=false;
+  aiMicBtn.classList.add('listening'); aiMicBtn.textContent='🔴';
+  addChatMessage('أنا سامعك يا بطل... اتكلم دلوقتي 🎙️','bot');
+  sesameRecognition.onresult=e=>{const heard=e.results[0][0].transcript;sendAiMsg(heard);};
+  sesameRecognition.onerror=e=>{if(e.error==='not-allowed')addChatMessage('اسمح للمتصفح باستخدام الميكروفون من علامة القفل بجوار عنوان الموقع.','bot');else if(e.error!=='no-speech')addChatMessage('ما سمعتكش كويس. جرّب تاني أو اكتب رسالتك.','bot');};
+  sesameRecognition.onend=()=>{aiMicBtn.classList.remove('listening');aiMicBtn.textContent='🎙️';};
+  try{sesameRecognition.start();}catch(e){aiMicBtn.classList.remove('listening');aiMicBtn.textContent='🎙️';}
+}
+aiMicBtn?.addEventListener('click',startSesameListening);
 
 /* ================== API & DATA ================== */
 async function apiCall(action, payload){
