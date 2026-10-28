@@ -483,18 +483,25 @@
   </div>
 </div>
 
-<!-- Modal Overlay for Audio Settings -->
+<!-- Modal Overlay for Voice Settings & Download -->
 <div class="modal-overlay" id="audioSettingsModal">
-  <div class="modal-card" style="border-color: var(--turquoise);">
+  <div class="modal-card" style="border-color: var(--turquoise); max-width: 420px;">
     <div class="modal-emoji">🔊</div>
     <div class="modal-word" style="font-size: 1.8rem; margin-bottom: 15px;">إعدادات الصوت</div>
     
-    <!-- اختيار صوت المتحدث -->
+    <!-- اختيار صوت المتحدث المحلية -->
     <div class="audio-slider-group" style="margin-bottom: 18px;">
-      <label for="voiceSelect">صوت المتحدث:</label>
+      <label for="voiceSelect">صوت الجهاز المحلي (أوفلاين):</label>
       <select id="voiceSelect" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--card-border); font-family: 'Tajawal', sans-serif; font-size: 0.95rem; background: var(--cream);">
         <option value="">جاري تحميل الأصوات المتاحة...</option>
       </select>
+    </div>
+
+    <!-- زر مباشر لتنزيل الأصوات على أندرويد -->
+    <div style="margin-bottom: 15px;">
+      <a href="https://play.google.com/store/apps/details?id=com.google.android.tts" target="_blank" class="modal-close" style="background: var(--turquoise); color: #fff; text-decoration: none; display: block; font-size: 0.9rem; padding: 10px;">
+        📲 فتح متجر Google Play لتنزيل الأصوات
+      </a>
     </div>
 
     <!-- التحكم في مستوى صوت المؤثرات -->
@@ -598,11 +605,10 @@ function playSFX(type) {
   } catch(e){}
 }
 
-/* ================== SPEECH SYNTHESIS & VOICE SELECTION ================== */
+/* ================== SMART HYBRID AUDIO ENGINE ================== */
 let arabicVoice = null;
-let voiceUnlocked = false;
 let availableVoices = [];
-
+let audioSpeechPlayer = new Audio();
 const voiceSelect = document.getElementById('voiceSelect');
 
 function populateVoiceList() {
@@ -666,32 +672,41 @@ if (voiceSelect) {
   });
 }
 
-function unlockVoiceOnce(){
-  if(voiceUnlocked || !('speechSynthesis' in window)) return;
-  voiceUnlocked = true;
-  try{
-    const warm = new SpeechSynthesisUtterance(' ');
-    warm.volume = 0;
-    window.speechSynthesis.speak(warm);
-  }catch(e){}
-  document.removeEventListener('touchend', unlockVoiceOnce);
-  document.removeEventListener('click', unlockVoiceOnce);
-}
-document.addEventListener('touchend', unlockVoiceOnce, { once:true });
-document.addEventListener('click', unlockVoiceOnce, { once:true });
+function speak(text) {
+  if (!text || speechVolume <= 0) return;
 
-function speak(text){
-  if(!text || speechVolume <= 0) return;
-  try{
-    if(!('speechSynthesis' in window)) return;
+  const cleanText = text.replace(/[\u064B-\u0652]/g, "").trim();
+  if (!cleanText) return;
+
+  // 1️⃣ تشغيل الصوت أونلاين أوتوماتيكياً (صوت عربي نقي وشغال بدون أي إعدادات)
+  const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=ar&client=tw-ob`;
+  
+  audioSpeechPlayer.pause();
+  audioSpeechPlayer.src = googleTtsUrl;
+  audioSpeechPlayer.volume = speechVolume;
+
+  let playPromise = audioSpeechPlayer.play();
+
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      // 2️⃣ في حالة الأوفلاين، نستخدم صوت الجهاز المحلي كخطة بديلة
+      speakLocalFallback(cleanText);
+    });
+  }
+}
+
+function speakLocalFallback(cleanText) {
+  try {
+    if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
-    const cleanText = text.replace(/[\u064B-\u0652]/g, "").trim();
     const u = new SpeechSynthesisUtterance(cleanText);
-    if(arabicVoice) u.voice = arabicVoice;
+    if (arabicVoice) u.voice = arabicVoice;
     u.lang = arabicVoice ? arabicVoice.lang : 'ar-SA';
-    u.rate = 0.75; u.pitch = 1.05; u.volume = speechVolume;
+    u.rate = 0.8; 
+    u.pitch = 1.0; 
+    u.volume = speechVolume;
     window.speechSynthesis.speak(u);
-  }catch(e){}
+  } catch (e) {}
 }
 
 /* ================== FRIEND BOT ================== */
@@ -1428,19 +1443,4 @@ function newBuildRound(){
     btn.onclick = ()=>{ if(btn.dataset.used === 'true') return; speak(part); btn.dataset.used = 'true'; btn.classList.add('used'); builtSoFar.push(part); blanks.children[builtSoFar.length-1].textContent = part; blanks.children[builtSoFar.length-1].classList.add('filled');
       if(builtSoFar.length === buildTarget.parts.length){ if(builtSoFar.join('') === buildTarget.parts.join('')){ document.getElementById('buildFeedback').textContent = 'صح 🎉'; document.getElementById('buildFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newBuildRound, 1500); }else{ document.getElementById('buildFeedback').textContent = 'غلط ❌'; document.getElementById('buildFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ builtSoFar = []; [...blanks.children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...pool.children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); document.getElementById('buildFeedback').textContent = ''; }, 1000); } } }; pool.appendChild(btn); });
 }
-document.getElementById('clearBtn').onclick = ()=>{ builtSoFar = []; [...document.getElementById('blanksRow').children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...document.getElementById('poolRow').children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); };
-document.getElementById('skipBtn').onclick = newBuildRound;
-
-// Init
-window.addEventListener('DOMContentLoaded', () => {
-  newSpeakLetterRound(); 
-  newSpeakWordRound(); 
-  newMissingRound(); 
-  newMatchRound(); 
-  newListenImgRound(); 
-  newListenTextRound(); 
-  newBuildRound();
-});
-</script>
-</body>
-</html>
+document.getElementById('clearBtn').onclick = ()=>{ builtSoFar = []; [...document.getElementById('blanksRow').children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...document.getElementById('poolRow').children].
