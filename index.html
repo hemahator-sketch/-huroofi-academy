@@ -55,13 +55,14 @@
   #app{ display:none; }
   #app.active{ display:block; }
   .player-bar{ display:flex; flex-direction:column; gap:12px; background:var(--card); border:2px solid var(--card-border); border-radius: var(--radius-md); padding:16px; margin-top:16px; box-shadow: var(--shadow); }
-  .player-main{ display:flex; align-items:center; gap:14px; width:100%; }
+  .player-main{ display:flex; align-items:center; gap:14px; width:100%; flex-wrap:wrap; }
   .player-avatar{ width:54px; height:54px; border-radius:50%; flex-shrink:0; background: linear-gradient(150deg, var(--saffron), var(--coral)); color:#fff; font-family:'Changa', sans-serif; font-weight:800; font-size:1.5rem; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
-  .player-info{ flex:1; min-width:0; }
+  .player-info{ flex:1; min-width:120px; }
   .player-name{ font-family:'Changa', sans-serif; font-weight:800; font-size:1.2rem; }
   .player-title{ font-size:0.85rem; color:var(--turquoise-deep); font-weight:700; background:#EAF7F5; padding:2px 8px; border-radius:6px; display:inline-block; margin-top:2px; }
   .player-score{ color:var(--saffron); font-weight:700; font-size:1rem; }
-  .logout-btn{ border:2px solid var(--card-border); background:transparent; color:var(--ink-soft); font-family:'Tajawal', sans-serif; font-weight:700; border-radius:999px; padding:9px 18px; cursor:pointer; }
+  .logout-btn, .audio-settings-trigger-btn{ border:2px solid var(--card-border); background:transparent; color:var(--ink-soft); font-family:'Tajawal', sans-serif; font-weight:700; border-radius:999px; padding:8px 16px; cursor:pointer; font-size:0.9rem; transition:0.2s; }
+  .audio-settings-trigger-btn:hover{ background:var(--cream); color:var(--ink); }
 
   /* Level & Progress Bar */
   .level-progress-container{ width:100%; background:var(--cream); border-radius:10px; border:2px solid var(--card-border); height:16px; overflow:hidden; position:relative; }
@@ -71,7 +72,7 @@
   .badge-item{ font-size:1.4rem; filter: grayscale(1); opacity:0.35; transition: all 0.3s; cursor:pointer; position:relative; }
   .badge-item.unlocked{ filter: grayscale(0); opacity:1; transform: scale(1.1); }
 
-  /* Friend floating button (voice only, no reading needed) */
+  /* Friend floating button */
   .friend-btn { position: fixed; bottom: 20px; left: 20px; width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--coral), var(--saffron)); border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; font-size: 2.4rem; cursor: pointer; z-index: 999; animation: pop 1.4s infinite alternate; }
   .friend-btn:active{ transform: scale(0.92); }
   .friend-bubble{ position:fixed; bottom:100px; left:16px; max-width:220px; background:#fff; border:3px solid var(--turquoise-deep); border-radius:20px; padding:14px 16px; font-weight:800; font-size:1.3rem; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.2); z-index:999; opacity:0; pointer-events:none; transition: opacity .3s, transform .3s; transform: translateY(10px) scale(0.9); }
@@ -143,6 +144,11 @@
   .modal-word { font-family: 'Changa', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--ink); margin-bottom: 20px; }
   .modal-close { background: var(--danger); color: #fff; border: none; border-radius: 999px; padding: 12px 30px; font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 1.2rem; cursor: pointer; box-shadow: 0 5px 0 #B83B27; transition: 0.1s; width: 100%; }
   .modal-close:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+
+  /* Audio Slider controls in Modal */
+  .audio-control-group { text-align: right; margin-bottom: 20px; }
+  .audio-control-group label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.95rem; color: var(--ink); }
+  .audio-control-group input[type="range"] { width: 100%; accent-color: var(--turquoise-deep); cursor: pointer; }
 
   /* Game Elements Extra */
   .listen-big-btn{ border:none; background:var(--saffron); color:#3A2504; font-family:'Changa', sans-serif; font-weight:800; font-size:1.4rem; border-radius:999px; padding:18px 36px; cursor:pointer; margin:16px auto 32px; display:inline-flex; align-items:center; gap:12px; box-shadow:0 6px 0 #D18925; }
@@ -265,6 +271,7 @@
           <div class="player-name" id="playerNameLabel">-</div>
         </div>
         <div class="player-score"><span id="playerScoreLabel">0</span> 🌟 <span class="sync-dot" id="syncDot" title="حالة حفظ النقاط"></span></div>
+        <button class="audio-settings-trigger-btn" id="openAudioSettingsBtn">⚙️ الصوت</button>
         <button class="logout-btn" id="logoutBtn">خروج</button>
       </div>
 
@@ -478,6 +485,26 @@
   </div>
 </div>
 
+<!-- Modal Overlay for Audio Settings -->
+<div class="modal-overlay" id="audioSettingsModal">
+  <div class="modal-card" style="border-color: var(--turquoise);">
+    <div class="modal-emoji">🔊</div>
+    <div class="modal-word" style="font-size: 1.8rem; margin-bottom: 20px;">إعدادات الصوت</div>
+    
+    <div class="audio-control-group">
+      <label for="sfxVolumeRange">مستوى صوت المؤثرات (SFX):</label>
+      <input type="range" id="sfxVolumeRange" min="0" max="1" step="0.1" value="0.3">
+    </div>
+
+    <div class="audio-control-group">
+      <label for="speechVolumeRange">مستوى صوت النطق والحديث:</label>
+      <input type="range" id="speechVolumeRange" min="0" max="1" step="0.1" value="1.0">
+    </div>
+
+    <button class="modal-close" id="closeAudioSettingsBtn" style="background: var(--turquoise); margin-top: 10px;">حفظ وإغلاق</button>
+  </div>
+</div>
+
 <!-- Modal Overlay for Journey Complete Celebration -->
 <div class="modal-overlay" id="journeyModal">
   <div class="modal-card" style="border-color:var(--saffron);">
@@ -491,6 +518,39 @@
 <script>
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgFq6EumPYteu4RQqn8QI64ZSCBinTPom69UcNo12CjKRJrsTTAd76xvhhx8Ve6Bim/exec";
 if(!APP_SCRIPT_URL || APP_SCRIPT_URL.indexOf('PASTE_') === 0) document.getElementById('configBanner').style.display = 'block';
+
+/* ================== AUDIO SETTINGS & VOLUMES ================== */
+let sfxVolume = 0.3;
+let speechVolume = 1.0;
+
+const audioModal = document.getElementById('audioSettingsModal');
+const openAudioBtn = document.getElementById('openAudioSettingsBtn');
+const closeAudioBtn = document.getElementById('closeAudioSettingsBtn');
+const sfxRange = document.getElementById('sfxVolumeRange');
+const speechRange = document.getElementById('speechVolumeRange');
+
+if (openAudioBtn) {
+  openAudioBtn.onclick = () => audioModal.classList.add('active');
+}
+if (closeAudioBtn) {
+  closeAudioBtn.onclick = () => audioModal.classList.remove('active');
+}
+if (audioModal) {
+  audioModal.addEventListener('click', (e) => {
+    if (e.target === audioModal) audioModal.classList.remove('active');
+  });
+}
+
+if (sfxRange) {
+  sfxRange.addEventListener('input', (e) => {
+    sfxVolume = parseFloat(e.target.value);
+  });
+}
+if (speechRange) {
+  speechRange.addEventListener('input', (e) => {
+    speechVolume = parseFloat(e.target.value);
+  });
+}
 
 /* ================== CONFETTI ANIMATION ================== */
 function triggerConfetti() {
@@ -537,11 +597,13 @@ function playSFX(type) {
       triggerConfetti();
       osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
       osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.3);
-      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+      gainNode.gain.setValueAtTime(sfxVolume, audioCtx.currentTime); 
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
       osc.start(); osc.stop(audioCtx.currentTime + 0.4);
     } else {
       osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      gainNode.gain.setValueAtTime(sfxVolume, audioCtx.currentTime); 
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
       osc.start(); osc.stop(audioCtx.currentTime + 0.3);
     }
   } catch(e){}
@@ -590,12 +652,13 @@ function speak(text){
     const u = new SpeechSynthesisUtterance(cleanText);
     if(arabicVoice) u.voice = arabicVoice;
     u.lang = arabicVoice ? arabicVoice.lang : 'ar-SA';
-    u.rate = 0.75; u.pitch = 1.05; u.volume = 1;
+    u.rate = 0.75; u.pitch = 1.05; 
+    u.volume = speechVolume;
     window.speechSynthesis.speak(u);
   }catch(e){}
 }
 
-/* ================== الصاحب الصوتي (بدون قراءة، زرار واحد بس) ================== */
+/* ================== الصاحب الصوتي ================== */
 const FRIEND_EMOJIS = ['🤖','😺','🦊','🐼'];
 const FRIEND_LINES = [
   'يا بطل! إنت شاطر أوي، يلا كمل معايا',
@@ -619,9 +682,7 @@ document.getElementById('friendBtn').addEventListener('click', () => {
   friendBubbleTimer = setTimeout(() => bubble.classList.remove('show'), 4500);
 });
 
-/* ================== أغاني الحروف (روابط يوتيوب حقيقية) ==================
-   مفيش تضمين فيديو جوه الصفحة، كل زرار بيفتح يوتيوب في تاب جديد وبيدور
-   على أغنية الحرف ده مباشرة. */
+/* ================== أغاني الحروف (روابط يوتيوب حقيقية) ================== */
 function openLetterSongOnYouTube(letterObj){
   const query = `أغنية حرف ${letterObj.name} للأطفال`;
   const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
@@ -651,9 +712,7 @@ async function fetchLeaderboard(){
   catch(e){ return { ok:false, leaderboard:[] }; }
 }
 
-/* ================== العب مع صاحبك (غرف حقيقية، بالصوت والصور بس) ==================
-   الأسئلة هنا بنفس طريقة لعبة "طابق الصورة": بيتسمع اسم الحرف، والطفل يختار
-   الحرف الصح من بين 3، من غير أي قراءة نص. */
+/* ================== العب مع صاحبك (غرف حقيقية) ================== */
 let activeRoomCode = '';
 let roomPollTimer = null;
 
@@ -843,15 +902,13 @@ function loginSuccess(username, password, remoteScore, remember){ currentUser = 
 document.getElementById('logoutBtn').addEventListener('click', ()=>{ flushScore(); currentUser = null; try{ localStorage.removeItem('huroofi_user'); }catch(e){} if(leaderboardTimer) clearInterval(leaderboardTimer); if(scoreRetryTimer) clearInterval(scoreRetryTimer); document.getElementById('app').classList.remove('active'); document.getElementById('authSection').style.display = 'block'; });
 (function tryAutoLogin(){ try{ const saved = localStorage.getItem('huroofi_user'); if(saved){ const u = JSON.parse(saved); apiCall('login', { username: u.username, password: u.password }).then(res=>{ if(res.ok) loginSuccess(res.username, u.password, res.score || 0, true); else localStorage.removeItem('huroofi_user'); }); } }catch(e){} })();
 
-/* ================== نظام الرحلات (بدل المستويات المستمرة) ==================
-   كل رحلة ليها اسم وعدد كلمات مفتوحة. الطفل لازم يدوس بنفسه "يلا للرحلة
-   الجاية" عشان ينتقل، مش بيتنقل أوتوماتيك، عشان يحس بإنجاز واضح. */
+/* ================== نظام الرحلات ================== */
 const JOURNEYS = [
   { name: 'رحلة الحروف 🔤', threshold: 0, wordCount: 24, doneLine: 'خلصت رحلة الحروف! بقيت تعرف حروف كتير' },
   { name: 'رحلة الكلمات 📖', threshold: 60, wordCount: 48, doneLine: 'خلصت رحلة الكلمات! بقيت تعرف كلمات أكتر بكتير' },
   { name: 'رحلة القارئ الصغير 🌟', threshold: 150, wordCount: wordsList.length, doneLine: 'خلصت رحلة القارئ الصغير! إنت بقيت قارئ حقيقي' }
 ];
-let confirmedJourney = 1; // 1-based: الرحلة اللي الطفل واقف فيها فعليًا دلوقتي
+let confirmedJourney = 1;
 const journeyModal = document.getElementById('journeyModal');
 document.getElementById('journeyModalCloseBtn').onclick = () => {
   journeyModal.classList.remove('active');
@@ -888,7 +945,6 @@ function updateGamificationUI(showCelebration = true) {
     document.getElementById('levelNextPtsLabel').textContent = 'إنت في آخر رحلة، كمل تجمع نقط 🌟';
   }
 
-  // لو وصل لعتبة الرحلة الجاية ولسه مأكدهاش، اعرض شاشة الاحتفال واستنى يدوس هو بنفسه
   if (showCelebration && next && score >= next.threshold) {
     const pName = currentUser ? currentUser.username : 'يا بطل';
     const line = `مبروك يا ${pName}! ${cur.doneLine}. يلا بينا للرحلة الجاية: ${next.name}`;
@@ -899,7 +955,6 @@ function updateGamificationUI(showCelebration = true) {
     speak(line);
   }
 
-  // الشارات (مستقلة عن الرحلات، نقط تراكمية بسيطة)
   if(score >= 20) document.getElementById('badge-1').classList.add('unlocked');
   else document.getElementById('badge-1').classList.remove('unlocked');
   if(score >= 60) document.getElementById('badge-2').classList.add('unlocked');
@@ -1201,156 +1256,4 @@ window.addEventListener('resize', () => { if(document.getElementById('screen-dra
 
 function checkDrawing(){
   if(!guideMaskData) return null;
-  const img = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-  let inkCount = 0, overlapCount = 0, guideCount = 0;
-  const step = 8;
-  for(let i = 3; i < img.length; i += step){
-    const inkAlpha = img[i];
-    const guideAlpha = guideMaskData[i];
-    if(guideAlpha > 10) guideCount++;
-    if(inkAlpha > 10){
-      inkCount++;
-      if(guideAlpha > 10) overlapCount++;
-    }
-  }
-  if(inkCount < 25) return { score: 0, empty: true };
-  const coverage = guideCount ? overlapCount / guideCount : 0;
-  const precision = inkCount ? overlapCount / inkCount : 0;
-  const score = coverage * 0.6 + precision * 0.4;
-  return { score, coverage, precision };
-}
-
-document.getElementById('checkDrawBtn').addEventListener('click', () => {
-  const result = checkDrawing();
-  const fb = document.getElementById('drawFeedback');
-  if(!result || result.empty){
-    fb.textContent = 'ارسم على اللوحة الأول ✏️';
-    fb.className = 'feedback-line no';
-    return;
-  }
-  const pct = Math.round(result.score * 100);
-  if(result.score >= 0.5){
-    fb.textContent = `ممتاز! 🎉 دقة الرسم ${pct}%`;
-    fb.className = 'feedback-line ok pop';
-    playSFX('win'); addScore(3);
-    setTimeout(newDrawRound, 1700);
-  }else{
-    fb.textContent = `حاول تاني، اتبع خط الحرف بدقة أكتر (${pct}%) ✏️`;
-    fb.className = 'feedback-line no shake';
-    playSFX('lose');
-  }
-});
-
-/* 3. Speak Letter Game */
-let currentSpeakLetterObj = null;
-function newSpeakLetterRound(){ document.getElementById('speakLetterFeedback').textContent = ''; document.getElementById('micErrorLetter').style.display = 'none'; currentSpeakLetterObj = pickNonRepeating(LETTERS, 'speakLetter'); document.getElementById('speakLetterTarget').textContent = currentSpeakLetterObj.l; }
-document.getElementById('micBtnLetter').onclick = () => { 
-  startListening(document.getElementById('micBtnLetter'), document.getElementById('micErrorLetter'), document.getElementById('speakLetterFeedback'), (spokenText) => { 
-    let normSpoken = normalizeArabic(spokenText);
-    let normTargetLetter = normalizeArabic(currentSpeakLetterObj.l);
-    let normTargetName = normalizeArabic(currentSpeakLetterObj.name);
-
-    if (normSpoken.includes(normTargetLetter) || normSpoken.includes(normTargetName)) { 
-      document.getElementById('speakLetterFeedback').textContent = `تمام 🎉 (سمعتك بتقول: ${spokenText})`; 
-      document.getElementById('speakLetterFeedback').className = 'feedback-line ok pop'; 
-      playSFX('win'); addScore(3); setTimeout(newSpeakLetterRound, 1500); 
-    } else { 
-      document.getElementById('speakLetterFeedback').textContent = `جرب تاني ❌ (سمعتك بتقول: ${spokenText})`; 
-      document.getElementById('speakLetterFeedback').className = 'feedback-line no shake'; 
-      playSFX('lose'); 
-    } 
-  }); 
-};
-document.getElementById('skipSpeakLetterBtn').onclick = newSpeakLetterRound;
-
-/* 4. Speak Word Game */
-let currentSpeakWordObj = null;
-function newSpeakWordRound(){ document.getElementById('speakWordFeedback').textContent = ''; document.getElementById('micErrorWord').style.display = 'none'; currentSpeakWordObj = pickNonRepeating(wordsForJourney(), 'speakWord'); document.getElementById('speakWordEmoji').textContent = currentSpeakWordObj.emoji; document.getElementById('speakWordTarget').textContent = currentSpeakWordObj.word; }
-document.getElementById('micBtnWord').onclick = () => { 
-  startListening(document.getElementById('micBtnWord'), document.getElementById('micErrorWord'), document.getElementById('speakWordFeedback'), (spokenText) => { 
-    let normSpoken = normalizeArabic(spokenText);
-    let normTargetWord = normalizeArabic(currentSpeakWordObj.word);
-
-    if (normSpoken.includes(normTargetWord)) { 
-      document.getElementById('speakWordFeedback').textContent = `يا بطل 🎉 (سمعتك بتقول: ${spokenText})`; 
-      document.getElementById('speakWordFeedback').className = 'feedback-line ok pop'; 
-      playSFX('win'); addScore(4); setTimeout(newSpeakWordRound, 1500); 
-    } else { 
-      document.getElementById('speakWordFeedback').textContent = `جرب تاني ❌ (سمعتك بتقول: ${spokenText})`; 
-      document.getElementById('speakWordFeedback').className = 'feedback-line no shake'; 
-      playSFX('lose'); 
-    } 
-  }); 
-};
-document.getElementById('skipSpeakWordBtn').onclick = newSpeakWordRound;
-
-/* 5. Missing Letter Game */
-let missingTargetPart = null; let missingLock = false;
-function newMissingRound(){
-  missingLock = false; document.getElementById('missingFeedback').textContent = ''; document.getElementById('missingFeedback').className = 'feedback-line';
-  const targetWord = pickNonRepeating(wordsForJourney(), 'missing'); const missingIndex = Math.floor(Math.random() * targetWord.parts.length); missingTargetPart = targetWord.parts[missingIndex];
-  document.getElementById('missingEmoji').textContent = targetWord.emoji; speak(targetWord.word);
-  const disp = document.getElementById('missingWordDisplay'); disp.innerHTML = '';
-  targetWord.parts.forEach((p, i) => { const slot = document.createElement('div'); if(i === missingIndex){ slot.className = 'missing-slot'; slot.textContent = '?'; slot.id = 'activeMissingSlot'; } else { slot.className = 'missing-slot filled'; slot.textContent = p; } disp.appendChild(slot); });
-  const opts = shuffle([missingTargetPart, ...shuffle([...new Set(wordsForJourney().flatMap(w => w.parts))].filter(p => p !== missingTargetPart)).slice(0, 2)]);
-  document.getElementById('missingOptions').innerHTML = '';
-  opts.forEach(opt => { const btn = document.createElement('button'); btn.className = 'pool-letter'; btn.style.width='80px'; btn.style.height='80px'; btn.style.fontSize='2.5rem'; btn.textContent = opt;
-    btn.onclick = () => { if(missingLock) return; speak(opt); missingLock = true; if(opt === missingTargetPart){ btn.classList.add('correct'); document.getElementById('activeMissingSlot').textContent = opt; document.getElementById('activeMissingSlot').classList.add('filled'); document.getElementById('missingFeedback').textContent = 'بطل! 🎉'; document.getElementById('missingFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newMissingRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('missingFeedback').textContent = 'غلط ❌'; document.getElementById('missingFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ missingLock = false; btn.classList.remove('wrong'); document.getElementById('missingFeedback').classList.remove('shake'); }, 800); } };
-    document.getElementById('missingOptions').appendChild(btn); });
-}
-
-/* 6. Match Game */
-let matchLock = false;
-function newMatchRound(){
-  matchLock = false; document.getElementById('matchFeedback').textContent = '';
-  const correct = pickNonRepeating(LETTERS, 'match'); const options = shuffle([correct, ...shuffle(LETTERS.filter(x=>x.l !== correct.l)).slice(0,2)]);
-  document.getElementById('matchLetter').textContent = correct.l; speak(correct.name); const cont = document.getElementById('matchOptions'); cont.innerHTML = '';
-  options.forEach(opt=>{ const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = opt.emoji;
-    btn.onclick = ()=>{ if(matchLock) return; matchLock = true; if(opt.l === correct.l){ btn.classList.add('correct'); document.getElementById('matchFeedback').textContent = 'صح 🎉'; document.getElementById('matchFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(1); setTimeout(newMatchRound, 1400); }else{ btn.classList.add('wrong'); document.getElementById('matchFeedback').textContent = 'غلط ❌'; document.getElementById('matchFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newMatchRound, 1500); } }; cont.appendChild(btn); });
-}
-
-/* 7. Listen Image */
-let listenImgLock = false;
-function newListenImgRound(){
-  listenImgLock = false; document.getElementById('listenImgFeedback').textContent = ''; const target = pickNonRepeating(wordsForJourney(), 'listenImg'); const options = shuffle([target, ...shuffle(wordsForJourney().filter(x => x.word !== target.word)).slice(0, 2)]);
-  speak(target.word); document.getElementById('playListenImgBtn').onclick = () => speak(target.word); const cont = document.getElementById('listenImgOptions'); cont.innerHTML = '';
-  options.forEach(opt => { const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = opt.emoji;
-    btn.onclick = () => { if(listenImgLock) return; listenImgLock = true; if(opt.word === target.word){ btn.classList.add('correct'); document.getElementById('listenImgFeedback').textContent = 'ممتاز 🎉'; document.getElementById('listenImgFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newListenImgRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('listenImgFeedback').textContent = 'غلط ❌'; document.getElementById('listenImgFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newListenImgRound, 1600); } }; cont.appendChild(btn); });
-}
-
-/* 8. Listen Text */
-let listenTextLock = false;
-function newListenTextRound(){
-  listenTextLock = false; document.getElementById('listenTextFeedback').textContent = ''; const target = pickNonRepeating(wordsForJourney(), 'listenText'); const options = shuffle([target, ...shuffle(wordsForJourney().filter(x => x.word !== target.word)).slice(0, 2)]);
-  speak(target.word); document.getElementById('playListenTextBtn').onclick = () => speak(target.word); const cont = document.getElementById('listenTextOptions'); cont.innerHTML = '';
-  options.forEach(opt => { const btn = document.createElement('button'); btn.className = 'word-option-btn'; btn.textContent = opt.word;
-    btn.onclick = () => { if(listenTextLock) return; listenTextLock = true; if(opt.word === target.word){ btn.classList.add('correct'); document.getElementById('listenTextFeedback').textContent = 'بطل 🎉'; document.getElementById('listenTextFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newListenTextRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('listenTextFeedback').textContent = 'غلط ❌'; document.getElementById('listenTextFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newListenTextRound, 1600); } }; cont.appendChild(btn); });
-}
-
-/* 9. Build Word */
-let buildTarget = null, builtSoFar = [];
-function newBuildRound(){
-  document.getElementById('buildFeedback').textContent = ''; buildTarget = pickNonRepeating(wordsForJourney(), 'build'); builtSoFar = []; document.getElementById('buildEmoji').textContent = buildTarget.emoji; speak(buildTarget.word); document.getElementById('speakWordBtn').onclick = () => speak(buildTarget.word);
-  const blanks = document.getElementById('blanksRow'); blanks.innerHTML = ''; buildTarget.parts.forEach(()=>{ const s = document.createElement('div'); s.className = 'blank-slot'; blanks.appendChild(s); });
-  let scrambled = shuffle(buildTarget.parts); if(scrambled.join('') === buildTarget.parts.join('') && scrambled.length > 1) scrambled = shuffle(buildTarget.parts);
-  const pool = document.getElementById('poolRow'); pool.innerHTML = '';
-  scrambled.forEach(part=>{ const btn = document.createElement('button'); btn.className = 'pool-letter'; btn.textContent = part; btn.dataset.used = 'false';
-    btn.onclick = ()=>{ if(btn.dataset.used === 'true') return; speak(part); btn.dataset.used = 'true'; btn.classList.add('used'); builtSoFar.push(part); blanks.children[builtSoFar.length-1].textContent = part; blanks.children[builtSoFar.length-1].classList.add('filled');
-      if(builtSoFar.length === buildTarget.parts.length){ if(builtSoFar.join('') === buildTarget.parts.join('')){ document.getElementById('buildFeedback').textContent = 'صح 🎉'; document.getElementById('buildFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newBuildRound, 1500); }else{ document.getElementById('buildFeedback').textContent = 'غلط ❌'; document.getElementById('buildFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ builtSoFar = []; [...blanks.children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...pool.children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); document.getElementById('buildFeedback').textContent = ''; }, 1000); } } }; pool.appendChild(btn); });
-}
-document.getElementById('clearBtn').onclick = ()=>{ builtSoFar = []; [...document.getElementById('blanksRow').children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...document.getElementById('poolRow').children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); };
-document.getElementById('skipBtn').onclick = newBuildRound;
-
-// Init
-window.addEventListener('DOMContentLoaded', () => {
-  newSpeakLetterRound(); 
-  newSpeakWordRound(); 
-  newMissingRound(); 
-  newMatchRound(); 
-  newListenImgRound(); 
-  newListenTextRound(); 
-  newBuildRound();
-});
-</script>
-</body>
-</html>
+  const img = ctx
