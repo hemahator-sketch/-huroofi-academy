@@ -483,24 +483,24 @@
   </div>
 </div>
 
-<!-- Modal Overlay for Voice Settings & Download -->
+<!-- Modal Overlay for Audio Settings & Download Voice -->
 <div class="modal-overlay" id="audioSettingsModal">
-  <div class="modal-card" style="border-color: var(--turquoise); max-width: 420px;">
+  <div class="modal-card" style="border-color: var(--turquoise); max-width: 400px;">
     <div class="modal-emoji">🔊</div>
     <div class="modal-word" style="font-size: 1.8rem; margin-bottom: 15px;">إعدادات الصوت</div>
     
-    <!-- اختيار صوت المتحدث المحلية -->
-    <div class="audio-slider-group" style="margin-bottom: 18px;">
-      <label for="voiceSelect">صوت الجهاز المحلي (أوفلاين):</label>
+    <!-- اختيار صوت المتحدث -->
+    <div class="audio-slider-group" style="margin-bottom: 15px;">
+      <label for="voiceSelect">صوت المتحدث (الأوفلاين):</label>
       <select id="voiceSelect" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--card-border); font-family: 'Tajawal', sans-serif; font-size: 0.95rem; background: var(--cream);">
         <option value="">جاري تحميل الأصوات المتاحة...</option>
       </select>
     </div>
 
-    <!-- زر مباشر لتنزيل الأصوات على أندرويد -->
-    <div style="margin-bottom: 15px;">
-      <a href="https://play.google.com/store/apps/details?id=com.google.android.tts" target="_blank" class="modal-close" style="background: var(--turquoise); color: #fff; text-decoration: none; display: block; font-size: 0.9rem; padding: 10px;">
-        📲 فتح متجر Google Play لتنزيل الأصوات
+    <!-- زرار فتح متجر بلاي لتنزيل أصوات أندرويد -->
+    <div style="margin-bottom: 18px;">
+      <a href="https://play.google.com/store/apps/details?id=com.google.android.tts" target="_blank" class="modal-close" style="background: var(--turquoise); color: #fff; text-decoration: none; display: block; font-size: 0.9rem; padding: 10px; border-radius: 10px;">
+        📲 تنزيل/تحديث محرك أصوات Google (Android)
       </a>
     </div>
 
@@ -606,10 +606,18 @@ function playSFX(type) {
 }
 
 /* ================== SMART HYBRID AUDIO ENGINE ================== */
-let arabicVoice = null;
-let availableVoices = [];
 let audioSpeechPlayer = new Audio();
+let arabicVoice = null;
+let voiceUnlocked = false;
+let availableVoices = [];
+
 const voiceSelect = document.getElementById('voiceSelect');
+const noVoiceModal = document.getElementById('noArabicVoiceModal');
+const closeNoVoiceBtn = document.getElementById('closeNoVoiceBtn');
+
+if (closeNoVoiceBtn) {
+  closeNoVoiceBtn.onclick = () => noVoiceModal.classList.remove('active');
+}
 
 function populateVoiceList() {
   if (!('speechSynthesis' in window)) return;
@@ -642,8 +650,19 @@ function populateVoiceList() {
 function pickBestArabicVoice() {
   if (!('speechSynthesis' in window)) return;
   const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+
   const arVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
-  if (!arVoices.length) { arabicVoice = null; return; }
+  
+  if (arVoices.length === 0) { 
+    arabicVoice = null;
+    if (noVoiceModal && !sessionStorage.getItem('voiceWarned')) {
+      noVoiceModal.classList.add('active');
+      sessionStorage.setItem('voiceWarned', 'true');
+    }
+    populateVoiceList();
+    return; 
+  }
   
   if (!arabicVoice) {
     arabicVoice =
@@ -660,7 +679,6 @@ if ('speechSynthesis' in window) {
   pickBestArabicVoice();
   window.speechSynthesis.onvoiceschanged = () => {
     pickBestArabicVoice();
-    populateVoiceList();
   };
 }
 
@@ -672,13 +690,27 @@ if (voiceSelect) {
   });
 }
 
+function unlockVoiceOnce(){
+  if(voiceUnlocked || !('speechSynthesis' in window)) return;
+  voiceUnlocked = true;
+  try{
+    const warm = new SpeechSynthesisUtterance(' ');
+    warm.volume = 0;
+    window.speechSynthesis.speak(warm);
+  }catch(e){}
+  document.removeEventListener('touchend', unlockVoiceOnce);
+  document.removeEventListener('click', unlockVoiceOnce);
+}
+document.addEventListener('touchend', unlockVoiceOnce, { once:true });
+document.addEventListener('click', unlockVoiceOnce, { once:true });
+
 function speak(text) {
   if (!text || speechVolume <= 0) return;
 
   const cleanText = text.replace(/[\u064B-\u0652]/g, "").trim();
   if (!cleanText) return;
 
-  // 1️⃣ تشغيل الصوت أونلاين أوتوماتيكياً (صوت عربي نقي وشغال بدون أي إعدادات)
+  // 1️⃣ الخيار الأول: تشغيل الصوت العربي الأونلاين (نطق عربي واضح ومباشر)
   const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=ar&client=tw-ob`;
   
   audioSpeechPlayer.pause();
@@ -689,7 +721,7 @@ function speak(text) {
 
   if (playPromise !== undefined) {
     playPromise.catch(() => {
-      // 2️⃣ في حالة الأوفلاين، نستخدم صوت الجهاز المحلي كخطة بديلة
+      // 2️⃣ الخيار الاحتياطي أوفلاين: الاعتماد على أصوات الجهاز المدمجة
       speakLocalFallback(cleanText);
     });
   }
@@ -900,7 +932,9 @@ const wordsList = [
   {word:'نَحْلَة', parts:['نَحْ', 'لَة'], emoji:'🐝'}, {word:'عَنْكَبُوت', parts:['عَنْ', 'كَ', 'بُوت'], emoji:'🕷️'}, {word:'سُلَحْفَاة', parts:['سُ', 'لَحْ', 'فَاة'], emoji:'🐢'},
   {word:'بَطِّيخ', parts:['بَ', 'طِّي', 'خ'], emoji:'🍉'}, {word:'عِنَب', parts:['عِ', 'نَب'], emoji:'🍇'}, {word:'بُرْتُقَال', parts:['بُرْ', 'تُ', 'قَال'], emoji:'🍊'},
   {word:'فَرَاوْلَة', parts:['فَ', 'رَاوْ', 'لَة'], emoji:'🍓'}, {word:'خِيَار', parts:['خِ', 'يَار'], emoji:'🥒'}, {word:'طَمَاطِم', parts:['طَ', 'مَا', 'طِم'], emoji:'🍅'},
-  {word:'جَزَر', parts:['جَ', 'زَر'], emoji:'🥕'}, {word:'بَصَل', parts:['بَ', 'صَل'], emoji:'🧅'}, {word:'فُلْفُل', parts:['فُلْ', 'فُل'], emoji:'🌶️'},
+  {word:'جَزَر', parts:['جَ', 'زَر'], emoji:'🥕'}, {word:'بَصَل', parts:['بَ', 'صَل'], emoji:'🧅'}, {word:'فُلْفُل', parts:['فُلْ', 'فُل'], emoji:'تفضل يا هيما النصف الثاني بالكامل من ملف **`Index.html`**، جاهز للنسخ المباشر بدايةً من المصفوفة المتبقية في قائمة الكلمات واللعبة وحتى نهاية الملف `</html>`:
+
+```html
   {word:'خُبْز', parts:['خُبْ', 'ز'], emoji:'🍞'}, {word:'جُبْنَة', parts:['جُبْ', 'نَة'], emoji:'🧀'}, {word:'بَيْضَة', parts:['بَيْ', 'ضَة'], emoji:'🥚'},
   {word:'عَصِير', parts:['عَ', 'صِير'], emoji:'🧃'}, {word:'سَاعَة', parts:['سَا', 'عَة'], emoji:'⏰'}, {word:'مِفْتَاح', parts:['مِفْ', 'تَاح'], emoji:'🔑'},
   {word:'شُبَّاك', parts:['شُ', 'بَّاك'], emoji:'🪟'}, {word:'سَرِير', parts:['سَ', 'رِير'], emoji:'🛏️'}, {word:'كُرْسِي', parts:['كُرْ', 'سِي'], emoji:'🪑'},
@@ -1443,4 +1477,19 @@ function newBuildRound(){
     btn.onclick = ()=>{ if(btn.dataset.used === 'true') return; speak(part); btn.dataset.used = 'true'; btn.classList.add('used'); builtSoFar.push(part); blanks.children[builtSoFar.length-1].textContent = part; blanks.children[builtSoFar.length-1].classList.add('filled');
       if(builtSoFar.length === buildTarget.parts.length){ if(builtSoFar.join('') === buildTarget.parts.join('')){ document.getElementById('buildFeedback').textContent = 'صح 🎉'; document.getElementById('buildFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newBuildRound, 1500); }else{ document.getElementById('buildFeedback').textContent = 'غلط ❌'; document.getElementById('buildFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ builtSoFar = []; [...blanks.children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...pool.children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); document.getElementById('buildFeedback').textContent = ''; }, 1000); } } }; pool.appendChild(btn); });
 }
-document.getElementById('clearBtn').onclick = ()=>{ builtSoFar = []; [...document.getElementById('blanksRow').children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...document.getElementById('poolRow').children].
+document.getElementById('clearBtn').onclick = ()=>{ builtSoFar = []; [...document.getElementById('blanksRow').children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...document.getElementById('poolRow').children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); };
+document.getElementById('skipBtn').onclick = newBuildRound;
+
+// Init
+window.addEventListener('DOMContentLoaded', () => {
+  newSpeakLetterRound(); 
+  newSpeakWordRound(); 
+  newMissingRound(); 
+  newMatchRound(); 
+  newListenImgRound(); 
+  newListenTextRound(); 
+  newBuildRound();
+});
+</script>
+</body>
+</html>
