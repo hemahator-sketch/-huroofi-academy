@@ -83,10 +83,17 @@
   .chat-quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--cream); border-top: 1px solid var(--card-border); }
   .chat-quick-btn { background: #fff; border: 1.5px solid var(--turquoise); color: var(--turquoise-deep); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
   .chat-quick-btn:hover { background: var(--turquoise); color: #fff; }
-  .chat-input-row{display:flex;gap:6px;padding:10px;border-top:1px solid var(--card-border);background:#fff}
-  .chat-input-row input{min-width:0;flex:1;border:1px solid var(--card-border);border-radius:18px;padding:10px;font:inherit;outline-color:var(--turquoise)}
-  .chat-input-row button{border:0;border-radius:50%;width:42px;min-width:42px;height:42px;background:var(--turquoise-deep);color:#fff;font-size:1.1rem;cursor:pointer}
-  .chat-input-row button.listening{background:#d93025;animation:pop .5s infinite alternate}
+  .chat-compose{display:flex;gap:7px;padding:10px;background:#fff;border-top:1px solid var(--card-border);align-items:center}
+  .chat-compose input{min-width:0;flex:1;border:2px solid var(--card-border);border-radius:14px;padding:11px;font:inherit;font-size:16px}
+  .chat-compose input:focus{outline:2px solid var(--turquoise)}
+  .chat-mic,.chat-send{border:0;border-radius:13px;padding:10px 12px;font:inherit;font-weight:800;cursor:pointer;background:var(--turquoise);color:#fff}
+  .chat-mic{font-size:1.2rem;background:var(--coral)}
+  .chat-mic.listening{animation:pop .5s infinite alternate;background:#b42318}
+  .chat-status{padding:5px 12px 10px;font-size:.78rem;color:var(--ink-soft);background:#fff}
+  .chat-live-btn{margin:0 10px 8px;border:0;border-radius:14px;padding:11px 12px;background:linear-gradient(135deg,#1c9c90,#0f6f66);color:#fff;font:inherit;font-weight:800;cursor:pointer}
+  .chat-live-btn[disabled]{opacity:.6;cursor:wait}
+  .chat-msg{white-space:pre-wrap;overflow-wrap:anywhere}
+  @media(max-width:480px){.chat-modal{left:10px;bottom:88px;width:calc(100vw - 20px);max-width:none}.chat-body{max-height:38vh}.ai-friend-btn{left:12px;bottom:12px}}
 
   /* Tabs */
   .tabs-container{ overflow-x: auto; white-space: nowrap; padding-bottom: 12px; margin: 20px 0 16px; scrollbar-width: none; }
@@ -443,14 +450,26 @@
         <div id="duelScores" class="feature-note"></div>
         <div class="feature-row"><button class="feature-btn" id="nextDuelBtn" style="display:none">السؤال التالي ➡️</button><button class="feature-btn secondary" id="leaveRoomBtn">مغادرة الغرفة</button></div>
       </div>
-      <p class="feature-note">ملحوظة: اللعب يتم بالتناوب على نفس السؤال، والنقاط تُحسب داخل التحدي. يتطلب إضافة كود الغرف إلى Google Apps Script الموضح في ملف الإعدادات.</p>
+      <p class="feature-note">كل لاعب يختار إجابته من جهازه. كود الغرفة يوصّل الأصدقاء ببعض، والنقاط تظهر بعد الإجابة.</p>
     </section>
 
     <section class="screen" id="screen-songs">
       <h2 class="screen-title">🎵 ركن الأغاني التعليمية</h2>
-      <p class="feature-note">اختار أنشودة، واضغط «استمع» لسماع كلماتها بصوت عربي من جهازك. تقدر تضيف ملفات MP3 خاصة بك بتعديل قائمة SONGS في كود الصفحة.</p>
+      <p class="feature-note">اختار الأنشودة واضغط للاستماع على يوتيوب. اختاروا فيديو مناسبًا للأطفال وبإشراف الأسرة.</p>
+      <div class="youtube-player-panel" style="background:#fff;border:2px solid var(--card-border);border-radius:20px;padding:14px;margin:14px 0 18px;box-shadow:0 8px 24px #17255410">
+        <h3 style="margin:0 0 8px;font-family:'Changa',sans-serif">▶️ مشغّل يوتيوب داخل البوابة</h3>
+        <p class="feature-note">اختار أغنية من القائمة لفتح نتائجها، وبعد ما تختار الفيديو المناسب انسخ رابطه والصقه هنا لتشغيله داخل البوابة.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+          <input id="youtubeUrlInput" type="url" inputmode="url" placeholder="الصق رابط فيديو YouTube هنا" aria-label="رابط فيديو يوتيوب" style="flex:1;min-width:220px;padding:12px;border:2px solid var(--card-border);border-radius:12px;font:inherit">
+          <button type="button" class="feature-btn" id="playYoutubeInsideBtn">▶️ شغّل هنا</button>
+        </div>
+        <div id="youtubePlayerMessage" class="feature-note" aria-live="polite">المشغّل جاهز. لازم تختار فيديو مناسب للأطفال.</div>
+        <div id="youtubePlayerWrap" style="display:none;position:relative;width:100%;padding-top:56.25%;overflow:hidden;border-radius:15px;background:#111;margin-top:12px">
+          <iframe id="youtubePlayerFrame" title="مشغل فيديو تعليمي من يوتيوب" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
+        </div>
+      </div>
       <div id="songsList"></div>
-      <button class="feature-btn secondary" id="stopSongBtn">⏹️ إيقاف الصوت</button>
+      <button class="feature-btn secondary" id="stopSongBtn">⏹️ إيقاف الصوت والفيديو</button>
     </section>
   </div>
 
@@ -458,25 +477,28 @@
 </div>
 
 <!-- Floating AI Friend Widget -->
-<div class="ai-friend-btn" id="aiFriendBtn" title="تحدث مع صديقك سمسم 🤖">🤖</div>
+<div class="ai-friend-btn" id="aiFriendBtn" title="تحدث مع صديقك هيما 🤖">🤖</div>
 <div class="chat-modal" id="chatModal">
   <div class="chat-header">
-    <span>صديقك المساعد سمسم 🤖</span>
+    <span>صديقك المساعد هيما 🤖</span>
     <span style="cursor:pointer; font-size:1.2rem;" id="closeChatBtn">✖</span>
   </div>
-  <div class="chat-body" id="chatBody">
-    <div class="chat-msg bot">أهلاً بك يا بطل! أنا صديقك سمسم، مستعد لنلعب ونتعلم معاً اليوم؟ 🚀</div>
+  <div class="chat-body" id="chatBody" aria-live="polite">
+    <div class="chat-msg bot">أهلًا يا صاحبي! أنا هيما 🧸. نقدر نلعب أو نحكي عن أي حاجة حلوة حصلت معاك. تحب تحكيلي إيه؟</div>
   </div>
   <div class="chat-quick-btns">
-    <button class="chat-quick-btn" onclick="sendAiMsg('شجعني يا سمسم!')">👏 شجعني!</button>
-    <button class="chat-quick-btn" onclick="sendAiMsg('كيف أصل للمستوى التالي؟')">🏆 المستويات</button>
-    <button class="chat-quick-btn" onclick="sendAiMsg('افتح الأغاني التعليمية')">🎵 الأغاني</button>
+    <button class="chat-quick-btn" onclick="sendAiMsg('عايز أحكي معاك يا هيما')">💬 نحكي سوا</button>
+    <button class="chat-quick-btn" onclick="sendAiMsg('احكيلي حكاية جميلة')">📖 حكاية</button>
+    <button class="chat-quick-btn" onclick="sendAiMsg('قول لي نكتة لطيفة')">😄 نضحك</button>
+    <button class="chat-quick-btn" onclick="startFriendMic()">🎙️ أتكلم</button>
   </div>
-  <div class="chat-input-row">
-    <input id="aiChatInput" type="text" placeholder="اتكلم مع سمسم أو اكتب له..." aria-label="رسالتك لسمسم">
-    <button id="aiSendBtn" title="إرسال الرسالة" aria-label="إرسال">➤</button>
-    <button id="aiMicBtn" title="تحدث مع سمسم بالصوت" aria-label="تحدث بالصوت">🎙️</button>
+  <button type="button" id="friendLiveBtn" class="chat-live-btn">📞 ابدأ محادثة صوتية مجانية مع هيما</button>
+  <div class="chat-compose">
+    <button type="button" class="chat-mic" id="friendMicBtn" aria-label="تحدث مع هيما" title="اضغط واتكلم">🎙️</button>
+    <input id="friendInput" type="text" autocomplete="off" placeholder="اكتب أو اضغط الميكروفون..." aria-label="رسالتك لهيما">
+    <button type="button" class="chat-send" id="friendSendBtn">إرسال ➤</button>
   </div>
+  <div id="friendChatStatus" class="chat-status">هيما صاحبك، اسأله أو احكيله براحتك 🌟</div>
 </div>
 
 <!-- Modal Overlay for Letters Pop-up -->
@@ -602,7 +624,7 @@ function speak(text){
     const cleanText = text.replace(/[\u064B-\u0652]/g, "").trim();
     const u = new SpeechSynthesisUtterance(cleanText);
     if(arabicVoice) u.voice = arabicVoice;
-    u.lang = arabicVoice ? arabicVoice.lang : 'ar-SA';
+    u.lang = arabicVoice ? arabicVoice.lang : 'ar-EG';
     u.rate = 0.75; u.pitch = 1.05; u.volume = 1;
     window.speechSynthesis.speak(u);
   }catch(e){}
@@ -613,53 +635,204 @@ const aiFriendBtn = document.getElementById('aiFriendBtn');
 const chatModal = document.getElementById('chatModal');
 const closeChatBtn = document.getElementById('closeChatBtn');
 const chatBody = document.getElementById('chatBody');
+const friendInput = document.getElementById('friendInput');
+const friendChatStatus = document.getElementById('friendChatStatus');
+const friendMicBtn = document.getElementById('friendMicBtn');
+let friendMessages = [];
+let friendRecognition = null;
+let friendBusy = false;
 
-aiFriendBtn.onclick = () => chatModal.classList.toggle('active');
+aiFriendBtn.onclick = () => {
+  chatModal.classList.toggle('active');
+  if (chatModal.classList.contains('active')) setTimeout(()=>friendInput && friendInput.focus(),100);
+};
 closeChatBtn.onclick = () => chatModal.classList.remove('active');
 
-function addChatMessage(text, who){
-  const div=document.createElement('div'); div.className='chat-msg '+who; div.textContent=text;
-  chatBody.appendChild(div); chatBody.scrollTop=chatBody.scrollHeight;
+function addFriendBubble(text, who) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (who === 'user' ? 'user' : 'bot');
+  div.textContent = text;
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
 }
-function getSesameReply(text){
-  const t=String(text||'').toLowerCase().replace(/[ًٌٍَُِّْـ]/g,'');
-  const name=currentUser?currentUser.username:'يا بطل';
-  if(/افتح.*(اغاني|الأغاني|اناشيد|الأناشيد)|قسم الاغاني/.test(t)){const tab=document.querySelector('[data-tab="songs"]');if(tab)tab.click();return 'حاضر يا '+name+'! فتحت لك ركن الأغاني التعليمية. اختار أنشودة واضغط استمع. 🎵';}
-  if(/افتح.*(حروف|الحروف)|لعبه الحروف|لعبة الحروف/.test(t)){const tab=document.querySelector('[data-tab="learn"]');if(tab)tab.click();return 'يلا بينا يا بطل! فتحت لك لعبة الحروف. اختار حرف وابدأ التعلّم. 🔤';}
-  if(/شجع|زعلان|تعبت|مش قادر/.test(t)) return 'أنا معاك يا '+name+' ❤️ خدها خطوة خطوة. كل مرة تتعلم فيها حاجة جديدة أنت بتتقدم، وأنا فخور بيك!';
-  if(/مستوى|نقاط|درجتي|نقطي/.test(t)) return 'يا '+name+'، معاك '+(typeof score!=='undefined'?score:0)+' نقطة. كل 20 نقطة ترفعك لمستوى جديد. يلا نكمل! 🏆';
-  if(/نصيحه|نصيحة|اقرا|القراءة/.test(t)) return 'نصيحتي ليك: اقرأ الكلمة ببطء، قسمها لحروف، وبعدها انطقها كاملة. التدريب البسيط كل يوم بيعمل فرق كبير! 📚';
-  if(/اسمك|انت مين|أنت مين/.test(t)) return 'أنا سمسم 🤖 صاحبك المساعد في بوابة المعرفة! أقدر أشجعك، أساعدك تتعلم، وأفتح لك أقسام اللعبة.';
-  if(/السلام عليكم|سلام/.test(t)) return 'وعليكم السلام يا بطل '+name+'! نورت بوابة المعرفة. مستعد نتعلم ونلعب؟ 😊';
-  if(/شكرا|شكرًا|تسلم/.test(t)) return 'العفو يا صاحبي! أنا هنا أساعدك. تحب نلعب ولا نسمع أغنية تعليمية؟ 🌟';
-  if(/اغنيه|أغنية|اغاني|أنشوده|انشوده/.test(t)) return 'عندي ركن للأغاني التعليمية! قول لي «افتح الأغاني» وهفتح لك القسم. 🎵';
-  if(/العب|نلعب|لعبه|لعبة/.test(t)) return 'يلا نلعب! اختار واحد من أقسام الألعاب فوق، أو قول لي «افتح الحروف» عشان أفتح لك لعبة الحروف. 🎮';
-  return 'سمعتك يا '+name+' 😊 أنا سمسم، صاحبك في التعلّم. جرّب تقول لي: شجعني، افتح الأغاني، افتح الحروف، أو كام نقطة عندي؟';
+function localFriendReply(text, name) {
+  const raw = String(text || '').trim();
+  const t = raw.toLowerCase().replace(/[ًٌٍَُِّْـ]/g,'').replace(/[أإآ]/g,'ا');
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const replies = [
+    `يا ${name} يا صاحبي، أنا معاك 😊 احكيلي براحتك، أنا سامعك.`,
+    `حلو إنك جيت تحكي معايا يا ${name} 🌟 إيه أكتر حاجة عجبتك النهارده؟`,
+    `طب تخيل إننا قاعدين في جنينة جميلة، حوالينا عصافير وفراشات 🦋 تحب نعمل إيه؟`,
+    `أنا مبسوط إننا بنتكلم يا بطل! مش لازم تستعجل، خد وقتك واحكيلي واحدة واحدة ❤️`,
+    `يا سلام! طب كمّل، وبعد كده حصل إيه؟ أنا متشوق أعرف 😊`,
+    `تعالى نلعب لعبة التخمين! أنا بفكر في حيوان بيحب الجزر وعنده ودان طويلة. يا ترى مين؟ 🐰`,
+    `لو عندك قوة سحرية ليوم واحد، تحب تعمل بيها إيه؟ ✨`,
+    `اختار مغامرة: رحلة للقمر 🌙 ولا رحلة تحت البحر 🐠 ولا زيارة لمدينة الألعاب 🎡؟`,
+    `عارف يا صاحبي؟ الغلط مش مشكلة، إحنا بنتعلم بالتجربة. وأنا هفضل أشجعك 💪`,
+    `خلينا ناخد نفس جميل كده… شهيق… وزفير… تمام! تحب تحكيلي عن حاجة فرحتك؟ 😊`
+  ];
+  if (/^(اه|أه|ايوه|أيوه|نعم|ماشي|تمام|حاضر|اوكي|okay)[.!؟ ]*$/.test(t)) return pick([`تمام يا ${name} 😄 نكمل! تحب حكاية ولا لعبة تخمين؟`,`حلو أوي! طب اختار: حيوانات 🐯 ولا فضاء 🚀 ولا نكتة 😂؟`,`اتفقنا يا بطل! قولّي تحب نعمل إيه دلوقتي؟`]);
+  if (/^(لا|لأ|مش عايز|مش عاوز|لا شكرا)/.test(t)) return pick([`ولا يهمك يا ${name} ❤️ نختار حاجة تانية براحتك. تحب نتكلم عن إيه؟`,`ماشي يا صاحبي، مفيش أي مشكلة. ممكن نسمع حكاية أو نلعب لعبة بسيطة 😊`]);
+  if (/اسمك|انت مين|إنت مين|مين انت|مين إنت/.test(t)) return `أنا هيما 🧸 صاحبك في بوابة المعرفة! بحب أحكي معاك ونلعب ونتعلم سوا. وإنت تحب أناديك بإيه؟`;
+  if (/عامل ايه|عامل إيه|اخبارك|أخبارك|ازيك|إزيك/.test(t)) return pick([`أنا كويس لما بتكلمني يا ${name} 😊 وإنت أخبارك إيه؟`,`زي الفل يا صاحبي 🌟 طمني عليك، يومك كان عامل إيه؟`,`أنا مبسوط إني معاك! إنت حاسس بإيه النهارده: فرحان ولا هادي ولا زعلان شوية؟`]);
+  if (/بحبك|بحبك يا هيما/.test(t)) return `يا سلام يا ${name} ❤️ أنا مبسوط إنك بتحب الكلام معايا. وإنت تستاهل حب واهتمام من ماما وبابا وكل الناس اللي بيهتموا بيك.`;
+  if (/وحشتني|وحشتك|رجعت/.test(t)) return `أهلًا برجوعك يا ${name}! 🥳 نورت بوابة المعرفة. تحب تحكيلي إيه جديد حصل معاك؟`;
+  if (/حزين|زعلان|خايف|بعيط|مضايق|متضايق|بخاف/.test(t)) return `يا ${name}، أنا آسف إنك حاسس كده ❤️ تحب تحكيلي إيه اللي حصل؟ ولو الموضوع مخوفك أو مضايقك قوي، احكي لماما أو بابا أو شخص كبير تثق فيه، ومش لازم تواجهه لوحدك.`;
+  if (/فرحان|مبسوط|سعيد|نجحت|كسبت|فرح/.test(t)) return `ياااه! فرحتني معاك يا ${name} 🎉 تستاهل التشجيع! إيه أحلى حاجة حصلت وخليتك مبسوط؟`;
+  if (/تعبان|وجع|بتوجع|مريض|مرض/.test(t)) return `سلامتك يا ${name} ❤️ لازم تقول لماما أو بابا إنك تعبان أو في حاجة بتوجعك، وهم يساعدوك. تحب تقولي هل قلت لحد كبير؟`;
+  if (/ماما|امي|أمي|بابا|أبويا|اسرتي|أهلي/.test(t)) return `ماما وبابا مهمين يا ${name} ❤️ إيه الحاجة الحلوة اللي بتحب تعملها معاهم؟`;
+  if (/مدرسة|مدرستي|مدرس|معلم|معلمتي|فصل/.test(t)) return `المدرسة فيها حاجات كتير نتعلمها يا بطل 📚 إيه أكتر حاجة بتحبها في يوم المدرسة؟ ومش محتاج تقولّي اسم مدرستك أو أي بيانات خاصة.`;
+  if (/صاحب|اصحابي|أصحابي|صديقي|صاحبتي|صاحبي/.test(t)) return `الأصحاب الحلوين بيفرحوا بعض يا ${name} 😊 إيه لعبة بتحب تلعبها مع أصحابك؟`;
+  if (/حكاية|قصة|احكي|احكيل/.test(t)) return pick([
+    `كان يا ما كان، في غابة خضرا، كان فيه عصفور صغير اسمه زقزوق. كل يوم كان يساعد أصحابه، ولما ضاع الطريق على سلحفاة، طار يدور على أمها. تحب تعرف عمل إيه بعد كده؟ 🐦`,
+    `كان فيه أرنب اسمه فلفول، زرع جزرة صغيرة وسقاها كل يوم. استنى وصبر لحد ما كبرت، وبعدها شاركها مع أصحابه. إيه رأيك، نكمل مغامرة فلفول؟ 🐰`,
+    `في يوم من الأيام، نجمة صغيرة وقعت في حديقة، وقابلت طفلًا طيبًا ساعدها ترجع للسماء باستخدام بالون سحري. وفجأة ظهر قمر مبتسم! تحب نعرف إيه السر؟ 🌟`
+  ]);
+  if (/نكتة|اضحك|نضحك|مضحك/.test(t)) return pick([`مرة موزة قالت لصاحبتها: يلا نجري! قالت لها: استني بس، أنا لسه بقشر نفسي! 😂`,`مرة قلم راح للدكتور، قاله: كل ما أكتب إيدي توجعني! الدكتور قاله: طب ريّح سنك شوية! ✏️😂`,`ليه السمكة مبتحبش الكمبيوتر؟ عشان خايفة من شبكة الإنترنت! 🐟😄`,`مرة أرنب لبس نظارة، قالوا له شايف إيه؟ قالهم: شايف الجزر أوضح بكتير! 🐰`]);
+  if (/لعب|لعبة|نلعب|زهقان|مللان/.test(t)) return pick([`يلا لعبة! أنا هقول وصف وإنت تخمن: حيوان كبير، عنده خرطوم طويل وودانه كبار. مين؟ 🐘`,`اختار بسرعة: 🍎 تفاحة ولا 🍌 موزة؟ قولّي بتحب أنهي واحدة وليه!`,`لعبة الأصوات: أنا بقول «مواء»، مين الحيوان؟ 🐱 وبعدها إنت اختار صوت وأنا أخمن!`,`تحدي الألوان! دور بعينيك على حاجة لونها أحمر حواليك، ولما تلاقيها قولّي «لقيتها» 🔴`,`أنا بفكر في رقم من واحد لتلاتة. خمن رقم، ونشوف حظك! 🎲`]);
+  if (/حيوان|اسد|أسد|قطة|قطه|كلب|فيل|زرافة|سمكة|سمكه/.test(t)) return pick([`الحيوانات مدهشة! 🦁 الأسد بيزأر، والقطة بتموء، والكلب بينبح. إيه حيوانك المفضل؟`,`تعرف إن الزرافة رقبتها طويلة جدًا؟ 🦒 لو قابلت زرافة، هتسميها إيه؟`,`يلا نقلد صوت حيوان! إنت اعمل صوت حيوان وأنا أخمنه 😄`]);
+  if (/حروف|حرف|اقرا|أقرأ|قراءة|كتابة|اكتب|كلمة/.test(t)) return pick([`يلا نتعلم حرف صغير! حرف «ب» زي «بطة» 🦆. تقدر تقول صوت حرف ب؟`,`كلمة «قمر» بتبدأ بحرف ق 🌙. تحب نختار كلمة تانية ونسمع أول حرف فيها؟`,`برافو عليك إنك بتحاول! نتعلم واحدة واحدة، ومفيش استعجال. تحب حرف ولا كلمة سهلة؟`]);
+  if (/رقم|اعداد|أعداد|احسب|حساب|واحد|اتنين|اثنين|ثلاثة/.test(t)) return pick([`تعالى نعد سوا: واحد، اتنين، تلاتة! 🎈 تحب نعد لحد خمسة ولا نعد حاجات حوالينا؟`,`لو معاك تفاحتين وجبت تفاحة كمان، يبقى معاك كام تفاحة؟ 🍎🍎🍎`,`أنا بقول رقم وإنت تقول اللي بعده: اتنين… يلا دورك!`]);
+  if (/لون|الوان|ألوان|احمر|أحمر|ازرق|أزرق|اخضر|أخضر|اصفر|أصفر/.test(t)) return `الألوان جميلة زي قوس قزح 🌈 الأحمر زي التفاح، والأخضر زي الشجر، والأزرق زي السما. أنهي لون بتحبه أكتر؟`;
+  if (/فضاء|قمر|نجوم|كواكب|صاروخ/.test(t)) return pick([`يا رائد الفضاء! 🚀 لو ركبنا صاروخ، تحب نزور القمر ولا نشوف الكواكب من بعيد؟`,`النجوم بتلمع في السما بالليل ✨ لو هتسمي نجمة باسم، هتسميها إيه؟`]);
+  if (/بحر|سمك|تحت البحر|محيط/.test(t)) return `تخيل إننا غطسنا تحت البحر 🐠 شفنا سمكة ملونة وسلحفاة بحرية وفقاعات بتطلع لفوق. تحب نكتشف إيه كمان؟`;
+  if (/شكرا|شكرًا|متشكر|تسلم/.test(t)) return pick([`العفو يا ${name} يا صاحبي ❤️ أنا مبسوط إننا بنتكلم.`,`ولا يهمك يا بطل! أنا هنا نلعب ونتعلم سوا 😊`,`العفو! إنت كمان خليت يومي ألطف بكلامك 🌟`]);
+  if (/باي|سلام|مع السلامة|هروح|همشي/.test(t)) return `مع السلامة يا ${name} 👋 خليك دايمًا لطيف مع نفسك ومع اللي حواليك، وتعالى نلعب تاني وقت ما تحب!`;
+  if (/سر|متقولش|ماتقولش|ما تقولش/.test(t)) return `تقدر تحكيلي اللي مضايقك، لكن لو فيه حاجة مخوفاك أو حد قالك تخبي حاجة بتأذيك، مهم تقول لماما أو بابا أو شخص كبير تثق فيه ❤️`;
+  return pick(replies);
 }
-function sendAiMsg(text) {
-  if(!text)return;
-  addChatMessage(text,'user');
-  const reply=getSesameReply(text);
-  setTimeout(()=>{addChatMessage(reply,'bot');speak(reply);},250);
+async function sendAiMsg(text) {
+  text = String(text || (friendInput && friendInput.value) || '').trim();
+  if (!text || friendBusy) return;
+  if (!currentUser) { addFriendBubble('سجّل دخولك الأول عشان هيما يقدر يفتكرك في المحادثة ❤️','bot'); return; }
+  if (friendInput) friendInput.value = '';
+  addFriendBubble(text, 'user');
+  friendMessages.push({role:'user', content:text});
+  friendMessages = friendMessages.slice(-8);
+  friendBusy = true;
+  if (friendChatStatus) friendChatStatus.textContent = 'هيما بيفكر في رد ليك...';
+  if (friendMicBtn) friendMicBtn.disabled = true;
+  // وضع مجاني بالكامل: لا يرسل رسائل الطفل إلى أي API مدفوع.
+  // الردود المحلية تعتمد على كلمات مفتاحية وسياق محادثة قصير.
+  await new Promise(resolve => setTimeout(resolve, 250 + Math.random()*450));
+  let reply = localFriendReply(text, currentUser.username);
+  const previousUser = friendMessages.filter(m => m.role === 'user').slice(-2, -1)[0];
+  if (previousUser && /^(وبعدين|وبعد كده|كمل|كمّل|ثم|بعدها)/.test(text)) {
+    reply = 'وبعد كده، أصحابنا اتعاونوا وساعدوا بعض لحد ما وصلوا للحل! 🌟 تحب تختار إيه يحصل بعد كده؟';
+  }
+  addFriendBubble(reply, 'bot');
+  friendMessages.push({role:'assistant', content:reply});
+  friendMessages = friendMessages.slice(-8);
+  speak(reply);
+  friendBusy = false;
+  if (friendMicBtn) friendMicBtn.disabled = false;
+  if (friendChatStatus) friendChatStatus.textContent = 'تقدر تتكلم أو تضغط الميكروفون وتحكي لهيما 🌟';
 }
-const aiChatInput=document.getElementById('aiChatInput');
-document.getElementById('aiSendBtn')?.addEventListener('click',()=>{const t=aiChatInput.value.trim();if(t){aiChatInput.value='';sendAiMsg(t);}});
-aiChatInput?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('aiSendBtn').click();});
-const aiMicBtn=document.getElementById('aiMicBtn');
-let sesameRecognition=null;
-function startSesameListening(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){addChatMessage('المتصفح ده مش بيدعم التعرف على الصوت. جرّب Google Chrome وحدّثه، أو اكتب رسالتك لسمسم.','bot');speak('المتصفح لا يدعم التحدث الصوتي. يمكنك كتابة رسالتك.');return;}
-  if(sesameRecognition){try{sesameRecognition.stop();}catch(e){} sesameRecognition=null;}
-  sesameRecognition=new SR(); sesameRecognition.lang='ar-EG'; sesameRecognition.continuous=false; sesameRecognition.interimResults=false;
-  aiMicBtn.classList.add('listening'); aiMicBtn.textContent='🔴';
-  addChatMessage('أنا سامعك يا بطل... اتكلم دلوقتي 🎙️','bot');
-  sesameRecognition.onresult=e=>{const heard=e.results[0][0].transcript;sendAiMsg(heard);};
-  sesameRecognition.onerror=e=>{if(e.error==='not-allowed')addChatMessage('اسمح للمتصفح باستخدام الميكروفون من علامة القفل بجوار عنوان الموقع.','bot');else if(e.error!=='no-speech')addChatMessage('ما سمعتكش كويس. جرّب تاني أو اكتب رسالتك.','bot');};
-  sesameRecognition.onend=()=>{aiMicBtn.classList.remove('listening');aiMicBtn.textContent='🎙️';};
-  try{sesameRecognition.start();}catch(e){aiMicBtn.classList.remove('listening');aiMicBtn.textContent='🎙️';}
+document.getElementById('friendSendBtn')?.addEventListener('click',()=>sendAiMsg());
+friendInput?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendAiMsg();}});
+function startFriendMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    if (friendChatStatus) friendChatStatus.textContent = 'الميكروفون الصوتي غير مدعوم هنا. جرّب Chrome أو اكتب رسالتك.';
+    return;
+  }
+  if (friendRecognition) { try{friendRecognition.stop();}catch(e){} }
+  friendRecognition = new SR();
+  friendRecognition.lang = 'ar-EG';
+  friendRecognition.interimResults = false;
+  friendRecognition.maxAlternatives = 1;
+  friendRecognition.onstart = () => {
+    friendMicBtn?.classList.add('listening');
+    if (friendChatStatus) friendChatStatus.textContent = 'هيما بيسمعك... اتكلم براحتك 🎙️';
+  };
+  friendRecognition.onresult = e => {
+    const heard = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : '';
+    if (heard) sendAiMsg(heard);
+    else if (friendChatStatus) friendChatStatus.textContent = 'مسمعتش كلامك كويس، جرّب تاني.';
+  };
+  friendRecognition.onerror = () => { if(friendChatStatus) friendChatStatus.textContent='الميكروفون محتاج إذن من المتصفح. ممكن تكتب أو تجرب تاني.'; };
+  friendRecognition.onend = () => friendMicBtn?.classList.remove('listening');
+  try { friendRecognition.start(); } catch(e) {}
 }
-aiMicBtn?.addEventListener('click',startSesameListening);
+friendMicBtn?.addEventListener('click',startFriendMic);
+
+/* ================== REALTIME VOICE FRIEND ==================
+   صوت مباشر ثنائي الاتجاه عبر WebRTC. المفتاح الدائم لا يغادر Apps Script؛
+   المتصفح يستلم فقط client secret قصير العمر.
+*/
+let livePc = null;
+let liveStream = null;
+let liveChannel = null;
+let liveAudio = null;
+let liveCallStarting = false;
+let lastAssistantTranscript = '';
+const friendLiveBtn = document.getElementById('friendLiveBtn');
+
+function stopFriendLiveCall(updateStatus = true) {
+  try { if (liveChannel && liveChannel.readyState === 'open') liveChannel.close(); } catch(e) {}
+  try { if (livePc) livePc.close(); } catch(e) {}
+  try { if (liveStream) liveStream.getTracks().forEach(track => track.stop()); } catch(e) {}
+  try { if (liveAudio) { liveAudio.pause(); liveAudio.srcObject = null; liveAudio.remove(); } } catch(e) {}
+  livePc = null; liveStream = null; liveChannel = null; liveAudio = null;
+  liveCallStarting = false;
+  if (friendLiveBtn) { friendLiveBtn.disabled = false; friendLiveBtn.textContent = '📞 ابدأ محادثة صوتية مجانية مع هيما'; }
+  if (updateStatus && friendChatStatus) friendChatStatus.textContent = 'المكالمة انتهت. تقدر تبدأ مكالمة جديدة أو تكتب لهيما 🌟';
+}
+
+function handleLiveEvent(event) {
+  if (!event || !event.type) return;
+  if (event.type === 'input_audio_buffer.speech_started') {
+    if (friendChatStatus) friendChatStatus.textContent = 'هيما بيسمعك… اتكلم براحتك 🎙️';
+  } else if (event.type === 'input_audio_buffer.speech_stopped') {
+    if (friendChatStatus) friendChatStatus.textContent = 'هيما بيفكر في كلامك…';
+  } else if (event.type === 'conversation.item.input_audio_transcription.completed') {
+    const transcript = String(event.transcript || '').trim();
+    if (transcript) {
+      addFriendBubble(transcript, 'user');
+      friendMessages.push({role:'user', content:transcript});
+      friendMessages = friendMessages.slice(-12);
+    }
+  } else if (event.type === 'response.output_audio_transcript.done' || event.type === 'response.audio_transcript.done') {
+    const transcript = String(event.transcript || '').trim();
+    if (transcript && transcript !== lastAssistantTranscript) {
+      lastAssistantTranscript = transcript;
+      addFriendBubble(transcript, 'bot');
+      friendMessages.push({role:'assistant', content:transcript});
+      friendMessages = friendMessages.slice(-12);
+    }
+    if (friendChatStatus) friendChatStatus.textContent = 'دورك يا صاحبي، أنا سامعك 😊';
+  } else if (event.type === 'response.done') {
+    if (friendChatStatus) friendChatStatus.textContent = 'اتكلم مع هيما وقت ما تحب؛ تقدر تقاطعه وهو بيتكلم 😊';
+  } else if (event.type === 'error') {
+    const msg = event.error && event.error.message ? event.error.message : 'حصلت مشكلة في الاتصال الصوتي.';
+    if (friendChatStatus) friendChatStatus.textContent = 'الصوت وقف: ' + msg;
+  }
+}
+
+async function startFriendLiveCall() {
+  // مكالمة مجانية بالتناوب: ميكروفون المتصفح ثم رد بصوت المتصفح، بدون Realtime API.
+  if (!currentUser) { addFriendBubble('سجّل دخولك الأول علشان هيما يفتكرك ❤️','bot'); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    if (friendChatStatus) friendChatStatus.textContent = 'التعرّف على الكلام غير متاح في المتصفح ده. جرّب Chrome أو اضغط زر الميكروفون.';
+    return;
+  }
+  if (friendLiveBtn.dataset.freeCall === 'on') {
+    friendLiveBtn.dataset.freeCall = 'off';
+    friendLiveBtn.textContent = '📞 ابدأ محادثة صوتية مجانية مع هيما';
+    try { if (friendRecognition) friendRecognition.stop(); } catch(e) {}
+    if (friendChatStatus) friendChatStatus.textContent = 'وقفنا المحادثة الصوتية. تقدر ترجع لها وقت ما تحب 😊';
+    return;
+  }
+  friendLiveBtn.dataset.freeCall = 'on';
+  friendLiveBtn.textContent = '⏹️ إيقاف المحادثة الصوتية';
+  if (friendChatStatus) friendChatStatus.textContent = 'المحادثة الصوتية المجانية جاهزة. اتكلم بعد ما تضغط زر الميكروفون 🎙️';
+  addFriendBubble('يلا يا صاحبي! المحادثة دي مجانية. اضغط الميكروفون واتكلم، وأنا هرد عليك بصوت المتصفح 😊','bot');
+  speak('يلا يا صاحبي! المحادثة دي مجانية. اضغط الميكروفون واتكلم، وأنا هرد عليك.');
+}
+friendLiveBtn?.addEventListener('click', startFriendLiveCall);
+closeChatBtn.addEventListener('click', () => stopFriendLiveCall(false));
+window.addEventListener('beforeunload', () => stopFriendLiveCall(false));
 
 /* ================== API & DATA ================== */
 async function apiCall(action, payload){
@@ -674,19 +847,64 @@ async function fetchLeaderboard(){
 
 /* ================== EDUCATIONAL SONGS ================== */
 const SONGS = [
- {title:'أنشودة الحروف العربية',emoji:'🔤',audioUrl:'',lyrics:`ألفٌ أرنبٌ يقفزُ\nباءٌ بطةٌ تمشي\nتاءٌ تفاحةٌ حمراء\nنتعلّم حرفًا كلَّ مساء`},
- {title:'أنشودة الأرقام',emoji:'🔢',audioUrl:'',lyrics:`واحدٌ اثنانِ ثلاثة\nنعدُّ الأشياءَ معًا\nأربعةٌ خمسةٌ ستة\nوالتعلّمُ صارَ ممتعًا`},
- {title:'أنشودة الألوان',emoji:'🌈',audioUrl:'',lyrics:`أحمرُ مثلَ التفاحة\nأصفرُ مثلَ الشمسِ\nأخضرُ لونُ الأشجار\nأزرقُ لونُ السماء`}
+ {title:'أنشودة الحروف العربية',emoji:'🔤',youtubeUrl:'https://www.youtube.com/results?search_query=أنشودة+الحروف+العربية+للأطفال',lyrics:'أنشودة الحروف العربية للأطفال'},
+ {title:'أنشودة الأرقام للأطفال',emoji:'🔢',youtubeUrl:'https://www.youtube.com/results?search_query=أنشودة+الأرقام+للأطفال',lyrics:'أنشودة الأرقام للأطفال'},
+ {title:'أنشودة الألوان للأطفال',emoji:'🌈',youtubeUrl:'https://www.youtube.com/results?search_query=أنشودة+الألوان+للأطفال',lyrics:'أنشودة الألوان للأطفال'},
+ {title:'أغنية أيام الأسبوع',emoji:'📅',youtubeUrl:'https://www.youtube.com/results?search_query=أغنية+أيام+الأسبوع+للأطفال',lyrics:'أغنية أيام الأسبوع للأطفال'},
+ {title:'أغنية الحيوانات',emoji:'🐘',youtubeUrl:'https://www.youtube.com/results?search_query=أغاني+أصوات+الحيوانات+للأطفال',lyrics:'أغاني الحيوانات للأطفال'}
 ];
 let activeSongAudio=null;
-function playEducationalSong(i){const song=SONGS[i];if(!song)return;if('speechSynthesis' in window)window.speechSynthesis.cancel();if(activeSongAudio){activeSongAudio.pause();activeSongAudio=null;}if(song.audioUrl){activeSongAudio=new Audio(song.audioUrl);activeSongAudio.play().catch(()=>speak(song.lyrics.replace(/\n/g,'، ')));}else speak(song.lyrics.replace(/\n/g,'، '));}
+function playEducationalSong(i){
+ const song=SONGS[i]; if(!song)return;
+ // روابط SONGS الحالية هي نتائج بحث، لذلك نفتح البحث الرسمي ولا نخترع معرّف فيديو.
+ window.open(song.youtubeUrl,'_blank','noopener,noreferrer');
+ const input=document.getElementById('youtubeUrlInput');
+ if(input) input.focus();
+ const msg=document.getElementById('youtubePlayerMessage');
+ if(msg) msg.textContent='اختار الفيديو من يوتيوب، وانسخ رابطه، وبعدها الصقه هنا واضغط «شغّل هنا».';
+}
+function extractYouTubeId(raw){
+ try {
+  const u=new URL(String(raw||'').trim());
+  const host=u.hostname.replace(/^www\./,'').toLowerCase();
+  if(host==='youtu.be') return u.pathname.split('/').filter(Boolean)[0]||'';
+  if(!/(^|\.)youtube\.com$/.test(host)) return '';
+  if(u.pathname==='/watch') return u.searchParams.get('v')||'';
+  const m=u.pathname.match(/^\/(?:embed|shorts|live)\/([A-Za-z0-9_-]{6,})/);
+  return m?m[1]:'';
+ } catch(e){return '';}
+}
+function playYoutubeInside(){
+ const input=document.getElementById('youtubeUrlInput');
+ const msg=document.getElementById('youtubePlayerMessage');
+ const wrap=document.getElementById('youtubePlayerWrap');
+ const frame=document.getElementById('youtubePlayerFrame');
+ const id=extractYouTubeId(input&&input.value);
+ if(!id){if(msg)msg.textContent='الرابط مش واضح. انسخ رابط فيديو كامل من youtube.com أو youtu.be وجرب تاني.';return;}
+ // تشغيل عبر مشغّل YouTube الرسمي المضمّن؛ قد تمنع بعض الفيديوهات التضمين حسب إعدادات صاحبها.
+ frame.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&rel=0';
+ wrap.style.display='block';
+ if(msg)msg.textContent='الفيديو جاهز للتشغيل داخل البوابة. لو ظهر رفض للتشغيل، اختار فيديو آخر من يوتيوب.';
+ wrap.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function stopYoutubeInside(){
+ const frame=document.getElementById('youtubePlayerFrame');
+ const wrap=document.getElementById('youtubePlayerWrap');
+ if(frame)frame.src='about:blank';
+ if(wrap)wrap.style.display='none';
+}
 function renderSongs(){
  const root=document.getElementById('songsList'); if(!root || root.dataset.ready) return;
  root.dataset.ready='1';
- root.innerHTML=SONGS.map((song,i)=>`<div class="song-card"><h3>${song.emoji} ${escapeText(song.title)}</h3><div class="song-lyrics">${escapeText(song.lyrics)}</div><button class="feature-btn" data-song-index="${i}">▶️ استمع للأنشودة</button></div>`).join('');
- root.querySelectorAll('[data-song-index]').forEach(btn=>btn.addEventListener('click',()=>playEducationalSong(Number(btn.dataset.songIndex))));
+ root.innerHTML=SONGS.map((song,i)=>`<div class="song-card"><h3>${song.emoji} ${escapeText(song.title)}</h3><p class="feature-note">افتح نتائج يوتيوب واختار فيديو مناسبًا للأطفال. تقدر بعد كده تشغّله داخل البوابة من المشغّل اللي فوق.</p><a class="feature-btn" style="display:inline-block;text-decoration:none" href="${song.youtubeUrl}" target="_blank" rel="noopener noreferrer" onclick="playEducationalSong(${i});return false;">🔎 اختار فيديو على YouTube</a></div>`).join('');
 }
-document.getElementById('stopSongBtn')?.addEventListener('click',()=>{if('speechSynthesis' in window) window.speechSynthesis.cancel();if(activeSongAudio){activeSongAudio.pause();activeSongAudio.currentTime=0;activeSongAudio=null;}});
+document.getElementById('playYoutubeInsideBtn')?.addEventListener('click',playYoutubeInside);
+document.getElementById('youtubeUrlInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();playYoutubeInside();}});
+document.getElementById('stopSongBtn')?.addEventListener('click',()=>{
+ if('speechSynthesis' in window) window.speechSynthesis.cancel();
+ if(activeSongAudio){activeSongAudio.pause();activeSongAudio.currentTime=0;activeSongAudio=null;}
+ stopYoutubeInside();
+});
 renderSongs();
 
 /* ================== ONLINE FRIEND CHALLENGE ================== */
@@ -703,15 +921,32 @@ function roomMsg(t){const e=document.getElementById('roomMessage');if(e)e.textCo
 function renderDuelState(state){
  if(!state)return; activeRoomState=state;
  document.getElementById('duelGameCard').style.display='block';
- document.getElementById('roomCodeDisplay').style.display='block'; document.getElementById('roomCodeValue').textContent=activeRoomCode;
- const players=state.players||[]; const me=currentUser?.username;
- document.getElementById('duelStatus').textContent=state.status==='playing'?'اختار الإجابة الصحيحة قبل صاحبك!':(state.status==='finished'?'انتهى التحدي!':'في انتظار انضمام صاحبك...');
- const question=DUEL_QUESTIONS[state.round % DUEL_QUESTIONS.length];
- document.getElementById('duelQuestion').textContent=state.status==='playing'?`السؤال ${state.round+1}: ${question.q}`:'عندما يدخل صاحبك سيبدأ التحدي.';
+ document.getElementById('roomCodeDisplay').style.display='block';
+ document.getElementById('roomCodeValue').textContent=activeRoomCode;
+ const players=state.players||[], me=currentUser?.username;
+ let statusText=state.status==='playing'?'اختار الإجابة اللي شايفها صح 😊':(state.status==='finished'?'خلص التحدي! أحسنتم يا أبطال 🎉':'مستنيين صاحبك ينضم للغرفة...');
+ if(state.revealed) statusText='الإجابة ظهرت! شوفوا مين جاوب صح، وبعدها اضغطوا السؤال التالي.';
+ document.getElementById('duelStatus').textContent=statusText;
+ const question=state.question;
+ document.getElementById('duelQuestion').textContent=state.status==='playing' && question ? `السؤال ${state.round+1}: ${question.q}` : (state.status==='finished'?'انتهى التحدي!':'أول ما صاحبك يدخل هنبدأ اللعب.');
  const choices=document.getElementById('duelChoices'); choices.innerHTML='';
- if(state.status==='playing') question.choices.forEach((c,i)=>{const b=document.createElement('button');b.className='quiz-choice';b.textContent=c;b.disabled=!!(state.answers&&state.answers[me]!==undefined);b.addEventListener('click',()=>answerDuel(i));choices.appendChild(b);});
- const scores=state.scores||{}; document.getElementById('duelScores').textContent=players.map(p=>`${p}: ${scores[p]||0} نقطة${state.answers&&state.answers[p]!==undefined?' ✓':''}`).join(' | ');
- document.getElementById('nextDuelBtn').style.display=(state.host===me && state.status==='playing' && players.length>=2 && players.every(p=>state.answers&&state.answers[p]!==undefined))?'inline-block':'none';
+ if(state.status==='playing' && question && !state.revealed) {
+   question.choices.forEach((c,i)=>{
+     const b=document.createElement('button'); b.className='quiz-choice'; b.textContent=c;
+     b.disabled=!!(state.answered&&state.answered[me]);
+     b.addEventListener('click',()=>answerDuel(i)); choices.appendChild(b);
+   });
+ } else if(state.revealed && question) {
+   question.choices.forEach((c,i)=>{
+     const b=document.createElement('div'); b.className='quiz-choice';
+     b.textContent=(i===state.correct?'✅ ':'')+c; b.style.cursor='default';
+     if(i===state.correct)b.style.borderColor='var(--success)';
+     choices.appendChild(b);
+   });
+ }
+ const scores=state.scores||{};
+ document.getElementById('duelScores').textContent=players.map(p=>`${p}: ${scores[p]||0} نقطة${state.answered&&state.answered[p]?' ✓':''}`).join(' | ');
+ document.getElementById('nextDuelBtn').style.display=(state.host===me && state.status==='playing' && state.revealed)?'inline-block':'none';
 }
 async function createDuelRoom(){
  if(!currentUser){roomMsg('سجّل الدخول أولًا.');return;}
