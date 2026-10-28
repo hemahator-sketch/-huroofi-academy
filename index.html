@@ -131,7 +131,44 @@ footer{text-align:center;color:var(--soft);font-weight:700;margin-top:40px}
 <body>
 <canvas id="confetti"></canvas>
 <div class="wrap">
-  <div class="hero"><h1>بوابة المعرفة 🚀</h1><p>رحلة ممتعة لتعلّم القراءة والكتابة، مليئة بالألعاب والمؤثرات!</p></div>
+
+<div class="hero">
+  <h1>بوابة المعرفة 🚀</h1>
+  <p>رحلة ممتعة لتعلّم القراءة والكتابة، مليئة بالألعاب والمؤثرات!</p>
+  <button id="voiceSettingsBtn" type="button"
+    style="margin-top:16px;padding:12px 18px;border:0;border-radius:14px;background:#fff;color:#0F6F66;font:inherit;font-weight:800;cursor:pointer">
+    🔊 إعدادات صوت سمسم وهيما
+  </button>
+</div>
+
+<div id="voiceSettings" style="display:none;background:#fff;border:2px solid #EADFC7;border-radius:20px;padding:18px;margin-top:14px">
+  <h3 style="margin-top:0">🎙️ اختار الصوت اللي يعجبك</h3>
+  <p>الأصوات دي هي المتاحة على جهازك. اضغط تجربة قبل ما تختار.</p>
+
+  <label for="voiceSelect" style="display:block;margin:10px 0 6px;font-weight:700">
+    الأصوات العربية
+  </label>
+  <select id="voiceSelect" style="width:100%;padding:12px;border:2px solid #EADFC7;border-radius:12px;font:inherit">
+    <option value="">جارٍ البحث عن الأصوات...</option>
+  </select>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+    <button id="testVoiceBtn" type="button" style="padding:11px 15px;border:0;border-radius:12px;background:#1C9C90;color:#fff;font:inherit;font-weight:800;cursor:pointer">▶️ جرّب الصوت</button>
+    <button id="saveVoiceBtn" type="button" style="padding:11px 15px;border:0;border-radius:12px;background:#F2A93B;color:#382600;font:inherit;font-weight:800;cursor:pointer">💾 حفظ الاختيار</button>
+  </div>
+
+  <label for="voiceRate" style="display:block;margin-top:18px;font-weight:700">
+    سرعة الكلام: <span id="voiceRateValue">0.85</span>
+  </label>
+  <input id="voiceRate" type="range" min="0.65" max="1.15" step="0.05" value="0.85" style="width:100%">
+
+  <label for="voicePitch" style="display:block;margin-top:12px;font-weight:700">
+    درجة الصوت: <span id="voicePitchValue">1.1</span>
+  </label>
+  <input id="voicePitch" type="range" min="0.8" max="1.3" step="0.05" value="1.1" style="width:100%">
+
+  <p id="voiceStatus" role="status" style="font-weight:700;color:#0F6F66"></p>
+</div>
 
   <div id="authSection"><div class="auth-card">
     <div class="auth-tabs"><div class="auth-tab active" data-at="login">دخول البطل</div><div class="auth-tab" data-at="signup">بطل جديد</div></div>
@@ -298,30 +335,145 @@ function sfx(type){
 }
 
 /* ---------- Speech ---------- */
-let arVoice=null;
-function pickVoice(){if(!('speechSynthesis' in window))return;const v=speechSynthesis.getVoices().filter(x=>x.lang&&x.lang.toLowerCase().startsWith('ar'));arVoice=v.find(x=>/google/i.test(x.name))||v.find(x=>/^ar-eg/i.test(x.lang))||v.find(x=>/^ar-sa/i.test(x.lang))||v[0]||null;}
-if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
-function speak(text,onDone){
-  if(!text||!('speechSynthesis' in window)){if(onDone)onDone();return;}
-  try{speechSynthesis.cancel();
-    const clean=text.replace(/[\u064B-\u0652]/g,'').replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF]/gu,'').trim();
-    const u=new SpeechSynthesisUtterance(clean);if(arVoice)u.voice=arVoice;u.lang=arVoice?arVoice.lang:'ar-EG';u.rate=.85;u.pitch=1.1;
-    if(onDone){u.onend=onDone;u.onerror=onDone;}speechSynthesis.speak(u);
-  }catch(e){if(onDone)onDone();}
+
+/* ---------- Speech: إعدادات صوت مجانية ---------- */
+let arVoice = null;
+let availableArabicVoices = [];
+let voiceRate = 0.85;
+let voicePitch = 1.1;
+
+function loadSavedVoiceSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem('hema_voice_settings') || '{}');
+    voiceRate = Number(s.rate) || 0.85;
+    voicePitch = Number(s.pitch) || 1.1;
+
+    if ($('voiceRate')) $('voiceRate').value = voiceRate;
+    if ($('voicePitch')) $('voicePitch').value = voicePitch;
+    if ($('voiceRateValue')) $('voiceRateValue').textContent = voiceRate.toFixed(2);
+    if ($('voicePitchValue')) $('voicePitchValue').textContent = voicePitch.toFixed(2);
+
+    if (s.voiceName) {
+      arVoice = null;
+      window.savedVoiceName = s.voiceName;
+    }
+  } catch (e) {}
 }
-const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
-let rec=null;
-function listen(btn,errEl,fbEl,onText){
-  if(!SR){fbEl.textContent='المتصفح ده لا يدعم المايك. جرّب Chrome.';fbEl.className='feedback-line no';return;}
-  try{if(rec)try{rec.stop()}catch(e){}
-    rec=new SR();rec.lang='ar-SA';rec.continuous=false;rec.interimResults=false;
-    rec.onstart=()=>{btn.classList.add('recording');btn.textContent='🎙️ جاري الاستماع...';fbEl.textContent='تكلم بوضوح الآن...';fbEl.className='feedback-line';errEl.style.display='none';};
-    rec.onresult=e=>{if(e.results[0]&&e.results[0][0])onText(e.results[0][0].transcript.trim());};
-    rec.onerror=e=>{fbEl.textContent='لم أسمعك جيدًا!';fbEl.className='feedback-line no';if(['not-allowed','service-not-allowed','audio-capture'].includes(e.error)){errEl.style.display='block';errEl.textContent='❌ المايك محتاج إذن، أو الصفحة داخل إطار يمنعه. جرّب فتح الرابط مباشرة في Chrome.';}};
-    rec.onend=()=>{btn.classList.remove('recording');btn.textContent='🎙️ اضغط وتكلم';};
-    rec.start();
-  }catch(e){btn.classList.remove('recording');}
+
+function pickVoice() {
+  if (!('speechSynthesis' in window)) {
+    if ($('voiceStatus')) $('voiceStatus').textContent =
+      'المتصفح لا يدعم تشغيل الكلام.';
+    return;
+  }
+
+  const voices = speechSynthesis.getVoices();
+  availableArabicVoices = voices.filter(v =>
+    v.lang && v.lang.toLowerCase().startsWith('ar')
+  );
+
+  const select = $('voiceSelect');
+  if (select) {
+    const previous = window.savedVoiceName || arVoice?.name || select.value;
+    select.innerHTML = '';
+
+    if (!availableArabicVoices.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'لا توجد أصوات عربية متاحة حاليًا';
+      select.appendChild(opt);
+      if ($('voiceStatus')) $('voiceStatus').textContent =
+        'لم نعثر على صوت عربي. جرّب تحديث الصفحة أو تثبيت صوت عربي في ويندوز.';
+      return;
+    }
+
+    availableArabicVoices.forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = `${v.name} — ${v.lang}`;
+      select.appendChild(opt);
+    });
+
+    const preferred =
+      availableArabicVoices.find(v => v.name === previous) ||
+      availableArabicVoices.find(v => /^ar-eg/i.test(v.lang)) ||
+      availableArabicVoices.find(v => /google/i.test(v.name)) ||
+      availableArabicVoices[0];
+
+    if (preferred) {
+      select.value = preferred.name;
+      arVoice = preferred;
+    }
+
+    if ($('voiceStatus')) $('voiceStatus').textContent =
+      `لقينا ${availableArabicVoices.length} صوت عربي. جرّب الأصوات واختار الأنسب.`;
+  } else {
+    arVoice =
+      availableArabicVoices.find(v => /^ar-eg/i.test(v.lang)) ||
+      availableArabicVoices.find(v => /google/i.test(v.name)) ||
+      availableArabicVoices[0] || null;
+  }
 }
+
+function updateSelectedVoice() {
+  const name = $('voiceSelect')?.value;
+  arVoice = availableArabicVoices.find(v => v.name === name) || null;
+}
+
+function speak(text, onDone) {
+  if (!text || !('speechSynthesis' in window)) {
+    if (onDone) onDone();
+    return;
+  }
+
+  try {
+    speechSynthesis.cancel();
+
+    const clean = String(text)
+      .replace(/[\u064B-\u0652]/g, '')
+      .replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF]/gu, '')
+      .trim();
+
+    const u = new SpeechSynthesisUtterance(clean);
+    updateSelectedVoice();
+
+    if (arVoice) {
+      u.voice = arVoice;
+      u.lang = arVoice.lang;
+    } else {
+      u.lang = 'ar-EG';
+    }
+
+    u.rate = voiceRate;
+    u.pitch = voicePitch;
+    u.volume = 1;
+
+    if (onDone) {
+      let called = false;
+      const done = () => {
+        if (called) return;
+        called = true;
+        onDone();
+      };
+      u.onend = done;
+      u.onerror = done;
+    }
+
+    speechSynthesis.speak(u);
+  } catch (e) {
+    if (onDone) onDone();
+  }
+}
+
+loadSavedVoiceSettings();
+
+if ('speechSynthesis' in window) {
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+  // بعض الأجهزة لا تعرض الأصوات إلا بعد لحظة
+  setTimeout(pickVoice, 500);
+}
+
 
 /* ---------- Data ---------- */
 const LETTERS=[['أ','أَلِف','أَسَد','🦁'],['ب','بَاء','بَطَّة','🦆'],['ت','تَاء','تُفَّاحَة','🍎'],['ث','ثَاء','ثَعْلَب','🦊'],['ج','جِيم','جَمَل','🐫'],['ح','حَاء','حِصَان','🐴'],['خ','خَاء','خَرُوف','🐑'],['د','دَال','دُبّ','🐻'],['ذ','ذَال','ذِئْب','🐺'],['ر','رَاء','رِيشَة','🪶'],['ز','زَاي','زَرَافَة','🦒'],['س','سِين','سَمَكَة','🐟'],['ش','شِين','شَمْس','☀️'],['ص','صَاد','صَقْر','🦅'],['ض','ضَاد','ضَفْدَع','🐸'],['ط','طَاء','طَائِرَة','✈️'],['ظ','ظَاء','ظَرْف','📩'],['ع','عَيْن','عُصْفُور','🐦'],['غ','غَيْن','غَزَال','🦌'],['ف','فَاء','فِيل','🐘'],['ق','قَاف','قِطَّة','🐱'],['ك','كَاف','كَلْب','🐶'],['ل','لاَم','لَيْمُون','🍋'],['م','مِيم','مَوْز','🍌'],['ن','نُون','نَجْمَة','⭐'],['هـ','هَاء','هَدِيَّة','🎁'],['و','وَاو','وَرْدَة','🌹'],['ي','يَاء','يَد','✋']].map(a=>({l:a[0],name:a[1],word:a[2],emoji:a[3]}));
@@ -555,8 +707,63 @@ liveBtn.onclick=()=>{
 };
 
 /* ---------- بداية ---------- */
-['SL','SW','Missing','Match','LI','LT','Build'].forEach(n=>{});
-addEventListener('DOMContentLoaded',()=>{newSL();newSW();newMissing();newMatch();newLI();newLT();newBuild();});
+
+/* ---------- إعدادات الصوت داخل اللعبة ---------- */
+$('voiceSettingsBtn').onclick = () => {
+  const panel = $('voiceSettings');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  pickVoice();
+};
+
+$('voiceSelect').onchange = () => {
+  updateSelectedVoice();
+  $('voiceStatus').textContent = arVoice
+    ? `الصوت المختار: ${arVoice.name}`
+    : 'اختار صوتًا من القائمة.';
+};
+
+$('voiceRate').oninput = e => {
+  voiceRate = Number(e.target.value);
+  $('voiceRateValue').textContent = voiceRate.toFixed(2);
+};
+
+$('voicePitch').oninput = e => {
+  voicePitch = Number(e.target.value);
+  $('voicePitchValue').textContent = voicePitch.toFixed(2);
+};
+
+$('testVoiceBtn').onclick = () => {
+  updateSelectedVoice();
+
+  if (!arVoice) {
+    $('voiceStatus').textContent =
+      'مفيش صوت عربي مختار. تأكد إن فيه أصوات عربية على الجهاز.';
+    pickVoice();
+    return;
+  }
+
+  speak('أهلاً يا بطل! أنا هيما، يلا نتعلم ونلعب سوا. شاطر يا صاحبي!');
+  $('voiceStatus').textContent = `بنجرب صوت: ${arVoice.name}`;
+};
+
+$('saveVoiceBtn').onclick = () => {
+  updateSelectedVoice();
+
+  try {
+    localStorage.setItem('hema_voice_settings', JSON.stringify({
+      voiceName: arVoice ? arVoice.name : '',
+      rate: voiceRate,
+      pitch: voicePitch
+    }));
+    window.savedVoiceName = arVoice ? arVoice.name : '';
+    $('voiceStatus').textContent =
+      'اتحفظ اختيارك على الكمبيوتر ❤️ هتقدر تستخدمه في ألعاب ومحادثات اللعبة.';
+  } catch (e) {
+    $('voiceStatus').textContent =
+      'تعذر الحفظ في المتصفح. تقدر تستخدم الصوت الحالي بدون حفظ.';
+  }
+};
+
 </script>
 </body>
 </html>
