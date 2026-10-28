@@ -530,183 +530,6 @@
   </div>
 </div>
 <script>
-const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgFq6EumPYteu4RQqn8QI64ZSCBinTPom69UcNo12CjKRJrsTTAd76xvhhx8Ve6Bim/exec";
-if(!APP_SCRIPT_URL || APP_SCRIPT_URL.indexOf('PASTE_') === 0) document.getElementById('configBanner').style.display = 'block';
-
-/* ================== AUDIO CONTROL SETTINGS ================== */
-let sfxVolume = 0.3;
-let speechVolume = 1.0;
-
-const audioModal = document.getElementById('audioSettingsModal');
-const openAudioBtn = document.getElementById('openAudioSettingsBtn');
-const closeAudioBtn = document.getElementById('closeAudioSettingsBtn');
-const sfxRange = document.getElementById('sfxVolumeRange');
-const speechRange = document.getElementById('speechVolumeRange');
-
-if (openAudioBtn) openAudioBtn.onclick = () => audioModal.classList.add('active');
-if (closeAudioBtn) closeAudioBtn.onclick = () => audioModal.classList.remove('active');
-if (audioModal) audioModal.addEventListener('click', (e) => { if(e.target === audioModal) audioModal.classList.remove('active'); });
-
-if (sfxRange) sfxRange.addEventListener('input', (e) => { sfxVolume = parseFloat(e.target.value); });
-if (speechRange) speechRange.addEventListener('input', (e) => { speechVolume = parseFloat(e.target.value); });
-
-/* ================== CONFETTI ANIMATION ================== */
-function triggerConfetti() {
-  const c = document.getElementById('confettiCanvas');
-  if(!c) return;
-  const ctx = c.getContext('2d');
-  c.width = window.innerWidth; c.height = window.innerHeight;
-  const pieces = [];
-  const colors = ['#E9614C', '#1C9C90', '#F2A93B', '#6C5B9E', '#3FAE5A'];
-  for (let i = 0; i < 60; i++) {
-    pieces.push({
-      x: Math.random() * c.width,
-      y: Math.random() * c.height - c.height,
-      size: Math.random() * 8 + 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      speed: Math.random() * 4 + 2,
-      velX: Math.random() * 2 - 1
-    });
-  }
-  let frame = 0;
-  function animate() {
-    ctx.clearRect(0, 0, c.width, c.height);
-    pieces.forEach(p => {
-      p.y += p.speed;
-      p.x += p.velX;
-      ctx.fillStyle = p.color;
-      ctx.fillRect(p.x, p.y, p.size, p.size);
-    });
-    frame++;
-    if (frame < 120) requestAnimationFrame(animate);
-    else ctx.clearRect(0, 0, c.width, c.height);
-  }
-  animate();
-}
-
-/* ================== AUDIO SFX ENGINE ================== */
-const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-const audioCtx = AudioContextClass ? new AudioContextClass() : null;
-function playSFX(type) {
-  try {
-    if(!audioCtx || sfxVolume <= 0) return; if(audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
-    osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-    if(type === 'win'){
-      triggerConfetti();
-      osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-      osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.3);
-      gainNode.gain.setValueAtTime(sfxVolume, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-    } else {
-      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-      gainNode.gain.setValueAtTime(sfxVolume, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-    }
-  } catch(e){}
-}
-
-/* ================== SMART HYBRID AUDIO ENGINE ================== */
-let audioSpeechPlayer = new Audio();
-let arabicVoice = null;
-let voiceUnlocked = false;
-let availableVoices = [];
-
-const voiceSelect = document.getElementById('voiceSelect');
-const noVoiceModal = document.getElementById('noArabicVoiceModal');
-const closeNoVoiceBtn = document.getElementById('closeNoVoiceBtn');
-
-if (closeNoVoiceBtn) {
-  closeNoVoiceBtn.onclick = () => noVoiceModal.classList.remove('active');
-}
-
-function populateVoiceList() {
-  if (!('speechSynthesis' in window)) return;
-  availableVoices = window.speechSynthesis.getVoices();
-  if (!voiceSelect) return;
-  voiceSelect.innerHTML = '';
-
-  const arVoices = availableVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
-  const voicesToDisplay = arVoices.length > 0 ? arVoices : availableVoices;
-
-  voicesToDisplay.forEach((voice) => {
-    const option = document.createElement('option');
-    option.textContent = `${voice.name} (${voice.lang})`;
-    option.setAttribute('data-name', voice.name);
-    if (arabicVoice && arabicVoice.name === voice.name) option.selected = true;
-    voiceSelect.appendChild(option);
-  });
-
-  if (voicesToDisplay.length === 0) {
-    const option = document.createElement('option');
-    option.textContent = 'لا توجد أصوات مثبتة على الجهاز';
-    voiceSelect.appendChild(option);
-  }
-}
-
-function pickBestArabicVoice() {
-  if (!('speechSynthesis' in window)) return;
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length === 0) return;
-
-  const arVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
-  if (arVoices.length === 0) { 
-    arabicVoice = null;
-    if (noVoiceModal && !sessionStorage.getItem('voiceWarned')) {
-      noVoiceModal.classList.add('active');
-      sessionStorage.setItem('voiceWarned', 'true');
-    }
-    populateVoiceList();
-    return; 
-  }
-  
-  if (!arabicVoice) {
-    arabicVoice = arVoices.find(v => /google/i.test(v.name)) || arVoices.find(v => /^ar-sa/i.test(v.lang)) || arVoices[0];
-  }
-  populateVoiceList();
-}
-
-if ('speechSynthesis' in window) {
-  pickBestArabicVoice();
-  window.speechSynthesis.onvoiceschanged = pickBestArabicVoice;
-}
-
-if (voiceSelect) {
-  voiceSelect.addEventListener('change', () => {
-    const selectedName = voiceSelect.selectedOptions[0].getAttribute('data-name');
-    arabicVoice = availableVoices.find(v => v.name === selectedName);
-    speak('أهلاً بك، تم تغيير الصوت بنجاح');
-  });
-}
-
-function speak(text) {
-  if (!text || speechVolume <= 0) return;
-  const cleanText = text.replace(/[\u064B-\u0652]/g, "").trim();
-  if (!cleanText) return;
-
-  const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=ar&client=tw-ob`;
-  audioSpeechPlayer.pause();
-  audioSpeechPlayer.src = googleTtsUrl;
-  audioSpeechPlayer.volume = speechVolume;
-
-  let playPromise = audioSpeechPlayer.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(() => speakLocalFallback(cleanText));
-  }
-}
-
-function speakLocalFallback(cleanText) {
-  try {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(cleanText);
-    if (arabicVoice) u.voice = arabicVoice;
-    u.lang = arabicVoice ? arabicVoice.lang : 'ar-SA';
-    u.rate = 0.8; u.pitch = 1.0; u.volume = speechVolume;
-    window.speechSynthesis.speak(u);
-  } catch (e) {}
-}
-
 /* ================== DATA ARRAYS ================== */
 const LETTERS = [
   {l:'أ', name:'أَلِف', word:'أَسَد', emoji:'🦁'}, {l:'ب', name:'بَاء', word:'بَطَّة', emoji:'🦆'}, {l:'ت', name:'تَاء', word:'تُفَّاحَة', emoji:'🍎'},
@@ -728,15 +551,23 @@ const wordsList = [
   {word:'بَيْت', parts:['بَ', 'يْ', 'ت'], emoji:'🏠'}, {word:'بَاب', parts:['بَا', 'ب'], emoji:'🚪'}, {word:'كِتَاب', parts:['كِ', 'تَا', 'ب'], emoji:'📚'},
   {word:'أَسَد', parts:['أَ', 'سَ', 'د'], emoji:'🦁'}, {word:'زَرَافَة', parts:['زَ', 'رَا', 'فَ', 'ة'], emoji:'🦒'}, {word:'أَرْنَب', parts:['أَ', 'رْ', 'نَ', 'ب'], emoji:'🐰'},
   {word:'دَجَاجَة', parts:['دَ', 'جَا', 'جَة'], emoji:'🐔'}, {word:'بَقَرَة', parts:['بَ', 'قَ', 'رَة'], emoji:'🐄'}, {word:'فَرَاشَة', parts:['فَ', 'رَا', 'شَة'], emoji:'🦋'},
-  {word:'نَحْلَة', parts:['نَحْ', 'لَة'], emoji:'🐝'}, {word:'عَنْكَبُوت', parts:['عَنْ', 'كَ', 'بُوت'], emoji:'🕷️'}, {word:'سُلَحْفَاة', parts:['سُ', 'لَحْ', 'فَاة'], emoji:'🐢'},
-  {word:'بَطِّيخ', parts:['بَ', 'طِّي', 'خ'], emoji:'🍉'}, {word:'عِنَب', parts:['عِ', 'نَب'], emoji:'🍇'}, {word:'بُرْتُقَال', parts:['بُرْ', 'تُ', 'قَال'], emoji:'🍊'},
-  {word:'فَرَاوْلَة', parts:['فَ', 'رَاوْ', 'لَة'], emoji:'🍓'}, {word:'خِيَار', parts:['خِ', 'يَار'], emoji:'🥒'}, {word:'طَمَاطِم', parts:['طَ', 'مَا', 'طِم'], emoji:'🍅'},
-  {word:'جَزَر', parts:['جَ', 'زَر'], emoji:'🥕'}, {word:'بَصَل', parts:['بَ', 'صَل'], emoji:'🧅'}, {word:'فُلْفُل', parts:['فُلْ', 'فُل'], emoji:'🌶️'},
+  {word:'نَحْلَة', parts:['نَحْ', 'لَة'], emoji:'🐝'}, {word:'سُلَحْفَاة', parts:['سُ', 'لَحْ', 'فَاة'], emoji:'🐢'}, {word:'عِنَب', parts:['عِ', 'نَب'], emoji:'🍇'},
+  {word:'خِيَار', parts:['خِ', 'يَار'], emoji:'🥒'}, {word:'جَزَر', parts:['جَ', 'زَر'], emoji:'🥕'}, {word:'فُلْفُل', parts:['فُلْ', 'فُل'], emoji:'🌶️'},
   {word:'خُبْز', parts:['خُبْ', 'ز'], emoji:'🍞'}, {word:'جُبْنَة', parts:['جُبْ', 'نَة'], emoji:'🧀'}, {word:'بَيْضَة', parts:['بَيْ', 'ضَة'], emoji:'🥚'}
 ];
 
-let currentUser = null; let score = 0; let leaderboardTimer = null;
-function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+let currentUser = null; 
+let score = 0; 
+let leaderboardTimer = null;
+
+function shuffle(arr){ 
+  const a = arr.slice(); 
+  for(let i=a.length-1;i>0;i--){ 
+    const j = Math.floor(Math.random()*(i+1)); 
+    [a[i],a[j]]=[a[j],a[i]]; 
+  } 
+  return a; 
+}
 
 const pickHistory = {};
 function pickNonRepeating(pool, key){
@@ -760,25 +591,82 @@ function normalizeArabic(text) {
 /* ================== API & AUTH ================== */
 async function apiCall(action, payload){
   payload = payload || {};
-  try{ const res = await fetch(APP_SCRIPT_URL, { method: 'POST', body: JSON.stringify(Object.assign({action: action}, payload)) }); return await res.json(); }
-  catch(e){ return { ok:false, error:'مشكلة اتصال' }; }
+  try{ 
+    const res = await fetch(APP_SCRIPT_URL, { method: 'POST', body: JSON.stringify(Object.assign({action: action}, payload)) }); 
+    return await res.json(); 
+  } catch(e){ 
+    return { ok:false, error:'مشكلة اتصال' }; 
+  }
 }
+
 async function fetchLeaderboard(){
-  try{ const res = await fetch(APP_SCRIPT_URL + '?action=leaderboard'); return await res.json(); }
-  catch(e){ return { ok:false, leaderboard:[] }; }
+  try{ 
+    const res = await fetch(APP_SCRIPT_URL + '?action=leaderboard'); 
+    return await res.json(); 
+  } catch(e){ 
+    return { ok:false, leaderboard:[] }; 
+  }
 }
 
-document.querySelectorAll('.auth-tab').forEach(t=>{ t.addEventListener('click', ()=>{ document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.auth-screen').forEach(x=>x.classList.remove('active')); t.classList.add('active'); document.getElementById('auth-' + t.dataset.authtab).classList.add('active'); }); });
-document.getElementById('signupBtn').addEventListener('click', async ()=>{ const u = document.getElementById('signupUsername').value.trim(); const p = document.getElementById('signupPassword').value; const m = document.getElementById('signupMsg'); m.className = 'auth-msg'; m.textContent = 'بنجهزلك مكانك...'; const res = await apiCall('signup', { username:u, password:p }); if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('signupRemember').checked); else { m.className = 'auth-msg err'; m.textContent = res.error || 'في مشكلة، جرب تاني'; } });
-document.getElementById('loginBtn').addEventListener('click', async ()=>{ const u = document.getElementById('loginUsername').value.trim(); const p = document.getElementById('loginPassword').value; const m = document.getElementById('loginMsg'); m.className = 'auth-msg'; m.textContent = 'بنسجلك دخول...'; const res = await apiCall('login', { username:u, password:p }); if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('loginRemember').checked); else { m.className = 'auth-msg err'; m.textContent = res.error || 'البيانات مش صح'; } });
+document.querySelectorAll('.auth-tab').forEach(t=>{ 
+  t.addEventListener('click', ()=>{ 
+    document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active')); 
+    document.querySelectorAll('.auth-screen').forEach(x=>x.classList.remove('active')); 
+    t.classList.add('active'); 
+    document.getElementById('auth-' + t.dataset.authtab).classList.add('active'); 
+  }); 
+});
 
-function loginSuccess(username, password, remoteScore, remember){ currentUser = { username, password }; score = remoteScore; if(remember) try{ localStorage.setItem('huroofi_user', JSON.stringify(currentUser)); }catch(e){} confirmedJourney = loadJourney(); document.getElementById('authSection').style.display = 'none'; document.getElementById('app').classList.add('active'); document.getElementById('playerNameLabel').textContent = currentUser.username; updateGamificationUI(false); refreshLeaderboard(); leaderboardTimer = setInterval(refreshLeaderboard, 7000); initScoreSync(); renderSongsGrid(); }
-document.getElementById('logoutBtn').addEventListener('click', ()=>{ flushScore(); currentUser = null; try{ localStorage.removeItem('huroofi_user'); }catch(e){} if(leaderboardTimer) clearInterval(leaderboardTimer); document.getElementById('app').classList.remove('active'); document.getElementById('authSection').style.display = 'block'; });
+document.getElementById('signupBtn').addEventListener('click', async ()=>{ 
+  const u = document.getElementById('signupUsername').value.trim(); 
+  const p = document.getElementById('signupPassword').value; 
+  const m = document.getElementById('signupMsg'); 
+  m.className = 'auth-msg'; 
+  m.textContent = 'بنجهزلك مكانك...'; 
+  const res = await apiCall('signup', { username:u, password:p }); 
+  if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('signupRemember').checked); 
+  else { m.className = 'auth-msg err'; m.textContent = res.error || 'في مشكلة، جرب تاني'; } 
+});
+
+document.getElementById('loginBtn').addEventListener('click', async ()=>{ 
+  const u = document.getElementById('loginUsername').value.trim(); 
+  const p = document.getElementById('loginPassword').value; 
+  const m = document.getElementById('loginMsg'); 
+  m.className = 'auth-msg'; 
+  m.textContent = 'بنسجلك دخول...'; 
+  const res = await apiCall('login', { username:u, password:p }); 
+  if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('loginRemember').checked); 
+  else { m.className = 'auth-msg err'; m.textContent = res.error || 'البيانات مش صح'; } 
+});
+
+function loginSuccess(username, password, remoteScore, remember){ 
+  currentUser = { username, password }; 
+  score = remoteScore; 
+  if(remember) try{ localStorage.setItem('huroofi_user', JSON.stringify(currentUser)); }catch(e){} 
+  confirmedJourney = loadJourney(); 
+  document.getElementById('authSection').style.display = 'none'; 
+  document.getElementById('app').classList.add('active'); 
+  document.getElementById('playerNameLabel').textContent = currentUser.username; 
+  updateGamificationUI(false); 
+  refreshLeaderboard(); 
+  leaderboardTimer = setInterval(refreshLeaderboard, 7000); 
+  initScoreSync(); 
+  renderSongsGrid(); 
+}
+
+document.getElementById('logoutBtn').addEventListener('click', ()=>{ 
+  flushScore(); 
+  currentUser = null; 
+  try{ localStorage.removeItem('huroofi_user'); }catch(e){} 
+  if(leaderboardTimer) clearInterval(leaderboardTimer); 
+  document.getElementById('app').classList.remove('active'); 
+  document.getElementById('authSection').style.display = 'block'; 
+});
 
 /* ================== JOURNEY SYSTEM ================== */
 const JOURNEYS = [
   { name: 'رحلة الحروف 🔤', threshold: 0, wordCount: 15, doneLine: 'خلصت رحلة الحروف!' },
-  { name: 'رحلة الكلمات 📖', threshold: 60, wordCount: 30, doneLine: 'خلصت رحلة الكلمات!' },
+  { name: 'رحلة الكلمات 📖', threshold: 60, wordCount: 20, doneLine: 'خلصت رحلة الكلمات!' },
   { name: 'رحلة القارئ الصغير 🌟', threshold: 150, wordCount: wordsList.length, doneLine: 'خلصت رحلة القارئ الصغير!' }
 ];
 let confirmedJourney = 1;
@@ -817,7 +705,11 @@ async function flushScore(){
 }
 function setSyncDot(state){ const dot = document.getElementById('syncDot'); if(dot){ dot.className = 'sync-dot ' + state; } }
 
-async function refreshLeaderboard(){ const res = await fetchLeaderboard(); const list = document.getElementById('leaderboardList'); if(res.ok && res.leaderboard) list.innerHTML = res.leaderboard.map((row, i)=>`<div class="lb-row ${currentUser && row.username===currentUser.username ? 'me' : ''}"><span class="lb-rank">${i+1}</span><span class="lb-name">${row.username}</span><span class="lb-score">${row.score} 🌟</span></div>`).join(''); }
+async function refreshLeaderboard(){ 
+  const res = await fetchLeaderboard(); 
+  const list = document.getElementById('leaderboardList'); 
+  if(res.ok && res.leaderboard) list.innerHTML = res.leaderboard.map((row, i)=>`<div class="lb-row ${currentUser && row.username===currentUser.username ? 'me' : ''}"><span class="lb-rank">${i+1}</span><span class="lb-name">${row.username}</span><span class="lb-score">${row.score} 🌟</span></div>`).join(''); 
+}
 
 /* ================== NAVIGATION & GAMES ================== */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -833,7 +725,8 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 });
 
 /* 1. Learn Grid */
-const letterGrid = document.getElementById('letterGrid'); const letterModal = document.getElementById('letterModal');
+const letterGrid = document.getElementById('letterGrid'); 
+const letterModal = document.getElementById('letterModal');
 LETTERS.forEach((item)=>{
   const card = document.createElement('div'); card.className = 'letter-card'; card.textContent = item.l;
   card.addEventListener('click', ()=>{
@@ -894,7 +787,13 @@ function renderSongsGrid(){
   LETTERS.forEach(item => { const card = document.createElement('div'); card.className = 'song-letter-card'; card.innerHTML = `<div class="song-letter-big">${item.l}</div>▶️`; card.onclick = () => window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(`أغنية حرف ${item.name}`), '_blank'); grid.appendChild(card); });
 }
 
-window.addEventListener('DOMContentLoaded', () => { newSpeakLetterRound(); newSpeakWordRound(); newMissingRound(); newMatchRound(); newBuildRound(); });
+window.addEventListener('DOMContentLoaded', () => { 
+  newSpeakLetterRound(); 
+  newSpeakWordRound(); 
+  newMissingRound(); 
+  newMatchRound(); 
+  newBuildRound(); 
+});
 </script>
 </body>
 </html>
