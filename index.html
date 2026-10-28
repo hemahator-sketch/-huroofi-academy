@@ -489,11 +489,21 @@
     <div class="modal-emoji">🔊</div>
     <div class="modal-word" style="font-size: 1.8rem; margin-bottom: 15px;">إعدادات الصوت</div>
     
+    <!-- اختيار صوت المتحدث -->
+    <div class="audio-slider-group" style="margin-bottom: 18px;">
+      <label for="voiceSelect">صوت المتحدث:</label>
+      <select id="voiceSelect" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--card-border); font-family: 'Tajawal', sans-serif; font-size: 0.95rem; background: var(--cream);">
+        <option value="">جاري تحميل الأصوات المتاحة...</option>
+      </select>
+    </div>
+
+    <!-- التحكم في مستوى صوت المؤثرات -->
     <div class="audio-slider-group">
       <label for="sfxVolumeRange">مستوى صوت المؤثرات (SFX):</label>
       <input type="range" id="sfxVolumeRange" min="0" max="1" step="0.1" value="0.3">
     </div>
 
+    <!-- التحكم في مستوى صوت النطق -->
     <div class="audio-slider-group" style="margin-bottom: 25px;">
       <label for="speechVolumeRange">مستوى صوت النطق والحديث:</label>
       <input type="range" id="speechVolumeRange" min="0" max="1" step="0.1" value="1">
@@ -512,7 +522,6 @@
     <button class="modal-close" id="journeyModalCloseBtn" style="background:var(--saffron); color:#3A2504;">يلا للرحلة الجاية 🚀</button>
   </div>
 </div>
-
 <script>
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgFq6EumPYteu4RQqn8QI64ZSCBinTPom69UcNo12CjKRJrsTTAd76xvhhx8Ve6Bim/exec";
 if(!APP_SCRIPT_URL || APP_SCRIPT_URL.indexOf('PASTE_') === 0) document.getElementById('configBanner').style.display = 'block';
@@ -589,24 +598,72 @@ function playSFX(type) {
   } catch(e){}
 }
 
-/* ================== SPEECH SYNTHESIS ================== */
+/* ================== SPEECH SYNTHESIS & VOICE SELECTION ================== */
 let arabicVoice = null;
 let voiceUnlocked = false;
+let availableVoices = [];
 
-function pickBestArabicVoice(){
-  if(!('speechSynthesis' in window)) return;
+const voiceSelect = document.getElementById('voiceSelect');
+
+function populateVoiceList() {
+  if (!('speechSynthesis' in window)) return;
+  availableVoices = window.speechSynthesis.getVoices();
+  
+  if (!voiceSelect) return;
+  voiceSelect.innerHTML = '';
+
+  const arVoices = availableVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
+  const voicesToDisplay = arVoices.length > 0 ? arVoices : availableVoices;
+
+  voicesToDisplay.forEach((voice) => {
+    const option = document.createElement('option');
+    option.textContent = `${voice.name} (${voice.lang})`;
+    option.setAttribute('data-name', voice.name);
+    
+    if (arabicVoice && arabicVoice.name === voice.name) {
+      option.selected = true;
+    }
+    voiceSelect.appendChild(option);
+  });
+
+  if (voicesToDisplay.length === 0) {
+    const option = document.createElement('option');
+    option.textContent = 'لا توجد أصوات مثبتة على الجهاز';
+    voiceSelect.appendChild(option);
+  }
+}
+
+function pickBestArabicVoice() {
+  if (!('speechSynthesis' in window)) return;
   const voices = window.speechSynthesis.getVoices();
   const arVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
-  if(!arVoices.length){ arabicVoice = null; return; }
-  arabicVoice =
-    arVoices.find(v => /google/i.test(v.name)) ||
-    arVoices.find(v => /^ar-sa/i.test(v.lang)) ||
-    arVoices.find(v => /^ar-eg/i.test(v.lang)) ||
-    arVoices[0];
+  if (!arVoices.length) { arabicVoice = null; return; }
+  
+  if (!arabicVoice) {
+    arabicVoice =
+      arVoices.find(v => /google/i.test(v.name)) ||
+      arVoices.find(v => /^ar-sa/i.test(v.lang)) ||
+      arVoices.find(v => /^ar-eg/i.test(v.lang)) ||
+      arVoices[0];
+  }
+  
+  populateVoiceList();
 }
-if('speechSynthesis' in window){
+
+if ('speechSynthesis' in window) {
   pickBestArabicVoice();
-  window.speechSynthesis.onvoiceschanged = pickBestArabicVoice;
+  window.speechSynthesis.onvoiceschanged = () => {
+    pickBestArabicVoice();
+    populateVoiceList();
+  };
+}
+
+if (voiceSelect) {
+  voiceSelect.addEventListener('change', () => {
+    const selectedName = voiceSelect.selectedOptions[0].getAttribute('data-name');
+    arabicVoice = availableVoices.find(v => v.name === selectedName);
+    speak('أهلاً بك، تم تغيير الصوت بنجاح');
+  });
 }
 
 function unlockVoiceOnce(){
