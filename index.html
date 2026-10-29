@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>بوابة المعرفة — عالم المغامرات المفتوح</title>
+<title>بوابة المعرفة — تعلم القراءة والكتابة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Changa:wght@500;600;700;800&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -71,29 +71,22 @@
   .badge-item{ font-size:1.4rem; filter: grayscale(1); opacity:0.35; transition: all 0.3s; cursor:pointer; position:relative; }
   .badge-item.unlocked{ filter: grayscale(0); opacity:1; transform: scale(1.1); }
 
-  /* AI Friend Floating Button & Chat */
-  .ai-friend-btn { position: fixed; bottom: 20px; left: 20px; width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, var(--coral), var(--saffron)); border: 3px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; cursor: pointer; z-index: 999; animation: pop 1s infinite alternate; }
-  .chat-modal { position: fixed; bottom: 95px; left: 20px; width: 330px; max-width: calc(100vw - 40px); background: #fff; border: 3px solid var(--turquoise-deep); border-radius: var(--radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; z-index: 999; animation: fadein 0.3s; }
-  .chat-modal.active { display: flex; }
-  .chat-header { background: var(--turquoise-deep); color: #fff; padding: 12px 16px; font-family: 'Changa', sans-serif; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
-  .chat-body { padding: 14px; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; }
-  .chat-msg { padding: 10px 14px; border-radius: 14px; max-width: 85%; font-weight: 600; line-height: 1.5; }
-  .chat-msg.bot { background: #EAF7F5; color: var(--turquoise-deep); align-self: flex-start; border-bottom-right-radius: 2px; }
-  .chat-msg.user { background: var(--saffron); color: #3A2504; align-self: flex-end; border-bottom-left-radius: 2px; }
-  .chat-quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--cream); border-top: 1px solid var(--card-border); }
-  .chat-quick-btn { background: #fff; border: 1.5px solid var(--turquoise); color: var(--turquoise-deep); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
-  .chat-quick-btn:hover { background: var(--turquoise); color: #fff; }
-  .chat-compose{display:flex;gap:7px;padding:10px;background:#fff;border-top:1px solid var(--card-border);align-items:center}
-  .chat-compose input{min-width:0;flex:1;border:2px solid var(--card-border);border-radius:14px;padding:11px;font:inherit;font-size:16px}
-  .chat-compose input:focus{outline:2px solid var(--turquoise)}
-  .chat-mic,.chat-send{border:0;border-radius:13px;padding:10px 12px;font:inherit;font-weight:800;cursor:pointer;background:var(--turquoise);color:#fff}
-  .chat-mic{font-size:1.2rem;background:var(--coral)}
-  .chat-mic.listening{animation:pop .5s infinite alternate;background:#b42318}
-  .chat-status{padding:5px 12px 10px;font-size:.78rem;color:var(--ink-soft);background:#fff}
-  .chat-live-btn{margin:0 10px 8px;border:0;border-radius:14px;padding:11px 12px;background:linear-gradient(135deg,#1c9c90,#0f6f66);color:#fff;font:inherit;font-weight:800;cursor:pointer}
-  .chat-live-btn[disabled]{opacity:.6;cursor:wait}
-  .chat-msg{white-space:pre-wrap;overflow-wrap:anywhere}
-  @media(max-width:480px){.chat-modal{left:10px;bottom:88px;width:calc(100vw - 20px);max-width:none}.chat-body{max-height:38vh}.ai-friend-btn{left:12px;bottom:12px}}
+  /* Friend floating button (voice only, no reading needed) */
+  .friend-btn { position: fixed; bottom: 20px; left: 20px; width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--coral), var(--saffron)); border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; font-size: 2.4rem; cursor: pointer; z-index: 999; animation: pop 1.4s infinite alternate; }
+  .friend-btn:active{ transform: scale(0.92); }
+  .friend-btn.calling{ background: linear-gradient(135deg, #d93025, #ff6b4a); animation: pop 0.6s infinite alternate; }
+  .friend-bubble{ position:fixed; bottom:100px; left:16px; max-width:220px; background:#fff; border:3px solid var(--turquoise-deep); border-radius:20px; padding:14px 16px; font-weight:800; font-size:1.3rem; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.2); z-index:999; opacity:0; pointer-events:none; transition: opacity .3s, transform .3s; transform: translateY(10px) scale(0.9); }
+  .friend-bubble.show{ opacity:1; pointer-events:auto; transform: translateY(0) scale(1); }
+  body:not(.in-app) .friend-btn, body:not(.in-app) .friend-bubble{ display:none; }
+  .friend-btn{ user-select:none; -webkit-user-select:none; }
+  .friend-btn:focus-visible{ outline:4px solid var(--violet); outline-offset:3px; }
+  .friend-btn.listening{ background: linear-gradient(135deg, #d93025, #ff6b4a); animation: pop 0.6s infinite alternate; }
+  .friend-btn.thinking{ background: linear-gradient(135deg, var(--violet), #9b8bd0); animation: friend-think 1s ease-in-out infinite; }
+  .friend-btn.speaking{ background: linear-gradient(135deg, var(--turquoise), #4fd1c5); animation: friend-talk .5s ease-in-out infinite; }
+  @keyframes friend-think{ 0%,100%{ transform:rotate(-8deg); } 50%{ transform:rotate(8deg); } }
+  @keyframes friend-talk{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
+  .friend-bubble{ max-width:min(260px, calc(100vw - 32px)); line-height:1.5; }
+  @media (prefers-reduced-motion:reduce){ .friend-btn{ animation:none !important; } }
 
   /* Tabs */
   .tabs-container{ overflow-x: auto; white-space: nowrap; padding-bottom: 12px; margin: 20px 0 16px; scrollbar-width: none; }
@@ -113,9 +106,8 @@
   .tab-btn[data-tab="listenText"].active{ background:#FF9800; }
   .tab-btn[data-tab="build"].active{ background:#4CAF50; }
   .tab-btn[data-tab="board"].active{ background:var(--ink); }
-  .tab-btn[data-tab="songs"].active{background:#E91E63}
-  .tab-btn[data-tab="duel"].active{background:#3F51B5}
-  .tab-btn[data-tab="story"].active{background:#16845e}
+  .tab-btn[data-tab="songs"].active{ background:#E91E63; }
+  .tab-btn[data-tab="duel"].active{ background:#3F51B5; }
 
   section.screen{ display:none; }
   section.screen.active{ display:block; animation: fadein .3s ease; }
@@ -205,94 +197,35 @@
 
   footer{ text-align:center; color:var(--ink-soft); font-weight:700; font-size:.95rem; margin-top:40px; }
 
+  /* Songs (YouTube links) */
+  .songs-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:12px; }
+  .song-letter-card{ background:var(--card); border:3px solid var(--card-border); border-radius: var(--radius-md); padding:16px 8px; text-align:center; cursor:pointer; box-shadow: 0 4px 0 var(--card-border); transition: all .15s; }
+  .song-letter-card:active{ transform:translateY(4px); box-shadow: 0 0 0 transparent; }
+  .song-letter-big{ font-family:'Changa', sans-serif; font-size:2rem; font-weight:800; color:var(--turquoise-deep); }
+  .song-letter-play{ font-size:1.6rem; margin-top:6px; }
+
+  /* Duel rooms */
+  .feature-card{ background:var(--card); border:2px solid var(--card-border); border-radius:var(--radius-lg); padding:20px; margin:14px 0; box-shadow:var(--shadow); }
+  .feature-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0; }
+  .feature-input{ font:inherit; border:2px solid var(--card-border); border-radius:12px; padding:11px; min-width:0; flex:1; background:#fff; }
+  .feature-btn{ font:inherit; font-weight:800; border:0; border-radius:12px; padding:11px 16px; background:var(--turquoise); color:#fff; cursor:pointer; }
+  .feature-btn.secondary{ background:var(--violet); }
+  .feature-btn.gold{ background:var(--saffron); color:#382600; }
+  .feature-note{ color:var(--ink-soft); font-weight:700; line-height:1.7; }
+  .room-code{ font-family:monospace; font-size:1.7rem; font-weight:900; letter-spacing:4px; color:var(--turquoise-deep); }
+  .duel-letter-big{ font-family:'Changa', sans-serif; font-weight:900; font-size:3rem; color:var(--violet); margin:10px 0; }
+
+  /* Journey system */
+  .journey-card{ display:flex; flex-direction:column; gap:6px; }
+  .journey-name{ font-family:'Changa', sans-serif; font-weight:800; font-size:1rem; color:var(--turquoise-deep); }
+  .journey-complete-sub{ font-size:1.1rem; color:var(--ink-soft); font-weight:700; line-height:1.7; margin-bottom:10px; }
+
   @media (max-width:480px){
     .letter-grid{ grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); }
     .hero h1{ font-size: 2.2rem; }
     .missing-word-display{ font-size:2.8rem; }
     .match-word{ font-size:2.8rem; }
   }
-
-  .feature-card{background:var(--card);border:2px solid var(--card-border);border-radius:var(--radius-lg);padding:20px;margin:14px 0;box-shadow:var(--shadow)}
-  .feature-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}
-  .feature-input{font:inherit;border:2px solid var(--card-border);border-radius:12px;padding:11px;min-width:0;flex:1;background:#fff}
-  .feature-btn{font:inherit;font-weight:800;border:0;border-radius:12px;padding:11px 16px;background:var(--turquoise);color:#fff;cursor:pointer}
-  .feature-btn.secondary{background:var(--violet)} .feature-btn.gold{background:var(--saffron);color:#382600}
-  .feature-note{color:var(--ink-soft);font-weight:700;line-height:1.7}
-  .song-card{background:#fff;border:2px solid var(--card-border);border-radius:18px;padding:16px;margin:12px 0}
-  .song-card h3{margin:0 0 8px;font-family:'Changa',sans-serif}.song-lyrics{line-height:2;white-space:pre-line;margin:8px 0;color:var(--ink-soft)}
-  .room-code{font-family:monospace;font-size:1.7rem;font-weight:900;letter-spacing:4px;color:var(--turquoise-deep)}
-  .quiz-choice{font:inherit;font-weight:800;padding:12px;border:2px solid var(--card-border);border-radius:12px;background:#fff;cursor:pointer}
-  .quiz-choice:disabled{opacity:.55;cursor:default}
-
-
-  /* Sesame Adventure Story Mode */
-
-  .daily-missions{margin:16px 0 4px;padding:16px;border-radius:20px;background:linear-gradient(135deg,#fff9e8,#eefbf5);border:1px solid #e8dfbe}
-  .daily-missions h4{margin:0 0 5px;color:#254b50;font-family:'Changa',sans-serif;font-size:1.2rem}
-  .daily-missions-intro{margin:0 0 12px;color:#526875;line-height:1.8}
-  .daily-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-  .daily-card{background:#fff;border:1px solid #e3e9e7;border-radius:15px;padding:13px;box-shadow:0 4px 12px #193b3510}
-  .daily-card h5{margin:0 0 8px;font-size:1rem;color:#253d50}.daily-options{display:flex;gap:7px;flex-wrap:wrap}
-  .daily-answer{border:1px solid #cbd8d8;background:#f8fbfb;border-radius:10px;padding:7px 11px;font:inherit;font-weight:700;cursor:pointer}
-  .daily-answer:disabled{cursor:default;opacity:.78}.daily-answer.right{background:#d9f7e6;border-color:#70c89a}.daily-answer.wrong{background:#ffe4e4;border-color:#e8a2a2}
-  .daily-status{min-height:26px;margin:8px 0 0;font-size:.9rem;font-weight:800;color:#28724e}
-  .daily-topline{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .story-hero{position:relative;overflow:hidden;border-radius:24px;padding:22px;background:linear-gradient(135deg,#e2f8ed,#e2f1ff 55%,#fff0cf);border:2px solid #d6e8ed;box-shadow:0 10px 28px #17324d12;margin-bottom:16px}
-  .story-hero h3{font-family:'Changa',sans-serif;font-size:clamp(1.35rem,3vw,2rem);margin:0 0 8px;color:#183d52}
-  .story-hero p{margin:0;line-height:1.9;color:#35566a}
-  .story-map-wrap{position:relative;overflow:hidden;margin:18px 0 22px;padding:18px;border-radius:24px;background:linear-gradient(180deg,#e9f8ff 0%,#f4fbeb 48%,#fff4dc 100%);border:2px solid #d5e9df;box-shadow:inset 0 0 0 5px #ffffff80}
-  .story-map-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-  .story-map-heading h4{margin:0;color:#204b56;font-family:'Changa',sans-serif;font-size:1.25rem}
-  .story-map-heading span{font-size:.88rem;font-weight:800;color:#496d69;background:#ffffffb8;border-radius:999px;padding:7px 12px}
-  .story-map{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px 10px;margin:12px 0 4px;align-items:center}
-  .story-node{position:relative;isolation:isolate;border:2px solid #d5e4e9;background:linear-gradient(145deg,#fff,#f8fcff);border-radius:19px;padding:12px 7px 10px;text-align:center;cursor:pointer;font:inherit;font-weight:800;min-height:126px;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 5px 0 #cddfe0,0 9px 16px #1e4b5510;color:#244552}
-  .story-node:nth-child(1){grid-column:1;grid-row:2}.story-node:nth-child(2){grid-column:2;grid-row:1}.story-node:nth-child(3){grid-column:3;grid-row:2}.story-node:nth-child(4){grid-column:4;grid-row:1}.story-node:nth-child(5){grid-column:5;grid-row:2}
-  .story-node:before{content:'';position:absolute;z-index:-1;top:50%;right:-18px;width:25px;border-top:4px dotted #85b8a5;transform:rotate(-20deg)}.story-node:nth-child(odd):before{transform:rotate(20deg)}.story-node:last-child:before{display:none}
-  .story-node .level-badge{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;border-radius:50%;background:#e8f1f5;color:#416775;font-size:.8rem;font-weight:900;margin-bottom:5px;border:2px solid #fff;box-shadow:0 1px 4px #183b4920}
-  .story-node .emoji{display:block;font-size:30px;margin-bottom:4px;filter:drop-shadow(0 3px 2px #163c3210)}.story-node small{display:block;font-size:.75rem;color:#667985;margin-top:6px;line-height:1.5}
-  .story-node.done{background:linear-gradient(145deg,#f0fff4,#d9f8e5);border-color:#69c18d;box-shadow:0 5px 0 #9bd7b0,0 9px 16px #1e4b5510}.story-node.done .level-badge{background:#2c9a67;color:#fff}
-  .story-node.current{border-color:#efa92f;background:linear-gradient(145deg,#fffdf1,#ffefbd);box-shadow:0 5px 0 #e7c56e,0 12px 20px #9d6a1b22;transform:translateY(-5px) scale(1.025)}.story-node.current .level-badge{background:#e9a52b;color:#fff;animation:levelPulse 1.7s infinite}
-  .story-node.locked{opacity:.66;filter:saturate(.65);cursor:not-allowed;background:linear-gradient(145deg,#f5f7f8,#e9eef1)}
-  .story-map-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;color:#46676a;font-size:.86rem;font-weight:700;margin-top:14px}
-  .story-map-foot span{background:#ffffffa8;border:1px solid #d8e8dd;border-radius:999px;padding:6px 10px}
-  @keyframes levelPulse{0%,100%{box-shadow:0 0 0 0 #e9a52b40}50%{box-shadow:0 0 0 7px #e9a52b00}}
-  .story-scene{background:#fff;border:2px solid var(--card-border);border-radius:22px;padding:clamp(16px,3vw,26px);box-shadow:var(--shadow)}
-  .story-scene-art{font-size:clamp(48px,9vw,84px);text-align:center;padding:10px;filter:drop-shadow(0 5px 4px #182b3b12)}
-  .story-scene h3{font-family:'Changa',sans-serif;font-size:1.45rem;text-align:center;margin:6px 0 12px}
-  .story-text{font-size:1.08rem;line-height:2;white-space:pre-line;margin:10px 0 18px;color:var(--ink)}
-  .story-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
-  .story-choice{border:2px solid #dce5ec;border-radius:15px;background:#f8fbff;padding:13px;font:inherit;font-weight:800;cursor:pointer;text-align:right;line-height:1.7;transition:.18s}
-  .story-choice:hover{border-color:#61b7a7;transform:translateY(-2px)}.story-choice:disabled{opacity:.6;cursor:default;transform:none}
-  .story-feedback{margin-top:14px;border-radius:14px;background:#fff6d9;padding:13px;line-height:1.8;display:none}
-  .story-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
-  .story-progress{height:10px;background:#e8edf2;border-radius:99px;overflow:hidden;margin:12px 0}.story-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#32a879,#82d7a7);transition:width .3s}
-  .story-stat{display:flex;gap:8px;flex-wrap:wrap}.story-pill{background:#f3f6fa;border-radius:999px;padding:8px 12px;font-weight:800}
-  @media(max-width:760px){.story-map{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}.story-node:nth-child(1){grid-column:1;grid-row:2}.story-node:nth-child(2){grid-column:2;grid-row:1}.story-node:nth-child(3){grid-column:3;grid-row:2}.story-node:nth-child(4){grid-column:2;grid-row:3}.story-node:nth-child(5){grid-column:1;grid-row:4}.story-node{min-height:118px}.story-node:before{width:18px;right:-13px}}
-  @media(max-width:430px){.story-map-wrap{padding:10px}.story-map{gap:10px 6px}.story-node{padding:9px 4px;min-height:110px;border-radius:15px}.story-node .emoji{font-size:25px}.story-node small{font-size:.68rem}.story-node:before{width:13px;right:-10px;border-top-width:3px}}
-
-
-  /* Open connected world */
-  .tab-btn[data-tab="world"].active{background:linear-gradient(135deg,#247a59,#164b3b)}
-  .world-shell{background:linear-gradient(160deg,#eaf7e9,#fff9e9);border:2px solid #cfe4c9;border-radius:26px;padding:14px;box-shadow:0 8px 0 rgba(34,92,62,.08)}
-  .world-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-  .world-topline h3{font-family:'Changa',sans-serif;margin:0;color:#1d563e;font-size:1.35rem}
-  .world-stats{display:flex;gap:8px;flex-wrap:wrap}.world-chip{background:#fff;border:1px solid #cfe4c9;border-radius:999px;padding:7px 12px;font-weight:800;color:#245a41}
-  .world-viewport{position:relative;overflow:hidden;border-radius:20px;border:3px solid #fff;box-shadow:0 6px 20px #20452c22;background:#b9e5a0;touch-action:pan-y}
-  #worldCanvas{display:block;width:100%;height:auto;aspect-ratio:16/10;max-height:68vh;object-fit:contain;touch-action:none;cursor:crosshair}
-  .world-hud{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px}
-  .world-hint{font-weight:700;color:#315b43;font-size:.94rem;line-height:1.6}
-  .world-action{border:0;border-radius:14px;padding:10px 14px;background:#1f7651;color:#fff;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #155338}
-  .world-action.gold{background:#e9b746;color:#49350a;box-shadow:0 4px 0 #c28b20}
-  .world-dpad{display:grid;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,42px);gap:5px;direction:ltr;user-select:none}
-  .world-dpad button{border:1px solid #c9ddc6;border-radius:12px;background:#fff;color:#235b40;font-size:1.15rem;font-weight:900;touch-action:none}
-  .world-dpad button:nth-child(1){grid-column:2;grid-row:1}.world-dpad button:nth-child(2){grid-column:1;grid-row:2}.world-dpad button:nth-child(3){grid-column:2;grid-row:2}.world-dpad button:nth-child(4){grid-column:3;grid-row:2}
-  .world-zone-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-top:12px}
-  .world-zone-btn{border:1px solid #cfe4c9;background:#fff;border-radius:15px;padding:12px 10px;text-align:right;font:inherit;font-weight:800;color:#28533b;cursor:pointer;transition:.2s}
-  .world-zone-btn:hover{transform:translateY(-2px);border-color:#2f8a5d;background:#f5fff3}
-  .world-zone-btn small{display:block;color:#6a7e6d;font-weight:600;margin-top:3px}
-  .world-note{margin:10px 0 0;font-size:.86rem;color:#607661;line-height:1.6}
-  @media(max-width:600px){.world-shell{padding:9px}.world-hud{align-items:flex-start}.world-hint{width:100%}#worldCanvas{aspect-ratio:4/3;max-height:none}.world-dpad{margin-inline:auto}}
-
 </style>
 </head>
 <body>
@@ -300,12 +233,12 @@
 <div class="wrap">
 
   <div id="configBanner" class="config-banner" style="display:none;">
-    ⚠️ تذكر تحديث رابط Google Apps Script الخاص بلوحة الصدارة.
+    ⚠️ متنساش تحدّث رابط Google Apps Script بتاع لوحة الصدارة.
   </div>
 
   <div class="hero">
     <h1>بوابة المعرفة 🚀</h1>
-    <p>رحلة ممتعة لتعلّم القراءة والكتابة، مليئة بالألعاب والمؤثرات!</p>
+    <p>رحلة حلوة هنتعلم فيها القراية والكتابة، هتلاقي فيها ألعاب كتير وحركات جامدة!</p>
   </div>
 
   <!-- AUTH -->
@@ -319,16 +252,16 @@
       <div class="auth-screen active" id="auth-login">
         <div class="auth-field"><label>اسم اللاعب</label><input type="text" id="loginUsername" placeholder="اكتب اسمك هنا"></div>
         <div class="auth-field"><label>الرقم السري</label><input type="password" id="loginPassword" placeholder="***"></div>
-        <div class="auth-remember"><input type="checkbox" id="loginRemember" checked><label for="loginRemember">تذكرني دائمًا</label></div>
-        <button class="auth-submit" id="loginBtn">ابدأ اللعب 🎮</button>
+        <div class="auth-remember"><input type="checkbox" id="loginRemember" checked><label for="loginRemember">فتكرني عالطول</label></div>
+        <button class="auth-submit" id="loginBtn">يلا نلعب 🎮</button>
         <div class="auth-msg" id="loginMsg"></div>
       </div>
 
       <div class="auth-screen" id="auth-signup">
         <div class="auth-field"><label>اختار اسم مميز</label><input type="text" id="signupUsername"></div>
         <div class="auth-field"><label>رقم سري قوي</label><input type="password" id="signupPassword"></div>
-        <div class="auth-remember"><input type="checkbox" id="signupRemember" checked><label for="signupRemember">تذكرني دائمًا</label></div>
-        <button class="auth-submit" id="signupBtn">إنشاء وانطلاق 🚀</button>
+        <div class="auth-remember"><input type="checkbox" id="signupRemember" checked><label for="signupRemember">فتكرني عالطول</label></div>
+        <button class="auth-submit" id="signupBtn">اعمل حساب وابدأ 🚀</button>
         <div class="auth-msg" id="signupMsg"></div>
       </div>
     </div>
@@ -341,20 +274,19 @@
         <div class="player-avatar" id="playerAvatar">؟</div>
         <div class="player-info">
           <div class="player-name" id="playerNameLabel">-</div>
-          <div class="player-title" id="playerTitleLabel">مبتدئ 🐣</div>
         </div>
         <div class="player-score"><span id="playerScoreLabel">0</span> 🌟 <span class="sync-dot" id="syncDot" title="حالة حفظ النقاط"></span></div>
         <button class="logout-btn" id="logoutBtn">خروج</button>
       </div>
 
-      <!-- Level & Progress Bar (20 Points Per Level) -->
-      <div>
+      <!-- Journey & Progress Bar -->
+      <div class="journey-card">
+        <div class="journey-name" id="journeyNameLabel">رحلة الحروف 🔤</div>
         <div class="level-progress-container">
           <div class="level-progress-bar" id="levelProgressBar"></div>
         </div>
         <div class="level-info">
-          <span>المستوى <strong id="levelNumberLabel">1</strong> 🏆</span>
-          <span id="levelNextPtsLabel">باقي 20 نقطة للمستوى التالي</span>
+          <span id="levelNextPtsLabel">باقيلك 20 نقطة تخلص الرحلة دي</span>
         </div>
       </div>
 
@@ -369,8 +301,7 @@
     <!-- Scrollable Tabs Menu -->
     <div class="tabs-container">
       <div class="tabs">
-        <button class="tab-btn active" data-tab="world">🌍 العالم المفتوح</button>
-        <button class="tab-btn" data-tab="learn">🔤 القاموس</button>
+        <button class="tab-btn active" data-tab="learn">🔤 القاموس</button>
         <button class="tab-btn" data-tab="draw">🎨 ارسم الحرف</button>
         <button class="tab-btn" data-tab="speakLetter">🎙️ انطق الحرف</button>
         <button class="tab-btn" data-tab="speakWord">🎙️ اقرأ الكلمة</button>
@@ -379,50 +310,21 @@
         <button class="tab-btn" data-tab="listenImage">🔊 اسمع الصورة</button>
         <button class="tab-btn" data-tab="listenText">🎧 أين الكلمة</button>
         <button class="tab-btn" data-tab="build">🏗️ ابني الكلمة</button>
-        <button class="tab-btn" data-tab="levels">🧭 خريطة الصعوبة</button>
-        <button class="tab-btn" data-tab="story">🗺️ مغامرة سمسم</button>
         <button class="tab-btn" data-tab="board">🏆 الأوائل</button>
-        <button class="tab-btn" data-tab="duel">👬 العب مع صاحبي</button>
-        <button class="tab-btn" data-tab="songs">🎵 الأغاني التعليمية</button>
+        <button class="tab-btn" data-tab="songs">🎵 أغاني الحروف</button>
+        <button class="tab-btn" data-tab="duel">👬 العب مع صاحبك</button>
       </div>
     </div>
 
-
-    <!-- Connected Open World: added around the existing games, not replacing them -->
-    <section class="screen active" id="screen-world">
-      <h2 class="screen-title">🌍 عالم بوابة المعرفة المفتوح</h2>
-      <div class="world-shell">
-        <div class="world-topline">
-          <h3>رحلتك تبدأ من هنا يا بطل!</h3>
-          <div class="world-stats"><span class="world-chip">⭐ نجومك: <b id="worldStars">0</b></span><span class="world-chip">🧭 مستكشف العالم</span></div>
-        </div>
-        <div class="world-viewport"><canvas id="worldCanvas" width="1200" height="750" aria-label="عالم مفتوح يتحرك فيه البطل بين المناطق"></canvas></div>
-        <div class="world-hud">
-          <div class="world-hint" id="worldMessage">حرّك بطلك بالأسهم أو WASD، أو اضغط على مكان في الخريطة. قرّب من أي مكان واضغط «ادخل».</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="world-action" id="worldEnterBtn">🚪 ادخل المكان القريب</button><button class="world-action gold" id="worldHomeBtn">🏡 رجوع للقرية</button></div>
-          <div class="world-dpad" aria-label="أزرار تحريك الشخصية"><button data-move="up" aria-label="أعلى">▲</button><button data-move="left" aria-label="يسار">◀</button><button data-move="down" aria-label="أسفل">▼</button><button data-move="right" aria-label="يمين">▶</button></div>
-        </div>
-        <div class="world-zone-list">
-          <button class="world-zone-btn" data-zone="village">🏡 قرية المعرفة<small>ألعاب الحروف والكلمات</small></button>
-          <button class="world-zone-btn" data-zone="forest">🌳 غابة الأسرار<small>مهام وكنوز مخفية</small></button>
-          <button class="world-zone-btn" data-zone="castle">🏰 قلعة سمسم<small>القصة والمغامرات</small></button>
-          <button class="world-zone-btn" data-zone="friends">🤝 ميدان الأصدقاء<small>تحدي الصديق</small></button>
-          <button class="world-zone-btn" data-zone="music">🎵 وادي الأغاني<small>الأغاني والفيديوهات</small></button>
-          <button class="world-zone-btn" data-zone="secret">🔮 الجزيرة السرية<small>تفتح بالإنجازات</small></button>
-        </div>
-        <p class="world-note">العالم ده إضافة فوق ألعابك الأصلية: القاموس والرسم والنطق والاستماع وتكوين الكلمات وتحدي الأصدقاء والأغاني ومغامرة سمسم ما زالت موجودة. المناطق السرية تحتاج إنجازات، وباقي المناطق تقدر تزورها بحرية.</p>
-      </div>
-    </section>
-
     <!-- 1. Learn -->
-    <section class="screen" id="screen-learn">
-      <h2 class="screen-title">اضغط على أي حرف لتعرفه</h2>
+    <section class="screen active" id="screen-learn">
+      <h2 class="screen-title">دوس على أي حرف عشان تتعرف عليه</h2>
       <div class="letter-grid" id="letterGrid"></div>
     </section>
 
     <!-- 2. Draw Letter -->
     <section class="screen" id="screen-draw">
-      <h2 class="screen-title">لوحة الرسم: تتبع مسار الحرف المتقطع بإصبعك</h2>
+      <h2 class="screen-title">لوحة الرسم: اتبع خط الحرف المنقّط بإصبعك</h2>
       <div class="game-card">
         <div class="match-prompt">ارسم الحرف: <span id="drawTargetLabel" style="font-weight:900; color:var(--violet);">أ</span></div>
         <div class="canvas-wrapper">
@@ -449,10 +351,10 @@
 
     <!-- 3. Speak Letter -->
     <section class="screen" id="screen-speakLetter">
-      <h2 class="screen-title">اقرأ الحرف بصوتك</h2>
+      <h2 class="screen-title">قول الحرف بصوتك</h2>
       <div class="game-card">
         <div class="mic-sandbox-note" id="micSandboxNoteLetter"></div>
-        <div class="match-prompt">اقرأ هذا الحرف بوضوح:</div>
+        <div class="match-prompt">قول الحرف ده بصوت عالي وواضح:</div>
         <div class="match-letter" id="speakLetterTarget">-</div>
         <div><button class="mic-btn" id="micBtnLetter">🎙️ اضغط وتكلم</button></div>
         <div class="sys-error" id="micErrorLetter"></div>
@@ -463,7 +365,7 @@
 
     <!-- 4. Speak Word -->
     <section class="screen" id="screen-speakWord">
-      <h2 class="screen-title">تحدي القراءة: اقرأ الكلمة</h2>
+      <h2 class="screen-title">تحدي القراية: قول الكلمة</h2>
       <div class="game-card">
         <div class="mic-sandbox-note" id="micSandboxNoteWord"></div>
         <div class="missing-emoji" id="speakWordEmoji">🦁</div>
@@ -477,7 +379,7 @@
 
     <!-- 5. Missing Letter -->
     <section class="screen" id="screen-missing">
-      <h2 class="screen-title">ما هو الحرف الناقص؟</h2>
+      <h2 class="screen-title">إيه هو الحرف الناقص؟</h2>
       <div class="game-card">
         <div class="missing-emoji" id="missingEmoji">🦁</div>
         <div class="missing-word-display" id="missingWordDisplay"></div>
@@ -488,7 +390,7 @@
 
     <!-- 6. Match Picture -->
     <section class="screen" id="screen-match">
-      <h2 class="screen-title">أين الصورة التي تبدأ بهذا الحرف؟</h2>
+      <h2 class="screen-title">فين الصورة اللي بتبدأ بالحرف ده؟</h2>
       <div class="game-card">
         <div class="match-letter" id="matchLetter">-</div>
         <div class="options-row" id="matchOptions"></div>
@@ -508,7 +410,7 @@
 
     <!-- 8. Listen Text -->
     <section class="screen" id="screen-listenText">
-      <h2 class="screen-title">اسمع الكلمة واختار النص الصحيح</h2>
+      <h2 class="screen-title">اسمع الكلمة واختار الكلمة الصح</h2>
       <div class="game-card">
         <button class="listen-big-btn" id="playListenTextBtn">🔊 اسمع الكلمة</button>
         <div class="options-row" id="listenTextOptions"></div>
@@ -518,7 +420,7 @@
 
     <!-- 9. Build Word -->
     <section class="screen" id="screen-build">
-      <h2 class="screen-title">رتب الحروف لتكوين الكلمة</h2>
+      <h2 class="screen-title">رتب الحروف وكوّن الكلمة</h2>
       <div class="game-card">
         <div class="build-header"><div class="build-emoji" id="buildEmoji">🐱</div><button class="audio-prompt-btn" id="speakWordBtn">🔊 استمع</button></div>
         <div class="blanks-row" id="blanksRow"></div>
@@ -528,117 +430,53 @@
       </div>
     </section>
 
-    <!-- Difficulty progression map: keeps each existing game question style -->
-    <section class="screen" id="screen-levels">
-      <h2 class="screen-title">🧭 خريطة مستويات التحدّي</h2>
-      <div class="story-hero">
-        <h3>كل ما تتعلّم وتكسب نقاط، الأسئلة تبقى أصعب بالتدريج! 🦊</h3>
-        <p>نفس طريقة اللعب والأسئلة اللي متعود عليها؛ اللي بيتغير هو مستوى الكلمات والتحدي فقط. كل ٢٠ نقطة تفتح مستوى جديد، والمستوى المفتوح بيتطبق على ألعاب الكلمات وغرفة الأصدقاء.</p>
-        <div class="story-stat"><span class="story-pill">⭐ نقاطك: <b id="difficultyScore">0</b></span><span class="story-pill">🏆 مستواك: <b id="difficultyLevel">١</b></span></div>
-        <div class="story-progress"><span id="difficultyProgressBar"></span></div>
-        <p id="difficultyNextText" class="feature-note">اجمع ٢٠ نقطة لفتح المستوى التالي.</p>
-      </div>
-      <div class="story-map-wrap"><div class="story-map-heading"><h4>طريق الأبطال</h4><span>افتح كل مرحلة بالنجاح</span></div><div class="story-map" id="difficultyMap"></div>
-        <div class="story-map-foot"><span>🟡 مستواك الحالي</span><span>🟢 مفتوح</span><span>🔒 محتاج نقاط</span></div>
-      </div>
-      <div class="feature-card"><h3>📚 إزاي الصعوبة بتتدرج؟</h3><p>١- بداية سهلة: كلمات قصيرة وحروف واضحة.</p><p>٢- مستكشف: كلمات من ٣ أجزاء.</p><p>٣- قارئ شاطر: كلمات أطول واختيارات متقاربة.</p><p>٤- بطل القراءة: كلمات متنوعة وتحديات أدق.</p><p>٥- أسطورة المعرفة: كل الكلمات والتحديات المتاحة.</p><p class="feature-note">ملاحظة: الرسم والنطق والاستماع يفضلوا بنفس شكلهم وأزرارهم؛ بنطوّر اختيار الكلمات فقط.</p></div>
-    </section>
-
-    <!-- Sesame Story Adventure: added without replacing existing games -->
-    <section class="screen" id="screen-story">
-      <h2 class="screen-title">🗺️ مغامرة سمسم: سرّ نجمة المعرفة</h2>
-      <div class="story-hero">
-        <h3>🦊 يلا نساعد سمسم ينقذ مكتبة الحكايات!</h3>
-        <p>في كل فصل هتختار قرار، وتحل لغز قراءة أو كلمة أو حساب بسيط. اختياراتك بتغيّر الحكاية، وكل فصل تخلصه بيفتح اللي بعده. اتعلم براحتك، والغلط فرصة للمحاولة من جديد.</p>
-        <div class="story-stat" style="margin-top:12px"><span class="story-pill">⭐ نجوم القصة: <b id="storyStars">0</b></span><span class="story-pill">📚 الفصول: <b id="storyChapterCount">0 / 5</b></span></div>
-        <div class="story-progress"><span id="storyProgressBar"></span></div>
-      </div>
-      <div class="daily-missions" id="dailyMissions">
-        <div class="daily-topline"><h4>🎯 مهام البطل اليومية</h4><span class="story-pill" id="dailyRewardCount">🎁 مكافآت اليوم: 0 / 3</span></div>
-        <p class="daily-missions-intro">كل يوم عندك ٣ تحديات صغيرة جديدة. جاوب بنفسك، ولو غلطت جرّب تاني؛ كل إجابة صح تكسبك ٣ نقاط.</p>
-        <div class="daily-grid" id="dailyMissionGrid"></div>
-      </div>
-      <div class="story-map-wrap">
-        <div class="story-map-heading"><h4>🧭 خريطة مستويات المغامرة</h4><span id="storyMapHint">افتح مستوى ورا مستوى!</span></div>
-        <div class="story-map" id="storyMap" aria-label="خريطة مستويات مغامرة سمسم"></div>
-        <div class="story-map-foot"><span>🟡 مستواك الحالي</span><span>🟢 مستوى خلصته</span><span>🔒 مستوى لسه مقفول</span><span>🎁 كل مستوى = ٥ نقاط</span></div>
-      </div>
-      <div class="story-scene" id="storyScene" aria-live="polite"></div>
-      <div class="story-bottom"><button class="feature-btn secondary" id="storyResetBtn" type="button">🔄 ابدأ الحكاية من الأول</button><span class="feature-note">💡 تقدم القصة محفوظ على الجهاز ده، والنقاط المكتسبة بتدخل في نظام نقاط البوابة.</span></div>
-    </section>
-
     <!-- 10. Leaderboard -->
     <section class="screen" id="screen-board">
       <h2 class="screen-title">لوحة شرف الأبطال 🌟</h2>
-      <div class="board-card"><div id="leaderboardList" class="lb-list"><div class="lb-empty">جارِ التحميل...</div></div></div>
+      <div class="board-card"><div id="leaderboardList" class="lb-list"><div class="lb-empty">بنحمّل...</div></div></div>
     </section>
 
+    <!-- Songs: real YouTube links, one per letter -->
+    <section class="screen" id="screen-songs">
+      <h2 class="screen-title">دوس على أي حرف وهتفتحلك أغنية بتاعته على يوتيوب 🎵</h2>
+      <div class="songs-grid" id="songsGrid"></div>
+    </section>
+
+    <!-- Duel: picture + audio based, no reading needed -->
     <section class="screen" id="screen-duel">
-      <h2 class="screen-title">👬 تحدّي الأصدقاء أونلاين</h2>
+      <h2 class="screen-title">👬 العب مع صاحبك</h2>
       <div class="feature-card">
-        <p class="feature-note">اعمل غرفة وابعث كودها لصاحبك. لازم يكون عندكم اتصال بالإنترنت وتدخلوا بحساباتكم من جهازين مختلفين.</p>
-        <div class="feature-row"><button class="feature-btn" id="createRoomBtn">إنشاء غرفة 🎮</button></div>
-        <div class="feature-row"><input class="feature-input" id="joinRoomCode" maxlength="6" placeholder="اكتب كود صاحبك"><button class="feature-btn secondary" id="joinRoomBtn">دخول الغرفة</button></div>
-        <div id="roomMessage" class="feature-note" aria-live="polite">أنشئ غرفة أو أدخل كود صاحبك.</div>
-        <div id="roomCodeDisplay" style="display:none;text-align:center;margin:16px 0"><div>كود الغرفة</div><div id="roomCodeValue" class="room-code"></div><button class="feature-btn gold" id="copyRoomCodeBtn">نسخ الكود</button></div>
+        <p class="feature-note">اعمل غرفة وابعت الكود لصاحبك، أو ادخل بكود صاحبك.</p>
+        <div class="feature-row"><button class="feature-btn" id="createRoomBtn">اعمل غرفة 🎮</button></div>
+        <div class="feature-row"><input class="feature-input" id="joinRoomCode" maxlength="6" placeholder="اكتب كود صاحبك"><button class="feature-btn secondary" id="joinRoomBtn">ادخل الغرفة</button></div>
+        <div id="roomMessage" class="feature-note" aria-live="polite">اعمل غرفة أو اكتب كود صاحبك.</div>
+        <div id="roomCodeDisplay" style="display:none;text-align:center;margin:16px 0">
+          <div>كود الغرفة</div>
+          <div id="roomCodeValue" class="room-code"></div>
+          <button class="feature-btn gold" id="copyRoomCodeBtn">انسخ الكود</button>
+        </div>
       </div>
       <div class="feature-card" id="duelGameCard" style="display:none">
-        <div id="duelStatus" class="feature-note">في انتظار اللاعب الآخر...</div>
-        <h3 id="duelQuestion" style="font-family:'Changa',sans-serif;font-size:1.6rem"></h3>
-        <div id="duelChoices" class="feature-row"></div>
-        <div id="duelScores" class="feature-note"></div>
-        <div class="feature-row"><button class="feature-btn" id="nextDuelBtn" style="display:none">السؤال التالي ➡️</button><button class="feature-btn secondary" id="leaveRoomBtn">مغادرة الغرفة</button></div>
-      </div>
-      <p class="feature-note">كل لاعب يختار إجابته من جهازه. كود الغرفة يوصّل الأصدقاء ببعض، والنقاط تظهر بعد الإجابة.</p>
-    </section>
-
-    <section class="screen" id="screen-songs">
-      <h2 class="screen-title">🎵 ركن الأغاني التعليمية</h2>
-      <p class="feature-note">اختار الأنشودة واضغط للاستماع على يوتيوب. اختاروا فيديو مناسبًا للأطفال وبإشراف الأسرة.</p>
-      <div class="youtube-player-panel" style="background:#fff;border:2px solid var(--card-border);border-radius:20px;padding:14px;margin:14px 0 18px;box-shadow:0 8px 24px #17255410">
-        <h3 style="margin:0 0 8px;font-family:'Changa',sans-serif">▶️ مشغّل يوتيوب داخل البوابة</h3>
-        <p class="feature-note">اختار أغنية من القائمة لفتح نتائجها، وبعد ما تختار الفيديو المناسب انسخ رابطه والصقه هنا لتشغيله داخل البوابة.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
-          <input id="youtubeUrlInput" type="url" inputmode="url" placeholder="الصق رابط فيديو YouTube هنا" aria-label="رابط فيديو يوتيوب" style="flex:1;min-width:220px;padding:12px;border:2px solid var(--card-border);border-radius:12px;font:inherit">
-          <button type="button" class="feature-btn" id="playYoutubeInsideBtn">▶️ شغّل هنا</button>
+        <div id="duelStatus" class="feature-note">بننتظر صاحبك...</div>
+        <div style="text-align:center">
+          <button class="listen-big-btn" id="duelListenBtn">🔊 اسمع الحرف</button>
+          <div class="options-row" id="duelChoices"></div>
         </div>
-        <div id="youtubePlayerMessage" class="feature-note" aria-live="polite">المشغّل جاهز. لازم تختار فيديو مناسب للأطفال.</div>
-        <div id="youtubePlayerWrap" style="display:none;position:relative;width:100%;padding-top:56.25%;overflow:hidden;border-radius:15px;background:#111;margin-top:12px">
-          <iframe id="youtubePlayerFrame" title="مشغل فيديو تعليمي من يوتيوب" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
+        <div id="duelScores" class="feature-note" style="margin-top:14px"></div>
+        <div class="feature-row">
+          <button class="feature-btn" id="nextDuelBtn" style="display:none">السؤال اللي بعده ➡️</button>
+          <button class="feature-btn secondary" id="leaveRoomBtn">اخرج من الغرفة</button>
         </div>
       </div>
-      <div id="songsList"></div>
-      <button class="feature-btn secondary" id="stopSongBtn">⏹️ إيقاف الصوت والفيديو</button>
     </section>
   </div>
 
-  <footer>صُنع بحب لأجل تعليم أطفالنا 📚</footer>
+  <footer>اتعمل بحب علشان نعلّم عيالنا 📚</footer>
 </div>
 
-<!-- Floating AI Friend Widget -->
-<div class="ai-friend-btn" id="aiFriendBtn" title="تحدث مع صديقك هيما 🤖">🤖</div>
-<div class="chat-modal" id="chatModal">
-  <div class="chat-header">
-    <span>صديقك المساعد هيما 🤖</span>
-    <span style="cursor:pointer; font-size:1.2rem;" id="closeChatBtn">✖</span>
-  </div>
-  <div class="chat-body" id="chatBody" aria-live="polite">
-    <div class="chat-msg bot">أهلًا يا صاحبي! أنا هيما 🧸. نقدر نلعب أو نحكي عن أي حاجة حلوة حصلت معاك. تحب تحكيلي إيه؟</div>
-  </div>
-  <div class="chat-quick-btns">
-    <button class="chat-quick-btn" onclick="sendAiMsg('عايز أحكي معاك يا هيما')">💬 نحكي سوا</button>
-    <button class="chat-quick-btn" onclick="sendAiMsg('احكيلي حكاية جميلة')">📖 حكاية</button>
-    <button class="chat-quick-btn" onclick="sendAiMsg('قول لي نكتة لطيفة')">😄 نضحك</button>
-    <button class="chat-quick-btn" onclick="startFriendMic()">🎙️ أتكلم</button>
-  </div>
-  <button type="button" id="friendLiveBtn" class="chat-live-btn">📞 ابدأ محادثة صوتية مجانية مع هيما</button>
-  <div class="chat-compose">
-    <button type="button" class="chat-mic" id="friendMicBtn" aria-label="تحدث مع هيما" title="اضغط واتكلم">🎙️</button>
-    <input id="friendInput" type="text" autocomplete="off" placeholder="اكتب أو اضغط الميكروفون..." aria-label="رسالتك لهيما">
-    <button type="button" class="chat-send" id="friendSendBtn">إرسال ➤</button>
-  </div>
-  <div id="friendChatStatus" class="chat-status">هيما صاحبك، اسأله أو احكيله براحتك 🌟</div>
-</div>
+<!-- Floating voice-only friend button: no reading required -->
+<div class="friend-btn" id="friendBtn" role="button" tabindex="0" aria-label="كلّم صاحبك سمسم" title="كلّم صاحبك">🤖</div>
+<div class="friend-bubble" id="friendBubble" aria-live="polite"></div>
 
 <!-- Modal Overlay for Letters Pop-up -->
 <div class="modal-overlay" id="letterModal">
@@ -651,26 +489,18 @@
   </div>
 </div>
 
-<!-- Modal Overlay for Level Up Celebration -->
-<div class="modal-overlay" id="levelModal">
+<!-- Modal Overlay for Journey Complete Celebration -->
+<div class="modal-overlay" id="journeyModal">
   <div class="modal-card" style="border-color:var(--saffron);">
     <div class="modal-emoji">🎉</div>
-    <div class="modal-letter" style="color:var(--saffron); font-size:2.2rem;" id="lvlModalTitle">مبروك الفوز!</div>
-    <div class="modal-word" id="lvlModalSub" style="font-size:1.4rem; margin-bottom:10px;">المستوى الجديد</div>
-    <p id="lvlModalTitleDesc" style="font-size:1.15rem; color:var(--turquoise-deep); font-weight:800; margin-bottom:20px; line-height:1.6;"></p>
-    <button class="modal-close" id="lvlModalCloseBtn" style="background:var(--saffron); color:#3A2504;">متابعة اللعب 🚀</button>
+    <div class="modal-letter" style="color:var(--saffron); font-size:2rem;" id="journeyModalTitle">خلصت رحلة!</div>
+    <p class="journey-complete-sub" id="journeyModalDesc"></p>
+    <button class="modal-close" id="journeyModalCloseBtn" style="background:var(--saffron); color:#3A2504;">يلا للرحلة الجاية 🚀</button>
   </div>
 </div>
 
 <script>
-// رابط نشر Google Apps Script الذي يحتوي على كود Code.gs الحالي.
-// إذا أنشأت نشرًا جديدًا، ضع رابط /exec الجديد هنا.
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgFq6EumPYteu4RQqn8QI64ZSCBinTPom69UcNo12CjKRJrsTTAd76xvhhx8Ve6Bim/exec";
-// معرّف مشروع Google Cloud الذي طلبت استخدامه. هذا ليس مفتاح API ولا يُستخدم بدلًا منه.
-// ربط Gemini يتم من جهة Apps Script عبر Script Properties باسم GEMINI_API_KEY.
-const GOOGLE_CLOUD_PROJECT_ID = "gen-lang-client-0996415704";
-// الصوت هنا مجاني من أصوات الجهاز/المتصفح؛ لا حاجة إلى Azure أو مفتاح صوت مدفوع.
-const AZURE_TTS_WEB_APP_URL = "";
 if(!APP_SCRIPT_URL || APP_SCRIPT_URL.indexOf('PASTE_') === 0) document.getElementById('configBanner').style.display = 'block';
 
 /* ================== CONFETTI ANIMATION ================== */
@@ -731,28 +561,17 @@ function playSFX(type) {
 /* ================== SPEECH SYNTHESIS ================== */
 let arabicVoice = null;
 let voiceUnlocked = false;
-let currentAzureAudio = null;
-let azureSpeechRequestId = 0;
 
 function pickBestArabicVoice(){
   if(!('speechSynthesis' in window)) return;
   const voices = window.speechSynthesis.getVoices();
   const arVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
   if(!arVoices.length){ arabicVoice = null; return; }
-  const scoreVoice = (v) => {
-    const name = (v.name || '').toLowerCase();
-    const lang = (v.lang || '').toLowerCase();
-    let score = 0;
-    if(lang === 'ar-eg' || lang.startsWith('ar-eg-')) score += 100;
-    else if(lang.startsWith('ar-sa')) score += 35;
-    if(/online|natural|neural/.test(name)) score += 80;
-    if(/google/.test(name)) score += 45;
-    if(/microsoft/.test(name)) score += 25;
-    if(/hoda|salma|shakir|hamed|zeina|layla/.test(name)) score += 15;
-    if(v.localService === false) score += 8;
-    return score;
-  };
-  arabicVoice = arVoices.slice().sort((a,b) => scoreVoice(b)-scoreVoice(a))[0];
+  arabicVoice =
+    arVoices.find(v => /google/i.test(v.name)) ||
+    arVoices.find(v => /^ar-sa/i.test(v.lang)) ||
+    arVoices.find(v => /^ar-eg/i.test(v.lang)) ||
+    arVoices[0];
 }
 if('speechSynthesis' in window){
   pickBestArabicVoice();
@@ -760,15 +579,12 @@ if('speechSynthesis' in window){
 }
 
 function unlockVoiceOnce(){
-  if(voiceUnlocked) return;
+  if(voiceUnlocked || !('speechSynthesis' in window)) return;
   voiceUnlocked = true;
-  // فك قفل تشغيل الصوت عند أول تفاعل من المستخدم، سواء Azure أو صوت الجهاز.
   try{
-    if('speechSynthesis' in window){
-      const warm = new SpeechSynthesisUtterance(' ');
-      warm.volume = 0;
-      window.speechSynthesis.speak(warm);
-    }
+    const warm = new SpeechSynthesisUtterance(' ');
+    warm.volume = 0;
+    window.speechSynthesis.speak(warm);
   }catch(e){}
   document.removeEventListener('touchend', unlockVoiceOnce);
   document.removeEventListener('click', unlockVoiceOnce);
@@ -776,434 +592,319 @@ function unlockVoiceOnce(){
 document.addEventListener('touchend', unlockVoiceOnce, { once:true });
 document.addEventListener('click', unlockVoiceOnce, { once:true });
 
-function azureTtsConfigured(){
-  return typeof AZURE_TTS_WEB_APP_URL === 'string' &&
-    /^https:\/\/script\.google\.com\/macros\/s\//.test(AZURE_TTS_WEB_APP_URL) &&
-    !AZURE_TTS_WEB_APP_URL.includes('PASTE_YOUR_');
-}
-
-function speakWithAzure(text){
-  return new Promise((resolve, reject) => {
-    const requestId = ++azureSpeechRequestId;
-    const callbackName = '__semsemTtsCallback_' + Date.now() + '_' + requestId;
-    const script = document.createElement('script');
-    let finished = false;
-    const cleanup = () => {
-      if(finished) return;
-      finished = true;
-      try { delete window[callbackName]; } catch(e) { window[callbackName] = undefined; }
-      if(script.parentNode) script.parentNode.removeChild(script);
-    };
-    const timeout = setTimeout(() => { cleanup(); reject(new Error('انتهت مهلة خدمة الصوت')); }, 18000);
-    window[callbackName] = (payload) => {
-      if(finished) return;
-      clearTimeout(timeout);
-      cleanup();
-      if(requestId !== azureSpeechRequestId) { resolve(false); return; }
-      if(!payload || !payload.audioBase64){ reject(new Error((payload && payload.error) || 'تعذر إنشاء الصوت')); return; }
-      try{
-        const audio = new Audio('data:audio/mpeg;base64,' + payload.audioBase64);
-        currentAzureAudio = audio;
-        audio.onended = () => { if(currentAzureAudio === audio) currentAzureAudio = null; resolve(true); };
-        audio.onerror = () => { if(currentAzureAudio === audio) currentAzureAudio = null; reject(new Error('تعذر تشغيل الملف الصوتي')); };
-        const playPromise = audio.play();
-        if(playPromise && typeof playPromise.catch === 'function') playPromise.catch(reject);
-      }catch(err){ reject(err); }
-    };
-    script.onerror = () => { clearTimeout(timeout); cleanup(); reject(new Error('تعذر الاتصال بخدمة الصوت')); };
-    script.src = AZURE_TTS_WEB_APP_URL + '?action=tts&text=' + encodeURIComponent(text) + '&callback=' + encodeURIComponent(callbackName) + '&v=' + Date.now();
-    document.head.appendChild(script);
-  });
-}
-
-function speakWithDevice(text){
-  return new Promise((resolve) => {
-    try{
-      if(!('speechSynthesis' in window)){ resolve(false); return; }
-      window.speechSynthesis.cancel();
-      const cleanText = text.replace(/[\u064B-\u0652]/g, '').trim();
-      const u = new SpeechSynthesisUtterance(cleanText);
-      if(arabicVoice) u.voice = arabicVoice;
-      u.lang = arabicVoice ? arabicVoice.lang : 'ar-EG';
-      u.rate = 0.88; u.pitch = 1.08; u.volume = 1;
-      u.onend = () => resolve(true);
-      u.onerror = () => resolve(false);
-      window.speechSynthesis.speak(u);
-    }catch(e){ resolve(false); }
-  });
-}
-
-async function speak(text){
-  if(!text) return;
-  const cleanText = String(text).replace(/[\u064B-\u0652]/g, '').trim();
-  if(!cleanText) return;
+function speak(text, onEnd, opts){
+  opts = opts || {};
+  let finished = false, wd = null;
+  const done = (interrupted) => { if(finished) return; finished = true; clearTimeout(wd); if(onEnd) onEnd(!!interrupted); };
+  if(!text){ done(); return; }
   try{
-    if('speechSynthesis' in window) window.speechSynthesis.cancel();
-    if(currentAzureAudio){ currentAzureAudio.pause(); currentAzureAudio = null; }
-    if(azureTtsConfigured()){
-      try { await speakWithAzure(cleanText); return; }
-      catch(err){ console.warn('Azure Speech unavailable:', err); }
+    if(!('speechSynthesis' in window)){ done(); return; }
+    window.speechSynthesis.cancel();
+    const cleanText = text.replace(/[\u064B-\u0652]/g, "").trim();
+    const u = new SpeechSynthesisUtterance(cleanText);
+    if(arabicVoice) u.voice = arabicVoice;
+    u.lang = arabicVoice ? arabicVoice.lang : 'ar-SA';
+    u.rate = opts.rate || 0.75; u.pitch = opts.pitch || 1.05; u.volume = 1;
+    if(onEnd){
+      u.onend = () => done(false);
+      u.onerror = (e) => done(!!(e && (e.error === 'interrupted' || e.error === 'canceled')));
+      wd = setTimeout(() => done(false), 3000 + cleanText.length * 140);   // احتياط لو المتصفح ما بعتش حدث النهاية
     }
-    // الصوت المجاني الاحتياطي من المتصفح/الجهاز؛ لا يتم إرسال النص إلى Azure.
-    await speakWithDevice(cleanText);
-  }catch(e){ console.warn('Speech error:', e); }
+    window.speechSynthesis.speak(u);
+  }catch(e){ done(false); }
 }
 
-/* ================== AI FRIEND CHAT SYSTEM ================== */
-const aiFriendBtn = document.getElementById('aiFriendBtn');
-const chatModal = document.getElementById('chatModal');
-const closeChatBtn = document.getElementById('closeChatBtn');
-const chatBody = document.getElementById('chatBody');
-const friendInput = document.getElementById('friendInput');
-const friendChatStatus = document.getElementById('friendChatStatus');
-const friendMicBtn = document.getElementById('friendMicBtn');
-let friendMessages = [];
-let friendRecognition = null;
-let friendBusy = false;
+/* ================== الصاحب الصوتي (محادثة حقيقية بالصوت بردود Gemini) ==================
+   الطفل يدوس مرة، يتكلم، وسمسم يسمعه ويرد بصوته، وبعدين يسمعه تاني، لحد ما الطفل يدوس تاني ليوقف.
+   من غير كتابة ولا قراءة. الرد بيجي من الباك إند (friendReply) وفيه جمل جاهزة احتياطي
+   لو النت أو مفتاح Gemini مش شغالين. */
+const FRIEND_EMOJIS = ['🤖','😺','🦊','🐼'];
+const FRIEND_LINES = [
+  'يا بطل! إنت شاطر أوي، يلا كمل معايا',
+  'برافو عليك! أنا فخور بيك أوي',
+  'جرب تدوس على أي حرف وهتسمعه بصوته',
+  'كل ما تلعب أكتر، كل ما تبقى أشطر',
+  'إنت نجم حقيقي، يلا نكمل اللعب',
+  'واخد بالك؟ كل حرف ليه صوت، سمّعه كويس',
+  'حابب تلعب لعبة تانية دلوقتي؟',
+  'أنا هنا جنبك طول الوقت، يلا بينا!'
+];
+const FRIEND_MAX_TURNS = 12;      // بعد كده بيقترح يلعبوا شوية (وبيوفّر على الحساب)
+const FRIEND_AI_TIMEOUT = 15000;
+const friendState = { active:false, phase:'idle', rec:null, history:[], silent:0, turns:0, gen:0, aiOff:false, noMic:false, lastErr:'', hideT:null, idle:'🤖' };
 
-aiFriendBtn.onclick = () => {
-  chatModal.classList.toggle('active');
-  if (chatModal.classList.contains('active')) setTimeout(()=>friendInput && friendInput.focus(),100);
-};
-closeChatBtn.onclick = () => chatModal.classList.remove('active');
+function friendSR(){ return window.SpeechRecognition || window.webkitSpeechRecognition; }
+function friendSetPhase(p){
+  friendState.phase = p;
+  const btn = document.getElementById('friendBtn'); if(!btn) return;
+  btn.classList.toggle('listening', p === 'listening');
+  btn.classList.toggle('thinking', p === 'thinking');
+  btn.classList.toggle('speaking', p === 'speaking');
+  btn.textContent = p === 'listening' ? '👂' : p === 'thinking' ? '🤔' : p === 'speaking' ? '🗣️' : friendState.idle;
+}
+function friendShow(text, hideAfterMs){
+  const b = document.getElementById('friendBubble'); if(!b) return;
+  b.textContent = text; b.classList.add('show');
+  clearTimeout(friendState.hideT);
+  if(hideAfterMs) friendState.hideT = setTimeout(() => b.classList.remove('show'), hideAfterMs);
+}
+function friendClean(t){ return String(t || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, ' ').replace(/\s+/g, ' ').trim(); }
 
-function addFriendBubble(text, who) {
-  const div = document.createElement('div');
-  div.className = 'chat-msg ' + (who === 'user' ? 'user' : 'bot');
-  div.textContent = text;
-  chatBody.appendChild(div);
-  chatBody.scrollTop = chatBody.scrollHeight;
+function stopFriend(){
+  friendState.active = false; friendState.gen++;
+  const rec = friendState.rec; friendState.rec = null;
+  if(rec){ try{ rec.onresult = rec.onerror = rec.onend = null; (rec.abort || rec.stop).call(rec); }catch(e){} }
+  try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+  clearTimeout(friendState.hideT);
+  const b = document.getElementById('friendBubble'); if(b) b.classList.remove('show');
+  friendSetPhase('idle');
 }
-function localFriendReply(text, name) {
-  const raw = String(text || '').trim();
-  const t = raw.toLowerCase().replace(/[ًٌٍَُِّْـ]/g,'').replace(/[أإآ]/g,'ا');
-  const pick = a => a[Math.floor(Math.random()*a.length)];
-  const replies = [
-    `يا ${name} يا صاحبي، أنا معاك 😊 احكيلي براحتك، أنا سامعك.`,
-    `حلو إنك جيت تحكي معايا يا ${name} 🌟 إيه أكتر حاجة عجبتك النهارده؟`,
-    `طب تخيل إننا قاعدين في جنينة جميلة، حوالينا عصافير وفراشات 🦋 تحب نعمل إيه؟`,
-    `أنا مبسوط إننا بنتكلم يا بطل! مش لازم تستعجل، خد وقتك واحكيلي واحدة واحدة ❤️`,
-    `يا سلام! طب كمّل، وبعد كده حصل إيه؟ أنا متشوق أعرف 😊`,
-    `تعالى نلعب لعبة التخمين! أنا بفكر في حيوان بيحب الجزر وعنده ودان طويلة. يا ترى مين؟ 🐰`,
-    `لو عندك قوة سحرية ليوم واحد، تحب تعمل بيها إيه؟ ✨`,
-    `اختار مغامرة: رحلة للقمر 🌙 ولا رحلة تحت البحر 🐠 ولا زيارة لمدينة الألعاب 🎡؟`,
-    `عارف يا صاحبي؟ الغلط مش مشكلة، إحنا بنتعلم بالتجربة. وأنا هفضل أشجعك 💪`,
-    `خلينا ناخد نفس جميل كده… شهيق… وزفير… تمام! تحب تحكيلي عن حاجة فرحتك؟ 😊`
-  ];
-  if (/^(اه|أه|ايوه|أيوه|نعم|ماشي|تمام|حاضر|اوكي|okay)[.!؟ ]*$/.test(t)) return pick([`تمام يا ${name} 😄 نكمل! تحب حكاية ولا لعبة تخمين؟`,`حلو أوي! طب اختار: حيوانات 🐯 ولا فضاء 🚀 ولا نكتة 😂؟`,`اتفقنا يا بطل! قولّي تحب نعمل إيه دلوقتي؟`]);
-  if (/^(لا|لأ|مش عايز|مش عاوز|لا شكرا)/.test(t)) return pick([`ولا يهمك يا ${name} ❤️ نختار حاجة تانية براحتك. تحب نتكلم عن إيه؟`,`ماشي يا صاحبي، مفيش أي مشكلة. ممكن نسمع حكاية أو نلعب لعبة بسيطة 😊`]);
-  if (/اسمك|انت مين|إنت مين|مين انت|مين إنت/.test(t)) return `أنا هيما 🧸 صاحبك في بوابة المعرفة! بحب أحكي معاك ونلعب ونتعلم سوا. وإنت تحب أناديك بإيه؟`;
-  if (/عامل ايه|عامل إيه|اخبارك|أخبارك|ازيك|إزيك/.test(t)) return pick([`أنا كويس لما بتكلمني يا ${name} 😊 وإنت أخبارك إيه؟`,`زي الفل يا صاحبي 🌟 طمني عليك، يومك كان عامل إيه؟`,`أنا مبسوط إني معاك! إنت حاسس بإيه النهارده: فرحان ولا هادي ولا زعلان شوية؟`]);
-  if (/بحبك|بحبك يا هيما/.test(t)) return `يا سلام يا ${name} ❤️ أنا مبسوط إنك بتحب الكلام معايا. وإنت تستاهل حب واهتمام من ماما وبابا وكل الناس اللي بيهتموا بيك.`;
-  if (/وحشتني|وحشتك|رجعت/.test(t)) return `أهلًا برجوعك يا ${name}! 🥳 نورت بوابة المعرفة. تحب تحكيلي إيه جديد حصل معاك؟`;
-  if (/حزين|زعلان|خايف|بعيط|مضايق|متضايق|بخاف/.test(t)) return `يا ${name}، أنا آسف إنك حاسس كده ❤️ تحب تحكيلي إيه اللي حصل؟ ولو الموضوع مخوفك أو مضايقك قوي، احكي لماما أو بابا أو شخص كبير تثق فيه، ومش لازم تواجهه لوحدك.`;
-  if (/فرحان|مبسوط|سعيد|نجحت|كسبت|فرح/.test(t)) return `ياااه! فرحتني معاك يا ${name} 🎉 تستاهل التشجيع! إيه أحلى حاجة حصلت وخليتك مبسوط؟`;
-  if (/تعبان|وجع|بتوجع|مريض|مرض/.test(t)) return `سلامتك يا ${name} ❤️ لازم تقول لماما أو بابا إنك تعبان أو في حاجة بتوجعك، وهم يساعدوك. تحب تقولي هل قلت لحد كبير؟`;
-  if (/ماما|امي|أمي|بابا|أبويا|اسرتي|أهلي/.test(t)) return `ماما وبابا مهمين يا ${name} ❤️ إيه الحاجة الحلوة اللي بتحب تعملها معاهم؟`;
-  if (/مدرسة|مدرستي|مدرس|معلم|معلمتي|فصل/.test(t)) return `المدرسة فيها حاجات كتير نتعلمها يا بطل 📚 إيه أكتر حاجة بتحبها في يوم المدرسة؟ ومش محتاج تقولّي اسم مدرستك أو أي بيانات خاصة.`;
-  if (/صاحب|اصحابي|أصحابي|صديقي|صاحبتي|صاحبي/.test(t)) return `الأصحاب الحلوين بيفرحوا بعض يا ${name} 😊 إيه لعبة بتحب تلعبها مع أصحابك؟`;
-  if (/حكاية|قصة|احكي|احكيل/.test(t)) return pick([
-    `كان يا ما كان، في غابة خضرا، كان فيه عصفور صغير اسمه زقزوق. كل يوم كان يساعد أصحابه، ولما ضاع الطريق على سلحفاة، طار يدور على أمها. تحب تعرف عمل إيه بعد كده؟ 🐦`,
-    `كان فيه أرنب اسمه فلفول، زرع جزرة صغيرة وسقاها كل يوم. استنى وصبر لحد ما كبرت، وبعدها شاركها مع أصحابه. إيه رأيك، نكمل مغامرة فلفول؟ 🐰`,
-    `في يوم من الأيام، نجمة صغيرة وقعت في حديقة، وقابلت طفلًا طيبًا ساعدها ترجع للسماء باستخدام بالون سحري. وفجأة ظهر قمر مبتسم! تحب نعرف إيه السر؟ 🌟`
-  ]);
-  if (/نكتة|اضحك|نضحك|مضحك/.test(t)) return pick([`مرة موزة قالت لصاحبتها: يلا نجري! قالت لها: استني بس، أنا لسه بقشر نفسي! 😂`,`مرة قلم راح للدكتور، قاله: كل ما أكتب إيدي توجعني! الدكتور قاله: طب ريّح سنك شوية! ✏️😂`,`ليه السمكة مبتحبش الكمبيوتر؟ عشان خايفة من شبكة الإنترنت! 🐟😄`,`مرة أرنب لبس نظارة، قالوا له شايف إيه؟ قالهم: شايف الجزر أوضح بكتير! 🐰`]);
-  if (/لعب|لعبة|نلعب|زهقان|مللان/.test(t)) return pick([`يلا لعبة! أنا هقول وصف وإنت تخمن: حيوان كبير، عنده خرطوم طويل وودانه كبار. مين؟ 🐘`,`اختار بسرعة: 🍎 تفاحة ولا 🍌 موزة؟ قولّي بتحب أنهي واحدة وليه!`,`لعبة الأصوات: أنا بقول «مواء»، مين الحيوان؟ 🐱 وبعدها إنت اختار صوت وأنا أخمن!`,`تحدي الألوان! دور بعينيك على حاجة لونها أحمر حواليك، ولما تلاقيها قولّي «لقيتها» 🔴`,`أنا بفكر في رقم من واحد لتلاتة. خمن رقم، ونشوف حظك! 🎲`]);
-  if (/حيوان|اسد|أسد|قطة|قطه|كلب|فيل|زرافة|سمكة|سمكه/.test(t)) return pick([`الحيوانات مدهشة! 🦁 الأسد بيزأر، والقطة بتموء، والكلب بينبح. إيه حيوانك المفضل؟`,`تعرف إن الزرافة رقبتها طويلة جدًا؟ 🦒 لو قابلت زرافة، هتسميها إيه؟`,`يلا نقلد صوت حيوان! إنت اعمل صوت حيوان وأنا أخمنه 😄`]);
-  if (/حروف|حرف|اقرا|أقرأ|قراءة|كتابة|اكتب|كلمة/.test(t)) return pick([`يلا نتعلم حرف صغير! حرف «ب» زي «بطة» 🦆. تقدر تقول صوت حرف ب؟`,`كلمة «قمر» بتبدأ بحرف ق 🌙. تحب نختار كلمة تانية ونسمع أول حرف فيها؟`,`برافو عليك إنك بتحاول! نتعلم واحدة واحدة، ومفيش استعجال. تحب حرف ولا كلمة سهلة؟`]);
-  if (/رقم|اعداد|أعداد|احسب|حساب|واحد|اتنين|اثنين|ثلاثة/.test(t)) return pick([`تعالى نعد سوا: واحد، اتنين، تلاتة! 🎈 تحب نعد لحد خمسة ولا نعد حاجات حوالينا؟`,`لو معاك تفاحتين وجبت تفاحة كمان، يبقى معاك كام تفاحة؟ 🍎🍎🍎`,`أنا بقول رقم وإنت تقول اللي بعده: اتنين… يلا دورك!`]);
-  if (/لون|الوان|ألوان|احمر|أحمر|ازرق|أزرق|اخضر|أخضر|اصفر|أصفر/.test(t)) return `الألوان جميلة زي قوس قزح 🌈 الأحمر زي التفاح، والأخضر زي الشجر، والأزرق زي السما. أنهي لون بتحبه أكتر؟`;
-  if (/فضاء|قمر|نجوم|كواكب|صاروخ/.test(t)) return pick([`يا رائد الفضاء! 🚀 لو ركبنا صاروخ، تحب نزور القمر ولا نشوف الكواكب من بعيد؟`,`النجوم بتلمع في السما بالليل ✨ لو هتسمي نجمة باسم، هتسميها إيه؟`]);
-  if (/بحر|سمك|تحت البحر|محيط/.test(t)) return `تخيل إننا غطسنا تحت البحر 🐠 شفنا سمكة ملونة وسلحفاة بحرية وفقاعات بتطلع لفوق. تحب نكتشف إيه كمان؟`;
-  if (/شكرا|شكرًا|متشكر|تسلم/.test(t)) return pick([`العفو يا ${name} يا صاحبي ❤️ أنا مبسوط إننا بنتكلم.`,`ولا يهمك يا بطل! أنا هنا نلعب ونتعلم سوا 😊`,`العفو! إنت كمان خليت يومي ألطف بكلامك 🌟`]);
-  if (/باي|سلام|مع السلامة|هروح|همشي/.test(t)) return `مع السلامة يا ${name} 👋 خليك دايمًا لطيف مع نفسك ومع اللي حواليك، وتعالى نلعب تاني وقت ما تحب!`;
-  if (/سر|متقولش|ماتقولش|ما تقولش/.test(t)) return `تقدر تحكيلي اللي مضايقك، لكن لو فيه حاجة مخوفاك أو حد قالك تخبي حاجة بتأذيك، مهم تقول لماما أو بابا أو شخص كبير تثق فيه ❤️`;
-  return pick(replies);
+
+// بيتكلم وبعدين ينفّذ onDone. لو حاجة تانية قاطعت الصوت (مثلًا لعبة نطقت حرف) المحادثة بتقف.
+function friendSpeak(text, gen, onDone){
+  if(gen !== friendState.gen) return;
+  friendSetPhase('speaking'); friendShow(text);
+  speak(friendClean(text), (interrupted) => {
+    if(gen !== friendState.gen) return;
+    if(interrupted){ stopFriend(); return; }
+    if(onDone) onDone();
+  }, { rate:0.9, pitch:1.2 });
 }
-async function sendAiMsg(text) {
-  text = String(text || (friendInput && friendInput.value) || '').trim();
-  if (!text || friendBusy) return;
-  if (!currentUser) { addFriendBubble('سجّل دخولك الأول عشان هيما يقدر يفتكرك في المحادثة ❤️','bot'); return; }
-  if (friendInput) friendInput.value = '';
-  addFriendBubble(text, 'user');
-  friendMessages.push({role:'user', content:text});
-  friendMessages = friendMessages.slice(-8);
-  friendBusy = true;
-  if (friendChatStatus) friendChatStatus.textContent = 'هيما بيفكر في رد ليك...';
-  if (friendMicBtn) friendMicBtn.disabled = true;
-  // نحاول استخدام Gemini من خلال Apps Script؛ المفتاح لا يظهر داخل ملف HTML.
-  // لو الخدمة غير مضبوطة أو انتهت الحصة، تظل اللعبة قابلة للاستخدام بردود محلية مجانية.
-  let reply = '';
-  try {
-    const result = await apiCall('chat', {
-      username: currentUser.username,
-      password: currentUser.password,
-      messages: friendMessages,
-      context: { level: currentLevel }
-    });
-    if (result && result.ok && result.reply) reply = String(result.reply).trim();
-  } catch (e) {
-    console.warn('Gemini chat unavailable; using local fallback.', e);
-  }
-  if (!reply) {
-    await new Promise(resolve => setTimeout(resolve, 250 + Math.random()*350));
-    reply = localFriendReply(text, currentUser.username);
-    const previousUser = friendMessages.filter(m => m.role === 'user').slice(-2, -1)[0];
-    if (previousUser && /^(وبعدين|وبعد كده|كمل|كمّل|ثم|بعدها)/.test(text)) {
-      reply = 'وبعد كده، أصحابنا اتعاونوا وساعدوا بعض لحد ما وصلوا للحل! 🌟 تحب تختار إيه يحصل بعد كده؟';
+function friendFinish(text, gen){
+  friendState.active = false;
+  friendSpeak(text, gen, () => { friendSetPhase('idle'); friendShow(text, 4000); });
+}
+
+function friendListen(){
+  const gen = friendState.gen, SR = friendSR();
+  if(!friendState.active || !SR) return;
+  let heard = '';
+  const rec = new SR(); friendState.rec = rec;
+  rec.lang = 'ar-EG'; rec.continuous = false; rec.interimResults = false; rec.maxAlternatives = 1;
+  rec.onstart = () => { if(gen !== friendState.gen) return; friendSetPhase('listening'); friendShow('بسمعك يا بطل... اتكلم 🎙️'); };
+  rec.onresult = (e) => { const r = e.results && e.results[0] && e.results[0][0]; heard = r ? String(r.transcript || '').trim() : ''; };
+  rec.onerror = (e) => { friendState.lastErr = e && e.error ? e.error : 'error'; };
+  rec.onend = () => {
+    if(gen !== friendState.gen) return;
+    friendState.rec = null;
+    const err = friendState.lastErr; friendState.lastErr = '';
+    if(heard){ friendState.silent = 0; friendRespond(heard, gen); return; }
+    if(err === 'not-allowed' || err === 'service-not-allowed' || err === 'audio-capture'){
+      friendState.noMic = true;
+      friendFinish('مش قادر أسمعك دلوقتي. اطلب من ماما أو بابا يفتحوا المايكروفون وجرّب تاني', gen); return;
     }
-  }
-  addFriendBubble(reply, 'bot');
-  friendMessages.push({role:'assistant', content:reply});
-  friendMessages = friendMessages.slice(-8);
-  speak(reply);
-  friendBusy = false;
-  if (friendMicBtn) friendMicBtn.disabled = false;
-  if (friendChatStatus) friendChatStatus.textContent = 'تقدر تتكلم أو تضغط الميكروفون وتحكي لهيما 🌟';
-}
-document.getElementById('friendSendBtn')?.addEventListener('click',()=>sendAiMsg());
-friendInput?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendAiMsg();}});
-function startFriendMic() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    if (friendChatStatus) friendChatStatus.textContent = 'الميكروفون الصوتي غير مدعوم هنا. جرّب Chrome أو اكتب رسالتك.';
-    return;
-  }
-  if (friendRecognition) { try{friendRecognition.stop();}catch(e){} }
-  friendRecognition = new SR();
-  friendRecognition.lang = 'ar-EG';
-  friendRecognition.interimResults = false;
-  friendRecognition.maxAlternatives = 1;
-  friendRecognition.onstart = () => {
-    friendMicBtn?.classList.add('listening');
-    if (friendChatStatus) friendChatStatus.textContent = 'هيما بيسمعك... اتكلم براحتك 🎙️';
+    friendState.silent++;
+    if(friendState.silent >= 2){ friendFinish('تمام يا بطل، أنا هنا لو عايزني. دوس عليا وكلمني!', gen); return; }
+    friendSpeak('أنا سامعك! قولي إيه؟', gen, () => friendListen());
   };
-  friendRecognition.onresult = e => {
-    const heard = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : '';
-    if (heard) sendAiMsg(heard);
-    else if (friendChatStatus) friendChatStatus.textContent = 'مسمعتش كلامك كويس، جرّب تاني.';
-  };
-  friendRecognition.onerror = () => { if(friendChatStatus) friendChatStatus.textContent='الميكروفون محتاج إذن من المتصفح. ممكن تكتب أو تجرب تاني.'; };
-  friendRecognition.onend = () => friendMicBtn?.classList.remove('listening');
-  try { friendRecognition.start(); } catch(e) {}
-}
-friendMicBtn?.addEventListener('click',startFriendMic);
-
-/* ================== REALTIME VOICE FRIEND ==================
-   صوت مباشر ثنائي الاتجاه عبر WebRTC. المفتاح الدائم لا يغادر Apps Script؛
-   المتصفح يستلم فقط client secret قصير العمر.
-*/
-let livePc = null;
-let liveStream = null;
-let liveChannel = null;
-let liveAudio = null;
-let liveCallStarting = false;
-let lastAssistantTranscript = '';
-const friendLiveBtn = document.getElementById('friendLiveBtn');
-
-function stopFriendLiveCall(updateStatus = true) {
-  try { if (liveChannel && liveChannel.readyState === 'open') liveChannel.close(); } catch(e) {}
-  try { if (livePc) livePc.close(); } catch(e) {}
-  try { if (liveStream) liveStream.getTracks().forEach(track => track.stop()); } catch(e) {}
-  try { if (liveAudio) { liveAudio.pause(); liveAudio.srcObject = null; liveAudio.remove(); } } catch(e) {}
-  livePc = null; liveStream = null; liveChannel = null; liveAudio = null;
-  liveCallStarting = false;
-  if (friendLiveBtn) { friendLiveBtn.disabled = false; friendLiveBtn.textContent = '📞 ابدأ محادثة صوتية مجانية مع هيما'; }
-  if (updateStatus && friendChatStatus) friendChatStatus.textContent = 'المكالمة انتهت. تقدر تبدأ مكالمة جديدة أو تكتب لهيما 🌟';
+  try{ rec.start(); }catch(e){ friendState.noMic = true; friendFinish('مش قادر أسمعك دلوقتي. جرّب تاني بعد شوية', gen); }
 }
 
-function handleLiveEvent(event) {
-  if (!event || !event.type) return;
-  if (event.type === 'input_audio_buffer.speech_started') {
-    if (friendChatStatus) friendChatStatus.textContent = 'هيما بيسمعك… اتكلم براحتك 🎙️';
-  } else if (event.type === 'input_audio_buffer.speech_stopped') {
-    if (friendChatStatus) friendChatStatus.textContent = 'هيما بيفكر في كلامك…';
-  } else if (event.type === 'conversation.item.input_audio_transcription.completed') {
-    const transcript = String(event.transcript || '').trim();
-    if (transcript) {
-      addFriendBubble(transcript, 'user');
-      friendMessages.push({role:'user', content:transcript});
-      friendMessages = friendMessages.slice(-12);
-    }
-  } else if (event.type === 'response.output_audio_transcript.done' || event.type === 'response.audio_transcript.done') {
-    const transcript = String(event.transcript || '').trim();
-    if (transcript && transcript !== lastAssistantTranscript) {
-      lastAssistantTranscript = transcript;
-      addFriendBubble(transcript, 'bot');
-      friendMessages.push({role:'assistant', content:transcript});
-      friendMessages = friendMessages.slice(-12);
-    }
-    if (friendChatStatus) friendChatStatus.textContent = 'دورك يا صاحبي، أنا سامعك 😊';
-  } else if (event.type === 'response.done') {
-    if (friendChatStatus) friendChatStatus.textContent = 'اتكلم مع هيما وقت ما تحب؛ تقدر تقاطعه وهو بيتكلم 😊';
-  } else if (event.type === 'error') {
-    const msg = event.error && event.error.message ? event.error.message : 'حصلت مشكلة في الاتصال الصوتي.';
-    if (friendChatStatus) friendChatStatus.textContent = 'الصوت وقف: ' + msg;
+async function friendGetLine(heard){
+  const fallback = () => FRIEND_LINES[Math.floor(Math.random() * FRIEND_LINES.length)];
+  if(friendState.aiOff || !currentUser) return fallback();
+  const journeyName = document.getElementById('journeyNameLabel') ? document.getElementById('journeyNameLabel').textContent : '';
+  const call = apiCall('friendReply', {
+    username: currentUser.username, password: currentUser.password,
+    context: { score: score, journeyName: journeyName, heard: heard || '', history: friendState.history.slice(-8) }
+  });
+  const res = await Promise.race([call, new Promise(r => setTimeout(() => r(null), FRIEND_AI_TIMEOUT))]);
+  if(res && res.ok && res.line) return String(res.line);
+  // مفيش مفتاح أو المفتاح مش شغال: بلاش نكلم السيرفر تاني في الجلسة دي
+  if(res && (res.error === 'ai_not_configured' || res.error === 'ai_bad_key' || res.error === 'ai_forbidden')) friendState.aiOff = true;
+  return fallback();
+}
+
+async function friendRespond(heard, gen){
+  friendSetPhase('thinking'); friendShow('🤔 ثانية واحدة...');
+  friendState.turns++;
+  const line = await friendGetLine(heard);
+  if(gen !== friendState.gen) return;
+  if(heard){
+    friendState.history.push({ role:'user', text:heard }, { role:'assistant', text:line });
+    if(friendState.history.length > 12) friendState.history.splice(0, friendState.history.length - 12);
   }
+  const bye = /باي|مع السلام|تصبح على خير/.test(heard || '');
+  const again = friendState.active && !bye && friendState.turns < FRIEND_MAX_TURNS && !!friendSR();
+  friendSpeak(line, gen, () => {
+    if(again && friendState.active && gen === friendState.gen) friendListen();
+    else { friendState.active = false; friendSetPhase('idle'); friendShow(line, 4000); }
+  });
 }
 
-async function startFriendLiveCall() {
-  // مكالمة مجانية بالتناوب: ميكروفون المتصفح ثم رد بصوت المتصفح، بدون Realtime API.
-  if (!currentUser) { addFriendBubble('سجّل دخولك الأول علشان هيما يفتكرك ❤️','bot'); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    if (friendChatStatus) friendChatStatus.textContent = 'التعرّف على الكلام غير متاح في المتصفح ده. جرّب Chrome أو اضغط زر الميكروفون.';
-    return;
-  }
-  if (friendLiveBtn.dataset.freeCall === 'on') {
-    friendLiveBtn.dataset.freeCall = 'off';
-    friendLiveBtn.textContent = '📞 ابدأ محادثة صوتية مجانية مع هيما';
-    try { if (friendRecognition) friendRecognition.stop(); } catch(e) {}
-    if (friendChatStatus) friendChatStatus.textContent = 'وقفنا المحادثة الصوتية. تقدر ترجع لها وقت ما تحب 😊';
-    return;
-  }
-  friendLiveBtn.dataset.freeCall = 'on';
-  friendLiveBtn.textContent = '⏹️ إيقاف المحادثة الصوتية';
-  if (friendChatStatus) friendChatStatus.textContent = 'المحادثة الصوتية المجانية جاهزة. اتكلم بعد ما تضغط زر الميكروفون 🎙️';
-  addFriendBubble('يلا يا صاحبي! المحادثة دي مجانية. اضغط الميكروفون واتكلم، وأنا هرد عليك بصوت المتصفح 😊','bot');
-  speak('يلا يا صاحبي! المحادثة دي مجانية. اضغط الميكروفون واتكلم، وأنا هرد عليك.');
+function startFriend(){
+  if(!currentUser) return;
+  friendState.active = true; friendState.silent = 0; friendState.turns = 0; friendState.lastErr = '';
+  const gen = ++friendState.gen;
+  if(friendSR() && !friendState.noMic) friendListen();
+  else { friendState.active = false; friendRespond('', gen); }   // من غير مايك: سمسم يبدأ الكلام بنفسه مرة واحدة
 }
-friendLiveBtn?.addEventListener('click', startFriendLiveCall);
-closeChatBtn.addEventListener('click', () => stopFriendLiveCall(false));
-window.addEventListener('beforeunload', () => stopFriendLiveCall(false));
+
+function friendOnLogin(){
+  friendState.history = []; friendState.aiOff = false; friendState.noMic = false;
+  friendState.idle = FRIEND_EMOJIS[Math.floor(Math.random() * FRIEND_EMOJIS.length)];
+  friendSetPhase('idle');
+  setTimeout(() => { if(currentUser && friendState.phase === 'idle') friendShow('دوس عليا وكلمني! 🤖', 4500); }, 1500);
+}
+
+function friendToggle(){
+  if(friendState.active || friendState.phase !== 'idle'){ stopFriend(); return; }
+  startFriend();
+}
+document.getElementById('friendBtn').addEventListener('click', friendToggle);
+document.getElementById('friendBtn').addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); friendToggle(); } });
+document.addEventListener('visibilitychange', () => { if(document.hidden && friendState.phase !== 'idle') stopFriend(); });
+
+/* ================== أغاني الحروف (روابط يوتيوب حقيقية) ==================
+   مفيش تضمين فيديو جوه الصفحة، كل زرار بيفتح يوتيوب في تاب جديد وبيدور
+   على أغنية الحرف ده مباشرة. */
+function openLetterSongOnYouTube(letterObj){
+  const query = `أغنية حرف ${letterObj.name} للأطفال`;
+  const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
+  window.open(url, '_blank', 'noopener');
+}
+function renderSongsGrid(){
+  const grid = document.getElementById('songsGrid');
+  if(!grid || grid.dataset.ready) return;
+  grid.dataset.ready = '1';
+  LETTERS.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'song-letter-card';
+    card.innerHTML = `<div class="song-letter-big">${item.l}</div><div class="song-letter-play">▶️</div>`;
+    card.addEventListener('click', () => openLetterSongOnYouTube(item));
+    grid.appendChild(card);
+  });
+}
 
 /* ================== API & DATA ================== */
 async function apiCall(action, payload){
   payload = payload || {};
   try{ const res = await fetch(APP_SCRIPT_URL, { method: 'POST', body: JSON.stringify(Object.assign({action: action}, payload)) }); return await res.json(); }
-  catch(e){ return { ok:false, error:'فشل الاتصال' }; }
+  catch(e){ return { ok:false, error:'في مشكلة في الاتصال' }; }
 }
 async function fetchLeaderboard(){
   try{ const res = await fetch(APP_SCRIPT_URL + '?action=leaderboard'); return await res.json(); }
   catch(e){ return { ok:false, leaderboard:[] }; }
 }
 
-/* ================== EDUCATIONAL SONGS ================== */
-const SONGS = [
- {title:'أنشودة الحروف العربية',emoji:'🔤',youtubeUrl:'https://www.youtube.com/results?search_query=أنشودة+الحروف+العربية+للأطفال',lyrics:'أنشودة الحروف العربية للأطفال'},
- {title:'أنشودة الأرقام للأطفال',emoji:'🔢',youtubeUrl:'https://www.youtube.com/results?search_query=أنشودة+الأرقام+للأطفال',lyrics:'أنشودة الأرقام للأطفال'},
- {title:'أنشودة الألوان للأطفال',emoji:'🌈',youtubeUrl:'https://www.youtube.com/results?search_query=أنشودة+الألوان+للأطفال',lyrics:'أنشودة الألوان للأطفال'},
- {title:'أغنية أيام الأسبوع',emoji:'📅',youtubeUrl:'https://www.youtube.com/results?search_query=أغنية+أيام+الأسبوع+للأطفال',lyrics:'أغنية أيام الأسبوع للأطفال'},
- {title:'أغنية الحيوانات',emoji:'🐘',youtubeUrl:'https://www.youtube.com/results?search_query=أغاني+أصوات+الحيوانات+للأطفال',lyrics:'أغاني الحيوانات للأطفال'}
-];
-let activeSongAudio=null;
-function playEducationalSong(i){
- const song=SONGS[i]; if(!song)return;
- // روابط SONGS الحالية هي نتائج بحث، لذلك نفتح البحث الرسمي ولا نخترع معرّف فيديو.
- window.open(song.youtubeUrl,'_blank','noopener,noreferrer');
- const input=document.getElementById('youtubeUrlInput');
- if(input) input.focus();
- const msg=document.getElementById('youtubePlayerMessage');
- if(msg) msg.textContent='اختار الفيديو من يوتيوب، وانسخ رابطه، وبعدها الصقه هنا واضغط «شغّل هنا».';
-}
-function extractYouTubeId(raw){
- try {
-  const u=new URL(String(raw||'').trim());
-  const host=u.hostname.replace(/^www\./,'').toLowerCase();
-  if(host==='youtu.be') return u.pathname.split('/').filter(Boolean)[0]||'';
-  if(!/(^|\.)youtube\.com$/.test(host)) return '';
-  if(u.pathname==='/watch') return u.searchParams.get('v')||'';
-  const m=u.pathname.match(/^\/(?:embed|shorts|live)\/([A-Za-z0-9_-]{6,})/);
-  return m?m[1]:'';
- } catch(e){return '';}
-}
-function playYoutubeInside(){
- const input=document.getElementById('youtubeUrlInput');
- const msg=document.getElementById('youtubePlayerMessage');
- const wrap=document.getElementById('youtubePlayerWrap');
- const frame=document.getElementById('youtubePlayerFrame');
- const id=extractYouTubeId(input&&input.value);
- if(!id){if(msg)msg.textContent='الرابط مش واضح. انسخ رابط فيديو كامل من youtube.com أو youtu.be وجرب تاني.';return;}
- // تشغيل عبر مشغّل YouTube الرسمي المضمّن؛ قد تمنع بعض الفيديوهات التضمين حسب إعدادات صاحبها.
- frame.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&rel=0';
- wrap.style.display='block';
- if(msg)msg.textContent='الفيديو جاهز للتشغيل داخل البوابة. لو ظهر رفض للتشغيل، اختار فيديو آخر من يوتيوب.';
- wrap.scrollIntoView({behavior:'smooth',block:'center'});
-}
-function stopYoutubeInside(){
- const frame=document.getElementById('youtubePlayerFrame');
- const wrap=document.getElementById('youtubePlayerWrap');
- if(frame)frame.src='about:blank';
- if(wrap)wrap.style.display='none';
-}
-function renderSongs(){
- const root=document.getElementById('songsList'); if(!root || root.dataset.ready) return;
- root.dataset.ready='1';
- root.innerHTML=SONGS.map((song,i)=>`<div class="song-card"><h3>${song.emoji} ${escapeText(song.title)}</h3><p class="feature-note">افتح نتائج يوتيوب واختار فيديو مناسبًا للأطفال. تقدر بعد كده تشغّله داخل البوابة من المشغّل اللي فوق.</p><a class="feature-btn" style="display:inline-block;text-decoration:none" href="${song.youtubeUrl}" target="_blank" rel="noopener noreferrer" onclick="playEducationalSong(${i});return false;">🔎 اختار فيديو على YouTube</a></div>`).join('');
-}
-document.getElementById('playYoutubeInsideBtn')?.addEventListener('click',playYoutubeInside);
-document.getElementById('youtubeUrlInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();playYoutubeInside();}});
-document.getElementById('stopSongBtn')?.addEventListener('click',()=>{
- if('speechSynthesis' in window) window.speechSynthesis.cancel();
- if(activeSongAudio){activeSongAudio.pause();activeSongAudio.currentTime=0;activeSongAudio=null;}
- stopYoutubeInside();
-});
-renderSongs();
+/* ================== العب مع صاحبك (غرف حقيقية، بالصوت والصور بس) ==================
+   الأسئلة هنا بنفس طريقة لعبة "طابق الصورة": بيتسمع اسم الحرف، والطفل يختار
+   الحرف الصح من بين 3، من غير أي قراءة نص. */
+let activeRoomCode = '';
+let roomPollTimer = null;
+let duelSpokenKey = '';
 
-/* ================== ONLINE FRIEND CHALLENGE ================== */
-let activeRoomCode='', activeRoomState=null, roomPollTimer=null, lastDuelRound=-1;
-const DUEL_QUESTIONS=[
- {q:'أي كلمة تبدأ بحرف أ؟',choices:['أسد','بطة','تفاحة'],answer:0},
- {q:'ما الحرف الأول في كلمة «قمر»؟',choices:['ش','ق','م'],answer:1},
- {q:'كم عدد حروف كلمة «باب»؟',choices:['حرفان','ثلاثة حروف','أربعة حروف'],answer:1},
- {q:'أي كلمة تدل على لون؟',choices:['أزرق','كتاب','قلم'],answer:0},
- {q:'أي كلمة تبدأ بحرف م؟',choices:['نجم','موز','بيت'],answer:1},
- {q:'اختر الحرف الذي تبدأ به كلمة «سمكة»',choices:['س','ش','ص'],answer:0}
-];
-function roomMsg(t){const e=document.getElementById('roomMessage');if(e)e.textContent=t;}
+function roomMsg(t){ const e = document.getElementById('roomMessage'); if(e) e.textContent = t; }
+
 function renderDuelState(state){
- if(!state)return; activeRoomState=state;
- document.getElementById('duelGameCard').style.display='block';
- document.getElementById('roomCodeDisplay').style.display='block';
- document.getElementById('roomCodeValue').textContent=activeRoomCode;
- const players=state.players||[], me=currentUser?.username;
- let statusText=state.status==='playing'?'اختار الإجابة اللي شايفها صح 😊':(state.status==='finished'?'خلص التحدي! أحسنتم يا أبطال 🎉':'مستنيين صاحبك ينضم للغرفة...');
- if(state.revealed) statusText='الإجابة ظهرت! شوفوا مين جاوب صح، وبعدها اضغطوا السؤال التالي.';
- document.getElementById('duelStatus').textContent=statusText;
- const question=state.question;
- document.getElementById('duelQuestion').textContent=state.status==='playing' && question ? `السؤال ${state.round+1}: ${question.q}` : (state.status==='finished'?'انتهى التحدي!':'أول ما صاحبك يدخل هنبدأ اللعب.');
- const choices=document.getElementById('duelChoices'); choices.innerHTML='';
- if(state.status==='playing' && question && !state.revealed) {
-   question.choices.forEach((c,i)=>{
-     const b=document.createElement('button'); b.className='quiz-choice'; b.textContent=c;
-     b.disabled=!!(state.answered&&state.answered[me]);
-     b.addEventListener('click',()=>answerDuel(i)); choices.appendChild(b);
-   });
- } else if(state.revealed && question) {
-   question.choices.forEach((c,i)=>{
-     const b=document.createElement('div'); b.className='quiz-choice';
-     b.textContent=(i===state.correct?'✅ ':'')+c; b.style.cursor='default';
-     if(i===state.correct)b.style.borderColor='var(--success)';
-     choices.appendChild(b);
-   });
- }
- const scores=state.scores||{};
- document.getElementById('duelScores').textContent=players.map(p=>`${p}: ${scores[p]||0} نقطة${state.answered&&state.answered[p]?' ✓':''}`).join(' | ');
- document.getElementById('nextDuelBtn').style.display=(state.host===me && state.status==='playing' && state.revealed)?'inline-block':'none';
+  if(!state) return;
+  document.getElementById('duelGameCard').style.display = 'block';
+  document.getElementById('roomCodeDisplay').style.display = 'block';
+  document.getElementById('roomCodeValue').textContent = activeRoomCode;
+
+  const players = state.players || [];
+  const me = currentUser ? currentUser.username : null;
+
+  if(state.status === 'waiting'){
+    document.getElementById('duelStatus').textContent = 'بننتظر صاحبك يدخل الغرفة...';
+  } else if(state.status === 'finished'){
+    document.getElementById('duelStatus').textContent = 'خلص التحدي! 🎉';
+  } else {
+    document.getElementById('duelStatus').textContent = 'اختار الحرف اللي هتسمعه';
+  }
+
+  const choices = document.getElementById('duelChoices');
+  choices.innerHTML = '';
+  const roundLetters = state.roundLetters;
+  document.getElementById('duelListenBtn').onclick = () => { if(roundLetters) speak(LETTERS[roundLetters.correct].name); };
+
+  if(state.status === 'playing' && roundLetters){
+    const alreadyAnswered = state.answers && me && state.answers[me] !== undefined;
+    roundLetters.options.forEach((letterIdx, optIdx) => {
+      const letterObj = LETTERS[letterIdx];
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = letterObj.l;
+      btn.disabled = !!alreadyAnswered;
+      btn.onclick = () => answerDuel(optIdx);
+      choices.appendChild(btn);
+    });
+    if(!alreadyAnswered){ const sk = activeRoomCode + ':' + (state.round || 0) + ':' + roundLetters.correct; if(sk !== duelSpokenKey){ duelSpokenKey = sk; speak(LETTERS[roundLetters.correct].name); } }
+  }
+
+  const scores = state.scores || {};
+  document.getElementById('duelScores').textContent = players.map(p => {
+    const answered = state.answers && state.answers[p] !== undefined;
+    return `${p}: ${scores[p] || 0} نجمة${answered ? ' ✓' : ''}`;
+  }).join('   |   ');
+
+  const bothAnswered = players.length >= 2 && players.every(p => state.answers && state.answers[p] !== undefined);
+  document.getElementById('nextDuelBtn').style.display = (state.host === me && state.status === 'playing' && bothAnswered) ? 'inline-block' : 'none';
 }
+
 async function createDuelRoom(){
- if(!currentUser){roomMsg('سجّل الدخول أولًا.');return;}
- roomMsg('جارٍ إنشاء الغرفة...'); const r=await apiCall('createRoom',{username:currentUser.username,password:currentUser.password,level:getDifficultyLevel()});
- if(!r.ok){roomMsg(r.error||'تعذر إنشاء الغرفة. تأكد من تحديث Google Apps Script.');return;}
- activeRoomCode=r.code; document.getElementById('roomCodeDisplay').style.display='block';document.getElementById('roomCodeValue').textContent=r.code;roomMsg('الغرفة جاهزة! ابعت الكود لصاحبك.'); startRoomPolling();
+  if(!currentUser){ roomMsg('سجل دخولك الأول.'); return; }
+  roomMsg('بننشئ الغرفة...');
+  const r = await apiCall('createRoom', { username: currentUser.username, password: currentUser.password });
+  if(!r.ok){ roomMsg(r.error || 'في مشكلة، جرب تاني.'); return; }
+  activeRoomCode = r.code;
+  document.getElementById('roomCodeDisplay').style.display = 'block';
+  document.getElementById('roomCodeValue').textContent = r.code;
+  roomMsg('الغرفة جاهزة! ابعت الكود لصاحبك.');
+  startRoomPolling();
 }
 async function joinDuelRoom(){
- if(!currentUser){roomMsg('سجّل الدخول أولًا.');return;}
- const code=document.getElementById('joinRoomCode').value.trim().toUpperCase(); if(!code){roomMsg('اكتب كود الغرفة أولًا.');return;}
- roomMsg('جارٍ دخول الغرفة...');const r=await apiCall('joinRoom',{username:currentUser.username,password:currentUser.password,code});
- if(!r.ok){roomMsg(r.error||'لم نتمكن من دخول الغرفة.');return;} activeRoomCode=code;roomMsg('دخلت الغرفة بنجاح!');startRoomPolling();
+  if(!currentUser){ roomMsg('سجل دخولك الأول.'); return; }
+  const code = document.getElementById('joinRoomCode').value.trim().toUpperCase();
+  if(!code){ roomMsg('اكتب كود الغرفة الأول.'); return; }
+  roomMsg('بندخل الغرفة...');
+  const r = await apiCall('joinRoom', { username: currentUser.username, password: currentUser.password, code });
+  if(!r.ok){ roomMsg(r.error || 'مقدرناش ندخل الغرفة.'); return; }
+  activeRoomCode = code;
+  roomMsg('دخلت الغرفة! 🎉');
+  startRoomPolling();
 }
-async function startRoomPolling(){if(roomPollTimer)clearInterval(roomPollTimer);await pollRoom();roomPollTimer=setInterval(pollRoom,1800);}
-async function pollRoom(){if(!activeRoomCode||!currentUser)return;const r=await apiCall('getRoom',{username:currentUser.username,password:currentUser.password,code:activeRoomCode});if(!r.ok){roomMsg(r.error||'انقطع الاتصال بالغرفة.');return;}renderDuelState(r.room);if(r.room.status==='finished'){roomMsg('انتهى التحدي! تقدروا تبدأوا تحديًا جديدًا بإنشاء غرفة جديدة.');clearInterval(roomPollTimer);roomPollTimer=null;}}
-async function answerDuel(index){if(!activeRoomCode)return;const r=await apiCall('answerRoom',{username:currentUser.username,password:currentUser.password,code:activeRoomCode,answer:index});if(!r.ok)roomMsg(r.error||'تعذر تسجيل إجابتك.');else await pollRoom();}
-async function nextDuelRound(){const r=await apiCall('nextRoomRound',{username:currentUser.username,password:currentUser.password,code:activeRoomCode});if(!r.ok)roomMsg(r.error||'تعذر الانتقال للسؤال التالي.');else await pollRoom();}
-async function leaveDuelRoom(){if(roomPollTimer)clearInterval(roomPollTimer);roomPollTimer=null;activeRoomCode='';activeRoomState=null;document.getElementById('duelGameCard').style.display='none';document.getElementById('roomCodeDisplay').style.display='none';roomMsg('أنشئ غرفة أو أدخل كود صاحبك.');}
-document.getElementById('createRoomBtn')?.addEventListener('click',createDuelRoom);
-document.getElementById('joinRoomBtn')?.addEventListener('click',joinDuelRoom);
-document.getElementById('nextDuelBtn')?.addEventListener('click',nextDuelRound);
-document.getElementById('leaveRoomBtn')?.addEventListener('click',leaveDuelRoom);
-document.getElementById('copyRoomCodeBtn')?.addEventListener('click',()=>{if(activeRoomCode&&navigator.clipboard)navigator.clipboard.writeText(activeRoomCode).then(()=>roomMsg('تم نسخ كود الغرفة.')).catch(()=>roomMsg('انسخ الكود يدويًا: '+activeRoomCode));});
-
+async function startRoomPolling(){
+  if(roomPollTimer) clearInterval(roomPollTimer);
+  await pollRoom();
+  roomPollTimer = setInterval(pollRoom, 1800);
+}
+async function pollRoom(){
+  if(!activeRoomCode || !currentUser) return;
+  const r = await apiCall('getRoom', { username: currentUser.username, password: currentUser.password, code: activeRoomCode });
+  if(!r.ok){ roomMsg(r.error || 'قطع الاتصال بالغرفة.'); return; }
+  renderDuelState(r.room);
+  if(r.room.status === 'finished' && roomPollTimer){ clearInterval(roomPollTimer); roomPollTimer = null; }
+}
+async function answerDuel(optIdx){
+  if(!activeRoomCode) return;
+  const r = await apiCall('answerRoom', { username: currentUser.username, password: currentUser.password, code: activeRoomCode, answer: optIdx });
+  if(r.ok){
+    if(r.correct){ playSFX('win'); addScore(1); } else { playSFX('lose'); }
+    await pollRoom();
+  } else {
+    roomMsg(r.error || 'حصلت مشكلة.');
+  }
+}
+async function nextDuelRound(){
+  const r = await apiCall('nextRoomRound', { username: currentUser.username, password: currentUser.password, code: activeRoomCode });
+  if(r.ok) await pollRoom(); else roomMsg(r.error || 'حصلت مشكلة.');
+}
+function leaveDuelRoom(){
+  if(roomPollTimer){ clearInterval(roomPollTimer); roomPollTimer = null; }
+  if(activeRoomCode && currentUser) apiCall('leaveRoom', { username: currentUser.username, password: currentUser.password, code: activeRoomCode });
+  activeRoomCode = ''; duelSpokenKey = '';
+  document.getElementById('duelGameCard').style.display = 'none';
+  document.getElementById('roomCodeDisplay').style.display = 'none';
+  roomMsg('اعمل غرفة أو اكتب كود صاحبك.');
+}
+document.getElementById('createRoomBtn')?.addEventListener('click', createDuelRoom);
+document.getElementById('joinRoomBtn')?.addEventListener('click', joinDuelRoom);
+document.getElementById('nextDuelBtn')?.addEventListener('click', nextDuelRound);
+document.getElementById('leaveRoomBtn')?.addEventListener('click', leaveDuelRoom);
+document.getElementById('copyRoomCodeBtn')?.addEventListener('click', () => {
+  if(activeRoomCode && navigator.clipboard) navigator.clipboard.writeText(activeRoomCode).then(() => roomMsg('اتنسخ الكود!')).catch(() => roomMsg('انسخ الكود بإيدك: ' + activeRoomCode));
+});
 
 const LETTERS = [
   {l:'أ', name:'أَلِف', word:'أَسَد', emoji:'🦁'}, {l:'ب', name:'بَاء', word:'بَطَّة', emoji:'🦆'}, {l:'ت', name:'تَاء', word:'تُفَّاحَة', emoji:'🍎'},
@@ -1245,7 +946,7 @@ const wordsList = [
   {word:'أَخْضَر', parts:['أَخْ', 'ضَر'], emoji:'🟢'}, {word:'دَائِرَة', parts:['دَا', 'ئِ', 'رَة'], emoji:'⭕'}
 ];
 
-let currentUser = null; let score = 0; let currentLevel = 1; let leaderboardTimer = null;
+let currentUser = null; let score = 0; let leaderboardTimer = null;
 function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
 const pickHistory = {};
@@ -1274,62 +975,73 @@ function normalizeArabic(text) {
 
 /* ================== AUTH ================== */
 document.querySelectorAll('.auth-tab').forEach(t=>{ t.addEventListener('click', ()=>{ document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.auth-screen').forEach(x=>x.classList.remove('active')); t.classList.add('active'); document.getElementById('auth-' + t.dataset.authtab).classList.add('active'); }); });
-document.getElementById('signupBtn').addEventListener('click', async ()=>{ const u = document.getElementById('signupUsername').value.trim(); const p = document.getElementById('signupPassword').value; const m = document.getElementById('signupMsg'); m.className = 'auth-msg'; m.textContent = 'نجهز لك مساحتك...'; const res = await apiCall('signup', { username:u, password:p }); if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('signupRemember').checked); else { m.className = 'auth-msg err'; m.textContent = res.error || 'خطأ أثناء التسجيل'; } });
-document.getElementById('loginBtn').addEventListener('click', async ()=>{ const u = document.getElementById('loginUsername').value.trim(); const p = document.getElementById('loginPassword').value; const m = document.getElementById('loginMsg'); m.className = 'auth-msg'; m.textContent = 'جارِ الدخول...'; const res = await apiCall('login', { username:u, password:p }); if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('loginRemember').checked); else { m.className = 'auth-msg err'; m.textContent = res.error || 'بيانات غير صحيحة'; } });
-function loginSuccess(username, password, remoteScore, remember){ currentUser = { username, password }; score = remoteScore; if(remember) try{ localStorage.setItem('huroofi_user', JSON.stringify(currentUser)); }catch(e){} document.getElementById('authSection').style.display = 'none'; document.getElementById('app').classList.add('active'); setTimeout(()=>{if(typeof initOpenWorld==='function')initOpenWorld();},120); document.getElementById('playerNameLabel').textContent = currentUser.username; updateGamificationUI(false); refreshLeaderboard(); leaderboardTimer = setInterval(refreshLeaderboard, 7000); initScoreSync(); }
-document.getElementById('logoutBtn').addEventListener('click', ()=>{ flushScore(); currentUser = null; try{ localStorage.removeItem('huroofi_user'); }catch(e){} if(leaderboardTimer) clearInterval(leaderboardTimer); if(scoreRetryTimer) clearInterval(scoreRetryTimer); document.getElementById('app').classList.remove('active'); document.getElementById('authSection').style.display = 'block'; });
+document.getElementById('signupBtn').addEventListener('click', async ()=>{ const u = document.getElementById('signupUsername').value.trim(); const p = document.getElementById('signupPassword').value; const m = document.getElementById('signupMsg'); m.className = 'auth-msg'; m.textContent = 'بنجهزلك مكانك...'; const res = await apiCall('signup', { username:u, password:p }); if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('signupRemember').checked); else { m.className = 'auth-msg err'; m.textContent = res.error || 'في مشكلة حصلت، جرب تاني'; } });
+document.getElementById('loginBtn').addEventListener('click', async ()=>{ const u = document.getElementById('loginUsername').value.trim(); const p = document.getElementById('loginPassword').value; const m = document.getElementById('loginMsg'); m.className = 'auth-msg'; m.textContent = 'بنسجلك دخول...'; const res = await apiCall('login', { username:u, password:p }); if(res.ok) loginSuccess(res.username, p, res.score || 0, document.getElementById('loginRemember').checked); else { m.className = 'auth-msg err'; m.textContent = res.error || 'البيانات مش صح، جرب تاني'; } });
+function loginSuccess(username, password, remoteScore, remember){ currentUser = { username, password }; score = remoteScore; if(remember) try{ localStorage.setItem('huroofi_user', JSON.stringify(currentUser)); }catch(e){} confirmedJourney = loadJourney(); document.getElementById('authSection').style.display = 'none'; document.getElementById('app').classList.add('active'); document.getElementById('playerNameLabel').textContent = currentUser.username; updateGamificationUI(false); refreshLeaderboard(); leaderboardTimer = setInterval(refreshLeaderboard, 7000); initScoreSync(); renderSongsGrid(); document.body.classList.add('in-app'); friendOnLogin(); }
+document.getElementById('logoutBtn').addEventListener('click', ()=>{ flushScore(); stopFriend(); currentUser = null; document.body.classList.remove('in-app'); try{ localStorage.removeItem('huroofi_user'); }catch(e){} if(leaderboardTimer) clearInterval(leaderboardTimer); if(scoreRetryTimer) clearInterval(scoreRetryTimer); document.getElementById('app').classList.remove('active'); document.getElementById('authSection').style.display = 'block'; });
 (function tryAutoLogin(){ try{ const saved = localStorage.getItem('huroofi_user'); if(saved){ const u = JSON.parse(saved); apiCall('login', { username: u.username, password: u.password }).then(res=>{ if(res.ok) loginSuccess(res.username, u.password, res.score || 0, true); else localStorage.removeItem('huroofi_user'); }); } }catch(e){} })();
 
-/* ================== GAMIFICATION SYSTEM (نظام التهنئة والـ 20 نقطة) ================== */
-const levelModal = document.getElementById('levelModal');
-document.getElementById('lvlModalCloseBtn').onclick = () => levelModal.classList.remove('active');
+/* ================== نظام الرحلات (بدل المستويات المستمرة) ==================
+   كل رحلة ليها اسم وعدد كلمات مفتوحة. الطفل لازم يدوس بنفسه "يلا للرحلة
+   الجاية" عشان ينتقل، مش بيتنقل أوتوماتيك، عشان يحس بإنجاز واضح. */
+const JOURNEYS = [
+  { name: 'رحلة الحروف 🔤', threshold: 0, wordCount: 24, doneLine: 'خلصت رحلة الحروف! بقيت تعرف حروف كتير' },
+  { name: 'رحلة الكلمات 📖', threshold: 60, wordCount: 48, doneLine: 'خلصت رحلة الكلمات! بقيت تعرف كلمات أكتر بكتير' },
+  { name: 'رحلة القارئ الصغير 🌟', threshold: 150, wordCount: wordsList.length, doneLine: 'خلصت رحلة القارئ الصغير! إنت بقيت قارئ حقيقي' }
+];
+let confirmedJourney = 1; // 1-based: الرحلة اللي الطفل واقف فيها فعليًا دلوقتي
+const journeyModal = document.getElementById('journeyModal');
+document.getElementById('journeyModalCloseBtn').onclick = () => {
+  journeyModal.classList.remove('active');
+  confirmedJourney = Math.min(confirmedJourney + 1, JOURNEYS.length);
+  saveJourney(confirmedJourney);
+  updateGamificationUI(false);
+};
 
-function getPlayerTitle(lvl) {
-  if (lvl === 1) return 'مبتدئ 🐣';
-  if (lvl === 2) return 'مكتشف الحروف 🔍';
-  if (lvl === 3) return 'مستكشف الكلمات 📚';
-  if (lvl === 4) return 'بطل القراءة 🌟';
-  if (lvl === 5) return 'عبقري اللغة 💡';
-  return 'أسطورة المعرفة 👑';
+function journeyKey(){ return currentUser ? ('journey_' + currentUser.username) : null; }
+function loadJourney(){ if(!currentUser) return 1; try{ const v = localStorage.getItem(journeyKey()); return v ? (parseInt(v,10) || 1) : 1; }catch(e){ return 1; } }
+function saveJourney(v){ if(!currentUser) return; try{ localStorage.setItem(journeyKey(), String(v)); }catch(e){} }
+
+function wordsForJourney(){
+  const idx = Math.max(1, Math.min(confirmedJourney, JOURNEYS.length)) - 1;
+  return wordsList.slice(0, JOURNEYS[idx].wordCount);
 }
 
 function updateGamificationUI(showCelebration = true) {
   document.getElementById('playerScoreLabel').textContent = score;
-  
-  // المستوى من 20 درجة
-  const newLvl = Math.floor(score / 20) + 1;
-  const ptsInCurrentLvl = score % 20;
-  const progressPct = (ptsInCurrentLvl / 20) * 100;
-  
-  document.getElementById('levelProgressBar').style.width = progressPct + '%';
-  document.getElementById('levelNumberLabel').textContent = newLvl;
-  document.getElementById('levelNextPtsLabel').textContent = `باقي ${20 - ptsInCurrentLvl} نقاط للمستوى التالي`;
-  
-  const title = getPlayerTitle(newLvl);
-  document.getElementById('playerTitleLabel').textContent = title;
 
-  if (showCelebration && newLvl > currentLevel) {
-    const pName = currentUser ? currentUser.username : 'يا بطل';
-    const lvlText = `مبروك يا ${pName}! وصلت للمستوى ${newLvl}، وأصبحت الآن ${title}! أنت رائع جداً!`;
-    
-    document.getElementById('lvlModalTitle').textContent = `مبروك يا ${pName}! 🎉`;
-    document.getElementById('lvlModalSub').textContent = `وصلت إلى المستوى ${newLvl}`;
-    document.getElementById('lvlModalTitleDesc').textContent = `أصبحت الآن: ${title} 🏆\nأنت بطل رائع جداً!`;
-    
-    levelModal.classList.add('active');
-    playSFX('win');
-    speak(lvlText);
+  const curIdx = Math.max(1, Math.min(confirmedJourney, JOURNEYS.length)) - 1;
+  const cur = JOURNEYS[curIdx];
+  const next = JOURNEYS[curIdx + 1];
+  document.getElementById('journeyNameLabel').textContent = cur.name;
+
+  if (next) {
+    const span = next.threshold - cur.threshold;
+    const progressPct = Math.max(0, Math.min(100, ((score - cur.threshold) / span) * 100));
+    document.getElementById('levelProgressBar').style.width = progressPct + '%';
+    const remaining = Math.max(0, next.threshold - score);
+    document.getElementById('levelNextPtsLabel').textContent = remaining > 0 ? `باقيلك ${remaining} نقطة تخلص الرحلة دي` : 'خلصت الرحلة دي! 🎉';
+  } else {
+    document.getElementById('levelProgressBar').style.width = '100%';
+    document.getElementById('levelNextPtsLabel').textContent = 'إنت في آخر رحلة، كمل تجمع نقط 🌟';
   }
-  currentLevel = newLvl;
-  if(document.getElementById('difficultyMap')) renderDifficultyMap();
 
-  // الشارات حسب نظام 20 نقطة
+  // لو وصل لعتبة الرحلة الجاية ولسه مأكدهاش، اعرض شاشة الاحتفال واستنى يدوس هو بنفسه
+  if (showCelebration && next && score >= next.threshold) {
+    const pName = currentUser ? currentUser.username : 'يا بطل';
+    const line = `مبروك يا ${pName}! ${cur.doneLine}. يلا بينا للرحلة الجاية: ${next.name}`;
+    document.getElementById('journeyModalTitle').textContent = `مبروك يا ${pName}! 🎉`;
+    document.getElementById('journeyModalDesc').textContent = `${cur.doneLine} 🏆\nجاهز تبدأ: ${next.name}؟`;
+    journeyModal.classList.add('active');
+    playSFX('win'); triggerConfetti();
+    speak(line);
+  }
+
+  // الشارات (مستقلة عن الرحلات، نقط تراكمية بسيطة)
   if(score >= 20) document.getElementById('badge-1').classList.add('unlocked');
   else document.getElementById('badge-1').classList.remove('unlocked');
-
   if(score >= 60) document.getElementById('badge-2').classList.add('unlocked');
   else document.getElementById('badge-2').classList.remove('unlocked');
-
   if(score >= 120) document.getElementById('badge-3').classList.add('unlocked');
   else document.getElementById('badge-3').classList.remove('unlocked');
 }
@@ -1403,139 +1115,6 @@ window.addEventListener('pagehide', flushWithBeacon);
 async function refreshLeaderboard(){ const res = await fetchLeaderboard(); const list = document.getElementById('leaderboardList'); if(res.ok && res.leaderboard) list.innerHTML = res.leaderboard.map((row, i)=>`<div class="lb-row ${currentUser && row.username===currentUser.username ? 'me' : ''}"><span class="lb-rank">${i+1}</span><span class="lb-name">${escapeText(row.username)}</span><span class="lb-score">${row.score} 🌟</span></div>`).join(''); }
 function escapeText(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
-/* ================== SESAME STORY ADVENTURE ==================
-   Additive module: does not replace or rename any legacy game functions.
-   Each chapter reward is granted once per signed-in username on this browser.
-*/
-const STORY_KEY_PREFIX = 'knowledge_sesame_story_v1:';
-const STORY_CHAPTERS = [
-  {id:0,emoji:'🏡',name:'بداية الحكاية',title:'رسالة غريبة',art:'🦊📜',text:'كان يا ما كان، في غابة جميلة، سمسم لقى رسالة جنب شجرة كبيرة. مكتوب فيها: «مكتبة الحكايات هتفقد نورها لو محدش جمع حروف كلمة سِرّ النجمة!»\nسمسم بص لك وقال: يا بطل، نبدأ بإيه؟',choices:[{label:'نقرأ الرسالة بهدوء ونحدد المطلوب',correct:true,feedback:'برافو! القراءة بهدوء بتساعدنا نفهم المهمة.',next:'chapter'},{label:'نجري من غير ما نقرأ',correct:false,feedback:'نجرب تاني. الرسالة فيها دليل مهم، فلازم نقراها الأول.',next:'retry'}]},
-  {id:1,emoji:'🌳',name:'غابة الحروف',title:'حارس الغابة',art:'🌳🐦',text:'وصلتوا لغابة الحروف. عصفور صغير واقف على بوابة ومش هيفتحها غير لما نعرف أول حرف في كلمة «شمس».',choices:[{label:'س',correct:false,feedback:'قريب، لكن كلمة شمس بتبدأ بحرف الشين: ش.',next:'retry'},{label:'ش',correct:true,feedback:'عاش! الشين أول حرف في شمس. البوابة فتحت!',next:'chapter'},{label:'م',correct:false,feedback:'ده حرف موجود في كلمات كتير، لكن مش أول حرف في شمس.',next:'retry'}]},
-  {id:2,emoji:'🏡',name:'قرية الكلمات',title:'الكلمة المبعثرة',art:'📚🧩',text:'في القرية، قابلتوا قطة ضايعة من بيتها. معاها حروف مبعثرة: «ب ـ ا ـ ب». رتّب الحروف عشان تعرف اسم الحاجة اللي بتدخلنا البيت.',choices:[{label:'باب',correct:true,feedback:'ممتاز! الحروف كوّنت كلمة «باب». القطة عرفت طريق البيت.',next:'chapter'},{label:'بطة',correct:false,feedback:'حاول تاني، ركّز في الحروف اللي قدامك: ب، ا، ب.',next:'retry'},{label:'كتاب',correct:false,feedback:'كلمة جميلة، لكن حروفها مختلفة عن الحروف اللي معانا.',next:'retry'}]},
-  {id:3,emoji:'🏝️',name:'جزيرة الألغاز',title:'الجسر السحري',art:'🏝️🌉',text:'عشان تعدّوا الجسر، لازم تحلوا لغز السلحفاة: «عندي ٣ تفاحات، وصاحبي اداني تفاحتين. بقى معايا كام تفاحة؟»',choices:[{label:'٤ تفاحات',correct:false,feedback:'نعد سوا: ٣، وبعدها ٤، وبعدها ٥.',next:'retry'},{label:'٥ تفاحات',correct:true,feedback:'صح! ٣ + ٢ = ٥. الجسر ظهر قدامكم!',next:'chapter'},{label:'٦ تفاحات',correct:false,feedback:'نجرب تاني: ابدأ بثلاثة وعدّ تفاحتين كمان.',next:'retry'}]},
-  {id:4,emoji:'⭐',name:'كوكب المعرفة',title:'سر النجمة الأخيرة',art:'🚀⭐📖',text:'وصلتوا للكوكب الأخير. النجمة هتنور لما تختاروا التصرف الصح: صاحبك غلط وهو بيقرأ كلمة. تعمل إيه؟',choices:[{label:'أضحك عليه وأسيبه',correct:false,feedback:'إحنا أصحاب وبنساعد بعض. جرب اختيار تاني.',next:'retry'},{label:'أشجعه ونقرأ الكلمة مع بعض',correct:true,feedback:'أحسنت! العلم بيكبر لما نتعاون ونشجع بعض. نجمة المعرفة نورت!',next:'finish'},{label:'أجاوب مكانه من غير ما أديه فرصة',correct:false,feedback:'الأحسن نساعده يحاول بنفسه ونشجعه.',next:'retry'}]}
-];
-let storyState = null;
-function storyUserKey(){
-  const who = (typeof currentUser !== 'undefined' && currentUser && currentUser.username) ? currentUser.username : 'guest';
-  return STORY_KEY_PREFIX + String(who).toLowerCase().replace(/[^\w\u0600-\u06FF-]/g,'_');
-}
-function loadStoryState(){
-  try{
-    const raw = JSON.parse(localStorage.getItem(storyUserKey()) || 'null');
-    if(raw && Array.isArray(raw.done) && Number.isInteger(raw.chapter)) return {chapter:Math.max(0,Math.min(4,raw.chapter)),done:raw.done.filter(n=>Number.isInteger(n)&&n>=0&&n<=4),finished:!!raw.finished};
-  }catch(e){}
-  return {chapter:0,done:[],finished:false};
-}
-function saveStoryState(){try{localStorage.setItem(storyUserKey(),JSON.stringify(storyState));}catch(e){}}
-function renderStoryAdventure(){
-  storyState = loadStoryState();
-  const map = document.getElementById('storyMap');
-  map.innerHTML = '';
-  STORY_CHAPTERS.forEach(ch=>{
-    const b=document.createElement('button');
-    b.type='button'; b.className='story-node'+(storyState.done.includes(ch.id)?' done':'')+(ch.id===storyState.chapter&&!storyState.finished?' current':'')+(ch.id>storyState.chapter&&!storyState.done.includes(ch.id)&&!storyState.finished?' locked':'');
-    b.setAttribute('aria-label','المستوى '+(ch.id+1)+': '+ch.name);
-    b.innerHTML='<span class="level-badge">'+(storyState.done.includes(ch.id)?'✓':(ch.id+1))+'</span><span class="emoji">'+ch.emoji+'</span>'+escapeText(ch.name)+'<small>'+(storyState.done.includes(ch.id)?'🟢 خلصته':(ch.id>storyState.chapter&&!storyState.finished?'🔒 مقفول':'⭐ العب واكسب'))+'</small>';
-    b.disabled = ch.id>storyState.chapter&&!storyState.done.includes(ch.id)&&!storyState.finished;
-    b.addEventListener('click',()=>{storyState.chapter=ch.id;storyState.finished=false;saveStoryState();renderStoryAdventure();});
-    map.appendChild(b);
-  });
-  document.getElementById('storyStars').textContent=storyState.done.length*5;
-  document.getElementById('storyChapterCount').textContent=storyState.done.length+' / 5';
-  document.getElementById('storyProgressBar').style.width=(storyState.done.length/5*100)+'%';
-  const hint=document.getElementById('storyMapHint');
-  if(hint) hint.textContent=storyState.done.length===5?'🏆 بطل المغامرة! كل المستويات مفتوحة':('المستوى '+(storyState.done.length+1)+' من ٥ — كمّل عشان تفتح اللي بعده');
-  renderStoryScene();
-}
-function renderStoryScene(){
-  const root=document.getElementById('storyScene');
-  if(storyState.finished && storyState.done.length===5){
-    root.innerHTML='<div class="story-scene-art">🏆🌟🎉</div><h3>مبروك يا بطل! أنقذت مكتبة الحكايات!</h3><p class="story-text">جمعت حروف المعرفة، وساعدت أصحابك، وحليت الألغاز. أنت بطل القراءة والتعاون! تقدر تعيد الحكاية وتراجع الفصول في أي وقت.</p><div class="story-choices"><button class="feature-btn" id="storyReplayBtn">🔁 أعيد المغامرة</button><button class="feature-btn secondary" id="storySpeakEndBtn">🔊 اسمع التهنئة</button></div>';
-    document.getElementById('storyReplayBtn').onclick=resetStoryAdventure;
-    document.getElementById('storySpeakEndBtn').onclick=()=>speak('مبروك يا بطل! أنقذت مكتبة الحكايات. أنت بطل القراءة والتعاون!');
-    return;
-  }
-  const ch=STORY_CHAPTERS[storyState.chapter]||STORY_CHAPTERS[0];
-  root.innerHTML='<div class="story-scene-art">'+ch.art+'</div><h3>'+escapeText(ch.title)+'</h3><p class="story-text">'+escapeText(ch.text)+'</p><div class="story-choices" id="storyChoices"></div><div class="story-feedback" id="storyFeedback" role="status"></div><div class="story-bottom"><button class="feature-btn secondary" id="storyReadBtn">🔊 اسمع الحكاية</button><span class="feature-note">الفصل '+(ch.id+1)+' من '+STORY_CHAPTERS.length+'</span></div>';
-  const choices=document.getElementById('storyChoices');
-  ch.choices.forEach((choice,index)=>{
-    const b=document.createElement('button');b.type='button';b.className='story-choice';b.textContent=choice.label;
-    b.addEventListener('click',()=>chooseStoryAnswer(ch,choice,b));choices.appendChild(b);
-  });
-  document.getElementById('storyReadBtn').onclick=()=>speak(ch.text);
-}
-function chooseStoryAnswer(ch,choice,button){
-  const feedback=document.getElementById('storyFeedback');
-  feedback.style.display='block';feedback.textContent=choice.feedback;
-  if(!choice.correct){playSFX('lose');speak(choice.feedback);return;}
-  document.querySelectorAll('#storyChoices button').forEach(b=>b.disabled=true);
-  playSFX('win');
-  const firstTime=!storyState.done.includes(ch.id);
-  if(firstTime){storyState.done.push(ch.id);storyState.done.sort((a,b)=>a-b);addScore(5);}
-  if(choice.next==='finish'){
-    storyState.finished=true;saveStoryState();
-    feedback.textContent+=' كسبت ٥ نقاط للفصل ده، ومجموع نقاط القصة '+(storyState.done.length*5)+'.';
-    triggerConfetti();
-    setTimeout(()=>{renderStoryAdventure();},900);
-  }else{
-    storyState.chapter=Math.min(ch.id+1,STORY_CHAPTERS.length-1);saveStoryState();
-    if(firstTime) feedback.textContent+=' 🎉 كسبت ٥ نقاط! الفصل اللي بعده اتفتح.';
-    setTimeout(()=>renderStoryAdventure(),900);
-  }
-  speak(choice.feedback);
-}
-function resetStoryAdventure(){
-  if(!confirm('هنبدأ الحكاية من الأول. النقاط اللي كسبتها قبل كده هتفضل في حسابك. موافق؟'))return;
-  storyState={chapter:0,done:[],finished:false};saveStoryState();renderStoryAdventure();
-}
-document.getElementById('storyResetBtn').addEventListener('click',resetStoryAdventure);
-
-/* ================== DAILY HERO MISSIONS ==================
-   Small daily practice challenges; independent from the legacy games.
-   Each challenge can award points only once per user per local day.
-*/
-const DAILY_MISSION_PREFIX = 'knowledge_daily_hero_v1:';
-const DAILY_MISSION_POOL = [
-  {q:'إيه أول حرف في كلمة «قمر»؟',a:['ق','م','ر'],correct:0,ok:'عاش! قاف هي أول حرف في قمر.',hint:'انطق الكلمة ببطء: قَـمَـر.'},
-  {q:'كام يساوي ٢ + ٣؟',a:['٤','٥','٦'],correct:1,ok:'ممتاز! اتنين وتلاتة يساووا خمسة.',hint:'ابدأ من ٢ وعدّ ٣ خطوات.'},
-  {q:'اختار الكلمة اللي بتدل على حيوان.',a:['كرسي','قطة','باب'],correct:1,ok:'صح! القطة حيوان أليف.',hint:'فكّر في الكائن اللي بيتحرك وبيموء.'},
-  {q:'رتّب الحروف في دماغك: «ت ـ و ـ ت»',a:['توت','بيت','تاج'],correct:0,ok:'برافو! الكلمة هي توت.',hint:'فاكهة صغيرة وحروفها ت و و ت.'},
-  {q:'إيه عكس كلمة «كبير»؟',a:['طويل','صغير','سريع'],correct:1,ok:'مظبوط! عكس كبير هو صغير.',hint:'لما الحجم يبقى مش كبير بنقول إيه؟'},
-  {q:'معاك ٥ نجوم وخدت نجمة كمان. بقوا كام؟',a:['٥','٦','٧'],correct:1,ok:'شطّور! خمسة زائد واحد يساوي ستة.',hint:'عدّ النجوم كلها واحدة واحدة.'},
-  {q:'أي كلمة بتبدأ بحرف «ب»؟',a:['سمكة','بطة','شمس'],correct:1,ok:'تمام! بطة بتبدأ بحرف الباء.',hint:'اسمع أول صوت في كل كلمة.'},
-  {q:'لما صاحبك يغلط، نعمل إيه؟',a:['نشجعه ونساعده','نضحك عليه','نمنعه يحاول'],correct:0,ok:'أحسنت! التشجيع بيساعدنا نتعلم سوا.',hint:'اختار التصرف اللي يخلي صاحبك مبسوط ويكمل.'},
-  {q:'أي رقم أكبر؟',a:['٣','٨','٥'],correct:1,ok:'ممتاز! ٨ أكبر من ٣ و٥.',hint:'تخيّل الأرقام على خط الأعداد.'}
-];
-function dailyMissionKey(){
-  const who=(typeof currentUser!=='undefined'&&currentUser&&currentUser.username)?currentUser.username:'guest';
-  const d=new Date();const day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  return DAILY_MISSION_PREFIX+String(who).toLowerCase().replace(/[^\w\u0600-\u06FF-]/g,'_')+':'+day;
-}
-function getDailyMissions(){
-  let state={done:[],attempts:{}};try{const v=JSON.parse(localStorage.getItem(dailyMissionKey())||'null');if(v&&Array.isArray(v.done))state={done:v.done.filter(n=>Number.isInteger(n)&&n>=0&&n<3),attempts:v.attempts||{}};}catch(e){}
-  const dayIndex=Math.floor(Date.now()/86400000);const offset=(dayIndex%DAILY_MISSION_POOL.length+DAILY_MISSION_POOL.length)%DAILY_MISSION_POOL.length;
-  state.items=[0,1,2].map(i=>({...DAILY_MISSION_POOL[(offset+i*3)%DAILY_MISSION_POOL.length],poolId:(offset+i*3)%DAILY_MISSION_POOL.length}));return state;
-}
-let dailyMissionState=null;
-function saveDailyMissions(){try{localStorage.setItem(dailyMissionKey(),JSON.stringify({done:dailyMissionState.done,attempts:dailyMissionState.attempts}));}catch(e){}}
-function renderDailyMissions(){
-  const grid=document.getElementById('dailyMissionGrid');if(!grid)return;dailyMissionState=getDailyMissions();grid.innerHTML='';
-  dailyMissionState.items.forEach((m,i)=>{
-    const card=document.createElement('div');card.className='daily-card';
-    const title=document.createElement('h5');title.textContent=(i+1)+'. '+m.q;card.appendChild(title);
-    const opts=document.createElement('div');opts.className='daily-options';
-    m.a.forEach((label,j)=>{const b=document.createElement('button');b.type='button';b.className='daily-answer';b.textContent=label;b.disabled=dailyMissionState.done.includes(i);b.addEventListener('click',()=>answerDailyMission(i,j,b));opts.appendChild(b);});
-    card.appendChild(opts);const status=document.createElement('p');status.className='daily-status';status.id='dailyStatus'+i;status.textContent=dailyMissionState.done.includes(i)?'✅ خلصت المهمة وكسبت ٣ نقاط!':'';card.appendChild(status);grid.appendChild(card);
-  });
-  document.getElementById('dailyRewardCount').textContent='🎁 مكافآت اليوم: '+dailyMissionState.done.length+' / 3';
-}
-function answerDailyMission(i,j,button){
-  if(!dailyMissionState||dailyMissionState.done.includes(i))return;const m=dailyMissionState.items[i];const status=document.getElementById('dailyStatus'+i);
-  if(j===m.correct){dailyMissionState.done.push(i);dailyMissionState.done.sort((a,b)=>a-b);saveDailyMissions();addScore(3);status.textContent='🌟 '+m.ok+' كسبت ٣ نقاط!';button.classList.add('right');const card=button.closest('.daily-card');card.querySelectorAll('button').forEach(b=>b.disabled=true);document.getElementById('dailyRewardCount').textContent='🎁 مكافآت اليوم: '+dailyMissionState.done.length+' / 3';playSFX('win');speak(m.ok);if(dailyMissionState.done.length===3)triggerConfetti();}
-  else{status.textContent='💡 مش مشكلة! '+m.hint;button.classList.add('wrong');playSFX('lose');speak(m.hint);setTimeout(()=>button.classList.remove('wrong'),900);}
-}
-
 /* ================== NAVIGATION ================== */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -1543,7 +1122,6 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.classList.add('active'); btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     document.getElementById('screen-'+btn.dataset.tab).classList.add('active');
     
-    if(btn.dataset.tab === 'world') { initOpenWorld(); }
     if(btn.dataset.tab === 'draw') newDrawRound();
     if(btn.dataset.tab === 'speakLetter') newSpeakLetterRound();
     if(btn.dataset.tab === 'speakWord') newSpeakWordRound();
@@ -1552,78 +1130,10 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     if(btn.dataset.tab === 'listenImage') newListenImgRound();
     if(btn.dataset.tab === 'listenText') newListenTextRound();
     if(btn.dataset.tab === 'build') newBuildRound();
-    if(btn.dataset.tab === 'songs') renderSongs();
-    if(btn.dataset.tab === 'story') { renderStoryAdventure(); renderDailyMissions(); }
-    if(btn.dataset.tab === 'levels') renderDifficultyMap();
+    if(btn.dataset.tab === 'songs') renderSongsGrid();
     if(btn.dataset.tab === 'duel' && activeRoomCode) pollRoom();
   });
 });
-
-
-/* ================== CONNECTED OPEN WORLD ==================
-   Lightweight canvas world, no paid API and no external game engine.
-   Existing learning screens remain unchanged and are opened from landmarks.
-*/
-const OPEN_WORLD_KEY='boabatAlmarefa_openWorld_v1';
-const WORLD_W=2400, WORLD_H=1500;
-const worldZones={
- village:{name:'قرية المعرفة',x:410,y:420,emoji:'🏡',color:'#e8bb64',screen:'learn',radius:175,locked:false},
- forest:{name:'غابة الأسرار',x:950,y:330,emoji:'🌳',color:'#4f9b61',screen:'story',radius:160,locked:false},
- castle:{name:'قلعة سمسم',x:1460,y:410,emoji:'🏰',color:'#9b83cf',screen:'story',radius:175,locked:false},
- friends:{name:'ميدان الأصدقاء',x:1790,y:890,emoji:'🤝',color:'#67b9d0',screen:'duel',radius:160,locked:false},
- music:{name:'وادي الأغاني',x:900,y:1080,emoji:'🎵',color:'#ed8c8b',screen:'songs',radius:155,locked:false},
- secret:{name:'الجزيرة السرية',x:2030,y:300,emoji:'🔮',color:'#6c5b9e',screen:'story',radius:145,locked:true}
-};
-let worldState={x:410,y:575,stars:0,unlocked:{village:true,forest:true,castle:true,friends:true,music:true,secret:false},collected:[],lastZone:'village'};
-let worldCanvas=null,worldCtx=null,worldFrame=null,worldLastTime=0,worldKeys={},worldMovePointer=null,worldInitialized=false;
-function loadWorldState(){try{const raw=localStorage.getItem(OPEN_WORLD_KEY);if(raw){const d=JSON.parse(raw);worldState={...worldState,...d,unlocked:{...worldState.unlocked,...(d.unlocked||{})},collected:Array.isArray(d.collected)?d.collected:[]};}}catch(e){} }
-function saveWorldState(){try{localStorage.setItem(OPEN_WORLD_KEY,JSON.stringify(worldState));}catch(e){} const s=document.getElementById('worldStars');if(s)s.textContent=worldState.stars||0;}
-function worldDistance(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
-function getNearbyWorldZone(){let best=null,dist=Infinity;Object.entries(worldZones).forEach(([id,z])=>{const d=worldDistance(worldState,z);if(d<dist){dist=d;best={id,...z,distance:d};}});return best&&best.distance<best.radius?best:null;}
-function worldMessage(text){const el=document.getElementById('worldMessage');if(el)el.textContent=text;}
-function unlockWorldSecret(){const scoreValue=Number(typeof score!=='undefined'?score:0)||0;if(scoreValue>=40&&!worldState.unlocked.secret){worldState.unlocked.secret=true;saveWorldState();worldMessage('✨ إنجاز رائع! ظهرت بوابة الجزيرة السرية. تقدر تزورها من الخريطة.');playSFX('win');}}
-function initOpenWorld(){
- loadWorldState(); if(!worldCanvas){worldCanvas=document.getElementById('worldCanvas');if(!worldCanvas)return;worldCtx=worldCanvas.getContext('2d');}
- if(!worldInitialized){worldInitialized=true;
-  worldCanvas.addEventListener('pointerdown',e=>{const r=worldCanvas.getBoundingClientRect();const sx=worldCanvas.width/r.width,sy=worldCanvas.height/r.height;const px=(e.clientX-r.left)*sx,py=(e.clientY-r.top)*sy;const cam=worldCamera();worldState.x=Math.max(40,Math.min(WORLD_W-40,cam.x+px));worldState.y=Math.max(40,Math.min(WORLD_H-40,cam.y+py));const near=getNearbyWorldZone();if(near)worldMessage('وصلت إلى '+near.name+'! اضغط «ادخل المكان القريب» للبدء.');saveWorldState();});
-  document.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'].includes(e.key)&&document.getElementById('screen-world')?.classList.contains('active')){worldKeys[e.key.toLowerCase()]=true;e.preventDefault();}if((e.key==='Enter'||e.key===' ')&&document.getElementById('screen-world')?.classList.contains('active'))enterNearbyWorldZone();});
-  document.addEventListener('keyup',e=>{worldKeys[e.key.toLowerCase()]=false;});
-  document.querySelectorAll('[data-move]').forEach(b=>{const dir=b.dataset.move;const down=e=>{e.preventDefault();worldMovePointer=dir;};const up=e=>{e.preventDefault();if(worldMovePointer===dir)worldMovePointer=null;};b.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,up));});
-  document.getElementById('worldEnterBtn')?.addEventListener('click',enterNearbyWorldZone);
-  document.getElementById('worldHomeBtn')?.addEventListener('click',()=>{worldState.x=410;worldState.y=575;worldState.lastZone='village';saveWorldState();worldMessage('رجعنا قرية المعرفة. اختار طريقك يا بطل!');});
-  document.querySelectorAll('[data-zone]').forEach(b=>b.addEventListener('click',()=>travelToWorldZone(b.dataset.zone)));
- }
- saveWorldState();unlockWorldSecret();if(worldFrame)cancelAnimationFrame(worldFrame);worldLastTime=0;worldFrame=requestAnimationFrame(worldLoop);
-}
-function worldCamera(){const cw=worldCanvas?.width||1200,ch=worldCanvas?.height||750;return{x:Math.max(0,Math.min(WORLD_W-cw,worldState.x-cw/2)),y:Math.max(0,Math.min(WORLD_H-ch,worldState.y-ch/2))};}
-function travelToWorldZone(id){const z=worldZones[id];if(!z)return;if(z.locked&&!worldState.unlocked[id]){worldMessage('🔒 الجزيرة السرية محتاجة ٤٠ نقطة على الأقل. العب واجمع النجوم وبعدين ارجع!');return;}worldState.x=z.x;worldState.y=z.y+z.radius*.58;worldState.lastZone=id;saveWorldState();worldMessage('أهلًا بيك في '+z.name+'! استكشف المكان، ولما تقرب من معلمه اضغط «ادخل المكان القريب».');}
-function enterNearbyWorldZone(){unlockWorldSecret();const z=getNearbyWorldZone();if(!z){worldMessage('قرّب من مبنى أو منطقة مميزة الأول، أو اختار منطقة من القائمة تحت الخريطة.');return;}if(z.locked&&!worldState.unlocked[z.id]){worldMessage('لسه المنطقة دي سرية! اجمع ٤٠ نقطة من الألعاب عشان تفتحها.');return;}worldState.lastZone=z.id;saveWorldState();const target=z.screen;const btn=document.querySelector('.tab-btn[data-tab="'+target+'"]');if(btn)btn.click();if(z.id==='village')worldMessage('دخلت قرية المعرفة. اختار اللعبة اللي تحبها من القائمة.');else if(z.id==='forest'||z.id==='castle')worldMessage('بدأت مغامرة سمسم!');else if(z.id==='friends')worldMessage('أهلًا بيك في ميدان الأصدقاء!');else if(z.id==='music')worldMessage('اختار أغنيتك المفضلة.');}
-function drawWorldPath(ctx,points,width,color){ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#d5c89a';ctx.lineWidth=width+10;ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();ctx.restore();}
-function drawWorldLandmark(ctx,id,z){const unlocked=!z.locked||worldState.unlocked[id];ctx.save();ctx.translate(z.x,z.y);ctx.fillStyle='rgba(37,75,44,.15)';ctx.beginPath();ctx.ellipse(0,48,100,27,0,0,Math.PI*2);ctx.fill();
- if(id==='village'){ctx.fillStyle='#f5d7a0';ctx.fillRect(-68,-16,136,72);ctx.fillStyle='#b9604b';ctx.beginPath();ctx.moveTo(-82,-16);ctx.lineTo(0,-82);ctx.lineTo(82,-16);ctx.closePath();ctx.fill();ctx.fillStyle='#fff2cf';ctx.fillRect(-18,12,36,44);ctx.fillStyle='#6aa3b9';ctx.fillRect(-51,0,24,24);ctx.fillRect(28,0,24,24);}
- else if(id==='castle'){ctx.fillStyle='#9e8bd0';ctx.fillRect(-76,-10,152,75);ctx.fillRect(-94,-55,42,120);ctx.fillRect(52,-55,42,120);ctx.fillRect(-24,-78,48,143);ctx.fillStyle='#685a98';[-73,-28,28,73].forEach(x=>{ctx.beginPath();ctx.moveTo(x-16,-55);ctx.lineTo(x,-82);ctx.lineTo(x+16,-55);ctx.fill();});ctx.fillStyle='#f9e6a2';ctx.fillRect(-13,25,26,40);}
- else if(id==='forest'){for(let i=0;i<5;i++){const x=(i-2)*34,y=(i%2)*12-20;ctx.fillStyle=['#398357','#4e9a62','#2c754f'][i%3];ctx.beginPath();ctx.moveTo(x,y-62);ctx.lineTo(x-27,y+4);ctx.lineTo(x+27,y+4);ctx.closePath();ctx.fill();ctx.fillStyle='#8b6241';ctx.fillRect(x-5,y+4,10,30);}}
- else if(id==='friends'){ctx.fillStyle='#dff4ff';ctx.beginPath();ctx.arc(-30,-4,33,Math.PI,0);ctx.lineTo(3,40);ctx.lineTo(-63,40);ctx.closePath();ctx.fill();ctx.fillStyle='#f1b84b';ctx.beginPath();ctx.arc(30,-4,33,Math.PI,0);ctx.lineTo(63,40);ctx.lineTo(-3,40);ctx.closePath();ctx.fill();ctx.fillStyle='#397aaf';ctx.fillRect(-63,22,126,28);}
- else if(id==='music'){ctx.fillStyle='#ef9c9b';ctx.beginPath();ctx.ellipse(0,20,88,48,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff2cc';ctx.fillRect(-58,-15,116,38);ctx.fillStyle='#bd5d80';ctx.beginPath();ctx.moveTo(-72,-15);ctx.lineTo(0,-55);ctx.lineTo(72,-15);ctx.closePath();ctx.fill();}
- else if(id==='secret'){ctx.fillStyle=unlocked?'#8570bc':'#777';ctx.beginPath();ctx.moveTo(-70,40);ctx.lineTo(-48,-40);ctx.lineTo(0,-72);ctx.lineTo(48,-40);ctx.lineTo(70,40);ctx.closePath();ctx.fill();ctx.fillStyle=unlocked?'#f5dc78':'#bbb';ctx.fillRect(-15,0,30,40);if(!unlocked){ctx.font='bold 38px sans-serif';ctx.fillStyle='#fff';ctx.fillText('🔒',-20,-15);}}
- ctx.font='bold 28px sans-serif';ctx.textAlign='center';ctx.fillText(z.emoji,0,-100);ctx.font='bold 22px Tajawal, sans-serif';ctx.lineWidth=5;ctx.strokeStyle='#fff';ctx.strokeText(z.name,0,96);ctx.fillStyle=unlocked?'#244d34':'#666';ctx.fillText(z.name,0,96);ctx.restore();}
-function worldLoop(t){if(!worldCanvas||!document.getElementById('screen-world')?.classList.contains('active')){worldFrame=null;return;}const dt=Math.min(.04,(t-(worldLastTime||t))/1000||.016);worldLastTime=t;let dx=0,dy=0;if(worldKeys.arrowleft||worldKeys.a||worldMovePointer==='left')dx=-1;if(worldKeys.arrowright||worldKeys.d||worldMovePointer==='right')dx=1;if(worldKeys.arrowup||worldKeys.w||worldMovePointer==='up')dy=-1;if(worldKeys.arrowdown||worldKeys.s||worldMovePointer==='down')dy=1;if(dx||dy){const n=Math.hypot(dx,dy)||1;worldState.x=Math.max(35,Math.min(WORLD_W-35,worldState.x+dx/n*240*dt));worldState.y=Math.max(35,Math.min(WORLD_H-35,worldState.y+dy/n*240*dt));}
- const ctx=worldCtx,cw=worldCanvas.width,ch=worldCanvas.height,cam=worldCamera();ctx.clearRect(0,0,cw,ch);ctx.save();ctx.translate(-cam.x,-cam.y);
- // soft grass base and connected biomes
- ctx.fillStyle='#bfe4a5';ctx.fillRect(0,0,WORLD_W,WORLD_H);
- ctx.fillStyle='#a9d79b';ctx.beginPath();ctx.ellipse(420,430,430,330,-.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b7dca0';ctx.beginPath();ctx.ellipse(980,340,420,360,.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#c7d8a0';ctx.beginPath();ctx.ellipse(1480,430,400,330,.1,0,Math.PI*2);ctx.fill();ctx.fillStyle='#a7d5c0';ctx.beginPath();ctx.ellipse(1780,900,380,360,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f1d9a8';ctx.beginPath();ctx.ellipse(900,1100,460,290,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b5a9d9';ctx.beginPath();ctx.ellipse(2040,300,250,220,0,0,Math.PI*2);ctx.fill();
- // water and bridges
- ctx.fillStyle='#79c8d6';ctx.beginPath();ctx.moveTo(0,760);ctx.bezierCurveTo(550,660,680,850,1050,730);ctx.bezierCurveTo(1440,600,1680,750,2400,650);ctx.lineTo(2400,740);ctx.bezierCurveTo(1700,840,1400,710,1080,810);ctx.bezierCurveTo(680,930,450,760,0,850);ctx.closePath();ctx.fill();
- drawWorldPath(ctx,[[330,590],[480,500],[650,520],[820,430],[960,390],[1140,420],[1320,450],[1470,520],[1620,650],[1770,820],[1900,720],[2030,440]],42,'#e7d8a8');drawWorldPath(ctx,[[820,430],[790,610],[870,800],[920,990],[900,1100]],34,'#e7d8a8');drawWorldPath(ctx,[[1470,520],[1390,680],[1230,820],[1110,980]],32,'#e7d8a8');
- // decorative shrubs / flowers
- for(let i=0;i<95;i++){const x=(i*197+83)%WORLD_W,y=(i*311+121)%WORLD_H;if(Object.values(worldZones).some(z=>Math.hypot(x-z.x,y-z.y)<145))continue;ctx.fillStyle=i%3===0?'#76b96d':i%3===1?'#8acb7c':'#e5b6a5';ctx.beginPath();ctx.arc(x,y,5+(i%4),0,Math.PI*2);ctx.fill();if(i%4===0){ctx.fillStyle='#fff4ce';ctx.beginPath();ctx.arc(x+3,y-3,3,0,Math.PI*2);ctx.fill();}}
- Object.entries(worldZones).forEach(([id,z])=>drawWorldLandmark(ctx,id,z));
- // secret collectible stars, fixed positions and one-time collection
- const treasures=[{id:'s1',x:700,y:260},{id:'s2',x:1160,y:250},{id:'s3',x:1260,y:930},{id:'s4',x:1920,y:510},{id:'s5',x:550,y:1000}];treasures.forEach(q=>{if(worldState.collected.includes(q.id))return;ctx.font='32px sans-serif';ctx.textAlign='center';ctx.fillText('⭐',q.x,q.y+Math.sin(t/320+q.x)*5);if(Math.hypot(worldState.x-q.x,worldState.y-q.y)<35){worldState.collected.push(q.id);worldState.stars=(worldState.stars||0)+1;saveWorldState();playSFX('win');worldMessage('لقيت نجمة مخفية! ⭐ نجوم العالم: '+worldState.stars);}});
- // player shadow and avatar
- ctx.fillStyle='#345c3b44';ctx.beginPath();ctx.ellipse(worldState.x,worldState.y+20,23,10,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f3bd4f';ctx.beginPath();ctx.arc(worldState.x,worldState.y-9,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3e83a5';ctx.fillRect(worldState.x-15,worldState.y+7,30,24);ctx.fillStyle='#f6d1a6';ctx.beginPath();ctx.arc(worldState.x,worldState.y-12,13,0,Math.PI*2);ctx.fill();ctx.fillStyle='#513a2d';ctx.beginPath();ctx.arc(worldState.x,worldState.y-17,13,Math.PI,Math.PI*2);ctx.fill();ctx.fillStyle='#243b31';ctx.beginPath();ctx.arc(worldState.x-4,worldState.y-12,1.8,0,Math.PI*2);ctx.arc(worldState.x+4,worldState.y-12,1.8,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a95f4c';ctx.lineWidth=2;ctx.beginPath();ctx.arc(worldState.x,worldState.y-7,4,0,Math.PI);ctx.stroke();ctx.font='bold 18px sans-serif';ctx.textAlign='center';ctx.fillText('🦊',worldState.x+27,worldState.y-22);
- ctx.restore();
- const near=getNearbyWorldZone();if(near){worldMessage('إنت قريب من '+near.name+'! اضغط «ادخل المكان القريب».');}unlockWorldSecret();worldFrame=requestAnimationFrame(worldLoop);}
 
 /* ================== SHARED SPEECH ================== */
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; 
@@ -1631,7 +1141,7 @@ let recognition = null;
 const inSandboxedFrame = (window.top !== window.self);
 let micConfirmedBlocked = false;
 
-const SANDBOX_NOTE_TEXT = '🎙️ ملحوظة: المايك بيتشغل جوه صفحة Google Apps Script، وده ممكن يمنعه بعض المتصفحات. لو زرار المايك مش بيستجيب خالص، جرّب تفتح الرابط من Chrome على أندرويد أو كمبيوتر.';
+const SANDBOX_NOTE_TEXT = '🎙️ ملحوظة: المايك بيشتغل جوه صفحة Google Apps Script، وده ممكن يوقفه بعض المتصفحات. لو زرار المايك مش بيستجيبلك خالص، جرّب تفتح الرابط من Chrome على أندرويد أو كمبيوتر.';
 
 function showSandboxNote(){
   ['micSandboxNoteLetter','micSandboxNoteWord'].forEach(id=>{
@@ -1643,7 +1153,7 @@ function showSandboxNote(){
 function startListening(btnEl, errorEl, feedbackEl, onMatchCallback) {
   if (!SpeechRecognition) { 
     btnEl.disabled = true; 
-    feedbackEl.textContent = 'المتصفح ده لا يدعم المايكروفون، جرب Chrome على أندرويد أو كمبيوتر'; 
+    feedbackEl.textContent = 'المتصفح ده مش بيدعم المايك، جرب Chrome على أندرويد أو كمبيوتر'; 
     feedbackEl.className = 'feedback-line no'; 
     showSandboxNote();
     return; 
@@ -1658,7 +1168,7 @@ function startListening(btnEl, errorEl, feedbackEl, onMatchCallback) {
     recognition.onstart = () => { 
       btnEl.classList.add('recording'); 
       btnEl.textContent = '🎙️ جاري الاستماع...'; 
-      feedbackEl.textContent = 'تكلم بوضوح الآن...'; 
+      feedbackEl.textContent = 'اتكلم بصوت واضح دلوقتي...'; 
       feedbackEl.className = 'feedback-line'; 
       errorEl.style.display = 'none'; 
     };
@@ -1674,11 +1184,11 @@ function startListening(btnEl, errorEl, feedbackEl, onMatchCallback) {
     recognition.onerror = (e) => {
       btnEl.classList.remove('recording'); 
       btnEl.textContent = '🎙️ اضغط وتكلم'; 
-      feedbackEl.textContent = 'لم أسمعك جيدًا!'; 
+      feedbackEl.textContent = 'مسمعتكش كويس!'; 
       feedbackEl.className = 'feedback-line no';
       if(e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture'){ 
         errorEl.style.display = 'block'; 
-        errorEl.innerHTML = '❌ تعذر الوصول للمايكروفون. تأكد من إعطاء الصلاحية من إعدادات المتصفح/الموبايل.'; 
+        errorEl.innerHTML = '❌ مش قادرين نوصل للمايك. اتأكد إنك ديت صلاحية المايك من إعدادات المتصفح أو الموبايل.'; 
         micConfirmedBlocked = true;
         if(inSandboxedFrame) showSandboxNote();
       }
@@ -1696,44 +1206,6 @@ function startListening(btnEl, errorEl, feedbackEl, onMatchCallback) {
     micConfirmedBlocked = true;
     if(inSandboxedFrame) showSandboxNote();
   }
-}
-
-/* ================== DIFFICULTY PROGRESSION ==================
-   Difficulty changes the selected word pool, never the familiar question UI/answer mechanics.
-*/
-const DIFFICULTY_LEVELS = [
-  {name:'بداية سهلة',emoji:'🌱',min:0,max:19,desc:'حروف وكلمات قصيرة'},
-  {name:'مستكشف الكلمات',emoji:'🔎',min:20,max:39,desc:'كلمات قصيرة ومتوسطة'},
-  {name:'قارئ شاطر',emoji:'📚',min:40,max:59,desc:'كلمات أطول واختيارات أدق'},
-  {name:'بطل القراءة',emoji:'🦁',min:60,max:79,desc:'تحديات أكثر تنوعًا'},
-  {name:'أسطورة المعرفة',emoji:'👑',min:80,max:Infinity,desc:'كل الكلمات متاحة'}
-];
-function getDifficultyLevel(){ return Math.max(1,Math.min(5,Math.floor(Math.max(0,Number(score)||0)/20)+1)); }
-function pickWordForLevel(key){
-  const level=getDifficultyLevel();
-  let pool=wordsList;
-  if(level===1) pool=wordsList.filter(w=>w.parts.length<=2);
-  else if(level===2) pool=wordsList.filter(w=>w.parts.length<=3);
-  else if(level===3) pool=wordsList.filter(w=>w.parts.length>=2 && w.parts.length<=4);
-  else if(level===4) pool=wordsList.filter(w=>w.parts.length>=3);
-  if(!pool.length) pool=wordsList;
-  return pickNonRepeating(pool,key+'-difficulty-'+level);
-}
-function renderDifficultyMap(){
-  const level=getDifficultyLevel(), pts=Math.max(0,Number(score)||0), map=document.getElementById('difficultyMap');
-  if(!map)return;
-  map.innerHTML='';
-  DIFFICULTY_LEVELS.forEach((item,i)=>{
-    const n=i+1, unlocked=n<=level, current=n===level;
-    const b=document.createElement('div'); b.className='story-node'+(unlocked?' done':' locked')+(current?' current':'');
-    b.innerHTML='<span class="level-badge">'+(unlocked?(current?'⭐':'✓'):'🔒')+'</span><span class="emoji">'+item.emoji+'</span>'+item.name+'<small>'+(current?'مستواك الحالي':(unlocked?'🟢 مفتوح':'🔒 اجمع '+item.min+' نقطة'))+'</small><small>'+item.desc+'</small>';
-    map.appendChild(b);
-  });
-  const within=pts%20;
-  document.getElementById('difficultyScore').textContent=pts;
-  document.getElementById('difficultyLevel').textContent=['١','٢','٣','٤','٥'][level-1];
-  document.getElementById('difficultyProgressBar').style.width=(level===5?100:(within/20*100))+'%';
-  document.getElementById('difficultyNextText').textContent=level===5?'🏆 وصلت لأعلى مستوى! كل الكلمات متاحة ليك.':'فاضلك '+(20-within)+' نقطة عشان تفتح «'+DIFFICULTY_LEVELS[level].name+'». الصعوبة هتزيد لوحدها.';
 }
 
 /* ================== GAMES LOGIC ================== */
@@ -1917,11 +1389,11 @@ document.getElementById('micBtnLetter').onclick = () => {
     let normTargetName = normalizeArabic(currentSpeakLetterObj.name);
 
     if (normSpoken.includes(normTargetLetter) || normSpoken.includes(normTargetName)) { 
-      document.getElementById('speakLetterFeedback').textContent = `صح 🎉 (سمعتك: ${spokenText})`; 
+      document.getElementById('speakLetterFeedback').textContent = `تمام 🎉 (سمعتك بتقول: ${spokenText})`; 
       document.getElementById('speakLetterFeedback').className = 'feedback-line ok pop'; 
       playSFX('win'); addScore(3); setTimeout(newSpeakLetterRound, 1500); 
     } else { 
-      document.getElementById('speakLetterFeedback').textContent = `حاول تاني ❌ (سمعتك: ${spokenText})`; 
+      document.getElementById('speakLetterFeedback').textContent = `جرب تاني ❌ (سمعتك بتقول: ${spokenText})`; 
       document.getElementById('speakLetterFeedback').className = 'feedback-line no shake'; 
       playSFX('lose'); 
     } 
@@ -1931,18 +1403,18 @@ document.getElementById('skipSpeakLetterBtn').onclick = newSpeakLetterRound;
 
 /* 4. Speak Word Game */
 let currentSpeakWordObj = null;
-function newSpeakWordRound(){ document.getElementById('speakWordFeedback').textContent = ''; document.getElementById('micErrorWord').style.display = 'none'; currentSpeakWordObj = pickWordForLevel('speakWord'); document.getElementById('speakWordEmoji').textContent = currentSpeakWordObj.emoji; document.getElementById('speakWordTarget').textContent = currentSpeakWordObj.word; }
+function newSpeakWordRound(){ document.getElementById('speakWordFeedback').textContent = ''; document.getElementById('micErrorWord').style.display = 'none'; currentSpeakWordObj = pickNonRepeating(wordsForJourney(), 'speakWord'); document.getElementById('speakWordEmoji').textContent = currentSpeakWordObj.emoji; document.getElementById('speakWordTarget').textContent = currentSpeakWordObj.word; }
 document.getElementById('micBtnWord').onclick = () => { 
   startListening(document.getElementById('micBtnWord'), document.getElementById('micErrorWord'), document.getElementById('speakWordFeedback'), (spokenText) => { 
     let normSpoken = normalizeArabic(spokenText);
     let normTargetWord = normalizeArabic(currentSpeakWordObj.word);
 
     if (normSpoken.includes(normTargetWord)) { 
-      document.getElementById('speakWordFeedback').textContent = `بطل 🎉 (سمعتك: ${spokenText})`; 
+      document.getElementById('speakWordFeedback').textContent = `يا بطل 🎉 (سمعتك بتقول: ${spokenText})`; 
       document.getElementById('speakWordFeedback').className = 'feedback-line ok pop'; 
       playSFX('win'); addScore(4); setTimeout(newSpeakWordRound, 1500); 
     } else { 
-      document.getElementById('speakWordFeedback').textContent = `حاول تاني ❌ (سمعتك: ${spokenText})`; 
+      document.getElementById('speakWordFeedback').textContent = `جرب تاني ❌ (سمعتك بتقول: ${spokenText})`; 
       document.getElementById('speakWordFeedback').className = 'feedback-line no shake'; 
       playSFX('lose'); 
     } 
@@ -1954,14 +1426,14 @@ document.getElementById('skipSpeakWordBtn').onclick = newSpeakWordRound;
 let missingTargetPart = null; let missingLock = false;
 function newMissingRound(){
   missingLock = false; document.getElementById('missingFeedback').textContent = ''; document.getElementById('missingFeedback').className = 'feedback-line';
-  const targetWord = pickWordForLevel('missing'); const missingIndex = Math.floor(Math.random() * targetWord.parts.length); missingTargetPart = targetWord.parts[missingIndex];
+  const targetWord = pickNonRepeating(wordsForJourney(), 'missing'); const missingIndex = Math.floor(Math.random() * targetWord.parts.length); missingTargetPart = targetWord.parts[missingIndex];
   document.getElementById('missingEmoji').textContent = targetWord.emoji; speak(targetWord.word);
   const disp = document.getElementById('missingWordDisplay'); disp.innerHTML = '';
   targetWord.parts.forEach((p, i) => { const slot = document.createElement('div'); if(i === missingIndex){ slot.className = 'missing-slot'; slot.textContent = '?'; slot.id = 'activeMissingSlot'; } else { slot.className = 'missing-slot filled'; slot.textContent = p; } disp.appendChild(slot); });
-  const opts = shuffle([missingTargetPart, ...shuffle([...new Set(wordsList.flatMap(w => w.parts))].filter(p => p !== missingTargetPart)).slice(0, 2)]);
+  const opts = shuffle([missingTargetPart, ...shuffle([...new Set(wordsForJourney().flatMap(w => w.parts))].filter(p => p !== missingTargetPart)).slice(0, 2)]);
   document.getElementById('missingOptions').innerHTML = '';
   opts.forEach(opt => { const btn = document.createElement('button'); btn.className = 'pool-letter'; btn.style.width='80px'; btn.style.height='80px'; btn.style.fontSize='2.5rem'; btn.textContent = opt;
-    btn.onclick = () => { if(missingLock) return; speak(opt); missingLock = true; if(opt === missingTargetPart){ btn.classList.add('correct'); document.getElementById('activeMissingSlot').textContent = opt; document.getElementById('activeMissingSlot').classList.add('filled'); document.getElementById('missingFeedback').textContent = 'بطل! 🎉'; document.getElementById('missingFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newMissingRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('missingFeedback').textContent = 'خطأ ❌'; document.getElementById('missingFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ missingLock = false; btn.classList.remove('wrong'); document.getElementById('missingFeedback').classList.remove('shake'); }, 800); } };
+    btn.onclick = () => { if(missingLock) return; speak(opt); missingLock = true; if(opt === missingTargetPart){ btn.classList.add('correct'); document.getElementById('activeMissingSlot').textContent = opt; document.getElementById('activeMissingSlot').classList.add('filled'); document.getElementById('missingFeedback').textContent = 'بطل! 🎉'; document.getElementById('missingFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newMissingRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('missingFeedback').textContent = 'غلط ❌'; document.getElementById('missingFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ missingLock = false; btn.classList.remove('wrong'); document.getElementById('missingFeedback').classList.remove('shake'); }, 800); } };
     document.getElementById('missingOptions').appendChild(btn); });
 }
 
@@ -1972,37 +1444,37 @@ function newMatchRound(){
   const correct = pickNonRepeating(LETTERS, 'match'); const options = shuffle([correct, ...shuffle(LETTERS.filter(x=>x.l !== correct.l)).slice(0,2)]);
   document.getElementById('matchLetter').textContent = correct.l; speak(correct.name); const cont = document.getElementById('matchOptions'); cont.innerHTML = '';
   options.forEach(opt=>{ const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = opt.emoji;
-    btn.onclick = ()=>{ if(matchLock) return; matchLock = true; if(opt.l === correct.l){ btn.classList.add('correct'); document.getElementById('matchFeedback').textContent = 'صح 🎉'; document.getElementById('matchFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(1); setTimeout(newMatchRound, 1400); }else{ btn.classList.add('wrong'); document.getElementById('matchFeedback').textContent = 'خطأ ❌'; document.getElementById('matchFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newMatchRound, 1500); } }; cont.appendChild(btn); });
+    btn.onclick = ()=>{ if(matchLock) return; matchLock = true; if(opt.l === correct.l){ btn.classList.add('correct'); document.getElementById('matchFeedback').textContent = 'صح 🎉'; document.getElementById('matchFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(1); setTimeout(newMatchRound, 1400); }else{ btn.classList.add('wrong'); document.getElementById('matchFeedback').textContent = 'غلط ❌'; document.getElementById('matchFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newMatchRound, 1500); } }; cont.appendChild(btn); });
 }
 
 /* 7. Listen Image */
 let listenImgLock = false;
 function newListenImgRound(){
-  listenImgLock = false; document.getElementById('listenImgFeedback').textContent = ''; const target = pickWordForLevel('listenImg'); const options = shuffle([target, ...shuffle(wordsList.filter(x => x.word !== target.word)).slice(0, 2)]);
+  listenImgLock = false; document.getElementById('listenImgFeedback').textContent = ''; const target = pickNonRepeating(wordsForJourney(), 'listenImg'); const options = shuffle([target, ...shuffle(wordsForJourney().filter(x => x.word !== target.word)).slice(0, 2)]);
   speak(target.word); document.getElementById('playListenImgBtn').onclick = () => speak(target.word); const cont = document.getElementById('listenImgOptions'); cont.innerHTML = '';
   options.forEach(opt => { const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = opt.emoji;
-    btn.onclick = () => { if(listenImgLock) return; listenImgLock = true; if(opt.word === target.word){ btn.classList.add('correct'); document.getElementById('listenImgFeedback').textContent = 'ممتاز 🎉'; document.getElementById('listenImgFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newListenImgRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('listenImgFeedback').textContent = 'خطأ ❌'; document.getElementById('listenImgFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newListenImgRound, 1600); } }; cont.appendChild(btn); });
+    btn.onclick = () => { if(listenImgLock) return; listenImgLock = true; if(opt.word === target.word){ btn.classList.add('correct'); document.getElementById('listenImgFeedback').textContent = 'ممتاز 🎉'; document.getElementById('listenImgFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newListenImgRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('listenImgFeedback').textContent = 'غلط ❌'; document.getElementById('listenImgFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newListenImgRound, 1600); } }; cont.appendChild(btn); });
 }
 
 /* 8. Listen Text */
 let listenTextLock = false;
 function newListenTextRound(){
-  listenTextLock = false; document.getElementById('listenTextFeedback').textContent = ''; const target = pickWordForLevel('listenText'); const options = shuffle([target, ...shuffle(wordsList.filter(x => x.word !== target.word)).slice(0, 2)]);
+  listenTextLock = false; document.getElementById('listenTextFeedback').textContent = ''; const target = pickNonRepeating(wordsForJourney(), 'listenText'); const options = shuffle([target, ...shuffle(wordsForJourney().filter(x => x.word !== target.word)).slice(0, 2)]);
   speak(target.word); document.getElementById('playListenTextBtn').onclick = () => speak(target.word); const cont = document.getElementById('listenTextOptions'); cont.innerHTML = '';
   options.forEach(opt => { const btn = document.createElement('button'); btn.className = 'word-option-btn'; btn.textContent = opt.word;
-    btn.onclick = () => { if(listenTextLock) return; listenTextLock = true; if(opt.word === target.word){ btn.classList.add('correct'); document.getElementById('listenTextFeedback').textContent = 'بطل 🎉'; document.getElementById('listenTextFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newListenTextRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('listenTextFeedback').textContent = 'خطأ ❌'; document.getElementById('listenTextFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newListenTextRound, 1600); } }; cont.appendChild(btn); });
+    btn.onclick = () => { if(listenTextLock) return; listenTextLock = true; if(opt.word === target.word){ btn.classList.add('correct'); document.getElementById('listenTextFeedback').textContent = 'بطل 🎉'; document.getElementById('listenTextFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newListenTextRound, 1500); } else { btn.classList.add('wrong'); document.getElementById('listenTextFeedback').textContent = 'غلط ❌'; document.getElementById('listenTextFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(newListenTextRound, 1600); } }; cont.appendChild(btn); });
 }
 
 /* 9. Build Word */
 let buildTarget = null, builtSoFar = [];
 function newBuildRound(){
-  document.getElementById('buildFeedback').textContent = ''; buildTarget = pickWordForLevel('build'); builtSoFar = []; document.getElementById('buildEmoji').textContent = buildTarget.emoji; speak(buildTarget.word); document.getElementById('speakWordBtn').onclick = () => speak(buildTarget.word);
+  document.getElementById('buildFeedback').textContent = ''; buildTarget = pickNonRepeating(wordsForJourney(), 'build'); builtSoFar = []; document.getElementById('buildEmoji').textContent = buildTarget.emoji; speak(buildTarget.word); document.getElementById('speakWordBtn').onclick = () => speak(buildTarget.word);
   const blanks = document.getElementById('blanksRow'); blanks.innerHTML = ''; buildTarget.parts.forEach(()=>{ const s = document.createElement('div'); s.className = 'blank-slot'; blanks.appendChild(s); });
   let scrambled = shuffle(buildTarget.parts); if(scrambled.join('') === buildTarget.parts.join('') && scrambled.length > 1) scrambled = shuffle(buildTarget.parts);
   const pool = document.getElementById('poolRow'); pool.innerHTML = '';
   scrambled.forEach(part=>{ const btn = document.createElement('button'); btn.className = 'pool-letter'; btn.textContent = part; btn.dataset.used = 'false';
     btn.onclick = ()=>{ if(btn.dataset.used === 'true') return; speak(part); btn.dataset.used = 'true'; btn.classList.add('used'); builtSoFar.push(part); blanks.children[builtSoFar.length-1].textContent = part; blanks.children[builtSoFar.length-1].classList.add('filled');
-      if(builtSoFar.length === buildTarget.parts.length){ if(builtSoFar.join('') === buildTarget.parts.join('')){ document.getElementById('buildFeedback').textContent = 'صح 🎉'; document.getElementById('buildFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newBuildRound, 1500); }else{ document.getElementById('buildFeedback').textContent = 'خطأ ❌'; document.getElementById('buildFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ builtSoFar = []; [...blanks.children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...pool.children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); document.getElementById('buildFeedback').textContent = ''; }, 1000); } } }; pool.appendChild(btn); });
+      if(builtSoFar.length === buildTarget.parts.length){ if(builtSoFar.join('') === buildTarget.parts.join('')){ document.getElementById('buildFeedback').textContent = 'صح 🎉'; document.getElementById('buildFeedback').className = 'feedback-line ok pop'; playSFX('win'); addScore(2); setTimeout(newBuildRound, 1500); }else{ document.getElementById('buildFeedback').textContent = 'غلط ❌'; document.getElementById('buildFeedback').className = 'feedback-line no shake'; playSFX('lose'); setTimeout(()=>{ builtSoFar = []; [...blanks.children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...pool.children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); document.getElementById('buildFeedback').textContent = ''; }, 1000); } } }; pool.appendChild(btn); });
 }
 document.getElementById('clearBtn').onclick = ()=>{ builtSoFar = []; [...document.getElementById('blanksRow').children].forEach(s=>{ s.textContent=''; s.classList.remove('filled'); }); [...document.getElementById('poolRow').children].forEach(b=>{ b.dataset.used='false'; b.classList.remove('used'); }); };
 document.getElementById('skipBtn').onclick = newBuildRound;
