@@ -608,13 +608,21 @@ const FRIEND_LINES = [
   'أنا هنا جنبك طول الوقت، يلا بينا!'
 ];
 let friendBubbleTimer = null;
-document.getElementById('friendBtn').addEventListener('click', () => {
-  const line = FRIEND_LINES[Math.floor(Math.random() * FRIEND_LINES.length)];
+document.getElementById('friendBtn').addEventListener('click', async () => {
   const bubble = document.getElementById('friendBubble');
+  playSFX('win');
+  // جملة احتياطية فورية، لحد ما رد الذكاء الاصطناعي يوصل (أو لو النت بايظ)
+  let line = FRIEND_LINES[Math.floor(Math.random() * FRIEND_LINES.length)];
   bubble.textContent = line;
   bubble.classList.add('show');
+
+  try{
+    const journeyName = document.getElementById('journeyNameLabel') ? document.getElementById('journeyNameLabel').textContent : '';
+    const res = await apiCall('friendReply', { context: { username: currentUser ? currentUser.username : '', score: score, journeyName } });
+    if(res && res.ok && res.line){ line = res.line; bubble.textContent = line; }
+  }catch(e){}
+
   speak(line);
-  playSFX('win');
   if(friendBubbleTimer) clearTimeout(friendBubbleTimer);
   friendBubbleTimer = setTimeout(() => bubble.classList.remove('show'), 4500);
 });
