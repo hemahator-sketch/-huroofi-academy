@@ -813,15 +813,81 @@ let arVoice=null;
 function pickVoice(){if(!('speechSynthesis' in window))return;const v=speechSynthesis.getVoices().filter(x=>x.lang&&x.lang.toLowerCase().startsWith('ar'));arVoice=v.find(x=>/google/i.test(x.name))||v.find(x=>/^ar-eg/i.test(x.lang))||v.find(x=>/^ar-sa/i.test(x.lang))||v[0]||null;}
 if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
 let speechLock=false,lockT=null,queuedSpeech='';
-function releaseSpeech(){speechLock=false;clearTimeout(lockT);if(queuedSpeech){const t=queuedSpeech;queuedSpeech='';speak(t);}}
+/* === صوت عربي طبيعي (Google TTS من السيرفر) بدل صوت المتصفح الآلي ===
+   المشكلة: speechSynthesis بتعتمد على أصوات الجهاز؛ لو مفيهوش صوت عربي
+   بتقرأ العربي بصوت كمبيوتر بيبوظ النطق عند الأطفال.
+   الحل: نطلب الصوت من السيرفر (action=tts) اللي بيستخدم محرك جوجل،
+   بيرجّع MP3 بصوت بشري واضح شغّال على أي جهاز. بنخزّنه في كاش على الجهاز
+   عشان الكلمة اللي اتقرّت قبل كده تطلع فوري من غير طلب جديد. */
+const ttsCache=new Map();              // نص -> base64 (أو null لو فشل من قبل)
+const ttsAudio=new Audio();            // عنصر صوت واحد بيتإعادة استخدامه
+let audioUnlocked=false;
+// فك قفل الصوت على أول تفاعل (المتصفحات بتمنع تشغيل الصوت من غير لمسة)
+const SILENT_WAV='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+function unlockAudio(){if(audioUnlocked)return;audioUnlocked=true;
+  try{ttsAudio.src=SILENT_WAV;ttsAudio.volume=0;ttsAudio.play().then(()=>{ttsAudio.pause();ttsAudio.currentTime=0;ttsAudio.volume=1;ttsAudio.removeAttribute('src');}).catch(()=>{});}catch(e){}
+  try{if(actx&&actx.state==='suspended')actx.resume();}catch(e){}}
+window.addEventListener('pointerdown',unlockAudio,{once:true});
+window.addEventListener('keydown',unlockAudio,{once:true});
+function drainQueue(){if(queuedSpeech){const t=queuedSpeech;queuedSpeech='';speak(t);}}
+function releaseSpeech(){              // فك القفل + وقف أي صوت شغال يدويًا
+  speechLock=false;clearTimeout(lockT);
+  try{ttsAudio.pause();ttsAudio.onended=null;ttsAudio.onerror=null;ttsAudio.removeAttribute('src');}catch(e){}
+  try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}
+  drainQueue();
+}
+async function fetchTts(text){
+  const key=String(text).trim();
+  if(ttsCache.has(key))return ttsCache.get(key);   // بيشمل الفشل المتخزّن عشان ما نضربش السيرفر تاني
+  try{const r=await apiCall('tts',{text});if(r&&r.ok&&r.audio){ttsCache.set(key,r.audio);return r.audio;}}catch(e){}
+  ttsCache.set(key,null);return null;
+}
+// تقسيم النص الطويل على حدود الجمل (محرك جوجل بياخد ≤180 حرف)
+function splitTts(text){
+  const max=180,segs=String(text).split(/([.!?؟،؛\n]+)/),out=[];
+  segs.forEach(s=>{if(!s)return;const last=out[out.length-1];
+    if(last&&last.length+s.length<=max)out[out.length-1]+=s;else out.push(s);});
+  return out.map(s=>s.trim()).filter(Boolean);
+}
+function playTtsChunks(chunks,done){
+  let i=0;
+  const next=()=>{
+    if(i>=chunks.length){done();return;}
+    const c=chunks[i++];
+    fetchTts(c).then(b64=>{
+      if(!b64){next();return;}                       // مقطع فاشل → تخطّيه ونكمّل
+      ttsAudio.src='data:audio/mp3;base64,'+b64;
+      ttsAudio.onended=next;ttsAudio.onerror=next;
+      const p=ttsAudio.play();if(p&&p.catch)p.catch(()=>next());
+    }).catch(()=>next());
+  };
+  next();
+}
 function speak(text,onDone,force){
   if(speechLock&&!force){if(text)queuedSpeech=text;if(onDone)onDone();return;}
-  if(!text||!('speechSynthesis' in window)){if(onDone)onDone();return;}
-  try{speechSynthesis.cancel();
-    const clean=text.replace(/[\u064B-\u0652]/g,'').replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF]/gu,'').trim();
-    const u=new SpeechSynthesisUtterance(clean);if(arVoice)u.voice=arVoice;u.lang=arVoice?arVoice.lang:'ar-EG';u.rate=.78;u.pitch=1.25;
-    if(onDone){u.onend=onDone;u.onerror=onDone;}speechSynthesis.speak(u);
-  }catch(e){if(onDone)onDone();}
+  if(!text){if(onDone)onDone();return;}
+  // وقف أي صوت شغال قبل ما نبدأ الجديد
+  try{ttsAudio.pause();ttsAudio.onended=null;ttsAudio.onerror=null;}catch(e){}
+  try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}
+  let done=false;
+  const finish=()=>{if(done)return;done=true;speechLock=false;clearTimeout(lockT);try{if(onDone)onDone();}catch(e){}drainQueue();};
+  speechLock=true;clearTimeout(lockT);
+  lockT=setTimeout(()=>{try{ttsAudio.pause();}catch(e){}try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}finish();},30000);
+  // 1) الأول: صوت جوجل الطبيعي (MP3 من السيرفر) — شغّال على كل الأجهزة ومفيهوش صوت كمبيوتر
+  if(navigator.onLine!==false){
+    playTtsChunks(splitTts(text),finish);
+    return;
+  }
+  // 2) لو مفيش نت → صوت المتصفح لو فيه صوت عربي حقيقي (آخر حيلة)
+  if('speechSynthesis' in window&&arVoice){
+    try{
+      const clean=text.replace(/[\u064B-\u0652]/g,'').replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF]/gu,'').trim();
+      const u=new SpeechSynthesisUtterance(clean);u.voice=arVoice;u.lang=arVoice.lang;u.rate=.78;u.pitch=1.25;
+      u.onend=finish;u.onerror=finish;speechSynthesis.speak(u);return;
+    }catch(e){}
+  }
+  // 3) مفيش نت ولا صوت عربي → خلّص بنعم عشان الكود ما يعلقش
+  finish();
 }
 const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
 let rec=null;
